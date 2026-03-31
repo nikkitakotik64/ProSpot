@@ -14,8 +14,8 @@ def return_main_page() -> str:
     return create_main_page(data)
 
 
-@app.route('/main/en')
 @app.route('/en')
+@app.route('/main/en')
 def return_main_page_en() -> str:
     data = Data(data_path + 'main_en.json')
     return create_main_page(data)
