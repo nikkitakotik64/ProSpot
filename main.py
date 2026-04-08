@@ -12,8 +12,13 @@ login_manager.init_app(app)
 @app.route('/main/ru', methods=['POST', 'GET'])
 def main_page_ru():
     if request.method == 'POST':
-        if request.form.get('btn', None) == 'change_lang':
-            return redirect('/en')
+        btn_pressed = request.form.get('btn', None)
+        if btn_pressed:
+            match btn_pressed:
+                case 'change_lang':
+                    return redirect('/en')
+                case 'autho':
+                    print('Авторизация пока недоступна')  # TODO
     return return_main_page_ru()
 
 
@@ -26,8 +31,13 @@ def return_main_page_ru():
 @app.route('/main/en', methods=['POST', 'GET'])
 def main_page_en():
     if request.method == 'POST':
-        if request.form.get('btn', None) == 'change_lang':
-            return redirect('/ru')
+        btn_pressed = request.form.get('btn', None)
+        if btn_pressed:
+            match btn_pressed:
+                case 'change_lang':
+                    return redirect('/ru')
+                case 'autho':
+                    print('Авторизация пока недоступна')  # TODO
     return return_main_page_en()
 
 
