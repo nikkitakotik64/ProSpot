@@ -1,6 +1,6 @@
 from pages import *
 from flask import Flask, render_template, request, redirect
-from data import Data, pages_path
+from textdata import TextData, pages_path
 from flask_login import login_user
 from login import *
 
@@ -23,7 +23,7 @@ def main_page_ru():
 
 
 def return_main_page_ru():
-    data = Data(pages_path + 'main_ru.json')
+    data = TextData(pages_path + 'main_ru.json')
     return create_main_page(data)
 
 
@@ -42,7 +42,7 @@ def main_page_en():
 
 
 def return_main_page_en():
-    data = Data(pages_path + 'main_en.json')
+    data = TextData(pages_path + 'main_en.json')
     return create_main_page(data)
 
 

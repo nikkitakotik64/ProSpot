@@ -1,4 +1,4 @@
-from data import games_list, Data, templates_path
+from textdata import games_list, TextData, templates_path
 from flask import render_template
 from enum import Enum
 
@@ -9,7 +9,7 @@ class PagesType(Enum):
     another = 2
 
 
-def create_main_page(data: Data) -> str:
+def create_main_page(data: TextData) -> str:
     return render_template('main_page.html',
                            lang=data.get_lang(),
                            title=data.get_phrase('title'),

@@ -8,7 +8,7 @@ templates_path = path + 'templates/'
 games_list = ('CS 2', 'Escape From Tarkov')
 
 
-class Data:
+class TextData:
     def __init__(self, text_filename: str) -> None:
         with open(text_filename, 'r', encoding='utf-8') as text_file:
             self.text_data = json.load(text_file)
