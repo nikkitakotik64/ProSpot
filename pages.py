@@ -1,24 +1,19 @@
-from data import games_list, Data
+from data import games_list, Data, templates_path
+from flask import render_template
+from enum import Enum
+
+
+class PagesType(Enum):
+    main = 0
+    games = 1
+    another = 2
 
 
 def create_main_page(data: Data) -> str:
-    page = f'''<!doctype html> 
-    <html lang="{data.get_lang()}">
-        <head>
-            <meta charset="utf-8">
-            <title>ProSpot</title>
-        </head>
-        <body>
-            <p># Добавить тут кнопку переключения языка</p>
-            <p># {data.get_another_langs()}</p>
-            <h0 lang="en">{data.get_phrase('title')}</h0>
-            <p># Тут должны быть кнопки игр</p>
-            <p># {games_list}</p>
-            <p># Тут должен быть визуальный разделитель</p>
-            <p># Тут должна быть кнопка</p>
-            <p># {data.get_phrase('add_spot_button')}</p>
-            <p># Тут должен быть визуальный разделитель</p>
-            <p>{data.get_phrase('tech_info')}</p>
-        </body>
-        </html>'''
-    return page
+    return render_template('main_page.html',
+                           lang=data.get_lang(),
+                           title=data.get_phrase('title'),
+                           autho_btn_text='Авторизация',  # TODO
+                           change_lang_btn_text=data.get_another_lang(),
+                           type = PagesType.main.value,
+                           tech_info=data.get_phrase('tech_info'))

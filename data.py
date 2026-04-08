@@ -2,10 +2,10 @@ import json
 import os
 
 path = os.path.dirname(os.path.abspath(__file__)) + '/'
-data_path = path + 'static/data/'
+pages_path = path + 'static/pages/'
+templates_path = path + 'templates/'
 
 games_list = ('CS 2', 'Escape From Tarkov')
-langs = ['ru', 'en']
 
 
 class Data:
@@ -19,7 +19,5 @@ class Data:
     def get_lang(self) -> str:
         return self.text_data['lang']
 
-    def get_another_langs(self) -> list[str]:
-        ans = langs.copy()
-        ans.remove(self.get_lang())
-        return ans
+    def get_another_lang(self) -> str:
+        return 'ru' if self.get_lang() == 'en' else 'en'
