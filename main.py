@@ -1,6 +1,6 @@
 from pages import *
 from flask import Flask, request, redirect
-from text_data import TextData, pages_path
+from data import TextData, pages_path
 from flask_login import login_user
 from login import *
 
@@ -56,6 +56,59 @@ def main_page():
     return redirect('/en')
 
 
+def return_add_spot_page_en():
+    data = TextData(pages_path + 'add_spot_en.json')
+    return create_add_spot_page(data)
+
+
+def return_add_spot_page_ru():
+    data = TextData(pages_path + 'add_spot_ru.json')
+    return create_add_spot_page(data)
+
+
+@app.route('/add_spot', methods=['GET'])
+def add_spot_page():
+    request.accept_languages.best_match(['ru', 'en'])
+    lang = request.accept_languages.best
+    if lang == 'ru-RU':
+        return redirect('/add_spot/ru')
+    return redirect('/add_spot/en')
+
+
+@app.route('/add_spot/en', methods=['POST', 'GET'])
+def add_spot_page_en():
+    if request.method == 'POST':
+        btn_pressed = request.form.get('btn', None)
+        if btn_pressed:
+            match btn_pressed:
+                case 'change_lang':
+                    return redirect('/add_spot/ru')
+                case 'autho':
+                    print('Авторизация пока недоступна')  # TODO
+                case 'send':
+                    print('Sent!')  # TODO: Считать все данные с формы
+                case 'to_main':
+                    return redirect('/en')
+    return return_add_spot_page_en()
+
+
+@app.route('/add_spot/ru', methods=['POST', 'GET'])
+def add_spot_page_ru():
+    if request.method == 'POST':
+        btn_pressed = request.form.get('btn', None)
+        if btn_pressed:
+            match btn_pressed:
+                case 'change_lang':
+                    return redirect('/add_spot/en')
+                case 'autho':
+                    print('Авторизация пока недоступна')  # TODO
+                case 'send':
+                    print('Sent!')  # TODO: Считать все данные с формы
+                case 'to_main':
+                    return redirect('/ru')
+    return return_add_spot_page_ru()
+
+
 # TODO: это после базы данных
 '''@app.route('/login')
 def login():
@@ -73,4 +126,4 @@ def login():
 '''
 
 if __name__ == '__main__':
-    app.run(port=8080, host='127.0.0.1', debug=True)
+    app.run(port=8080, host='127.0.0.1')
