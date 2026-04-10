@@ -1,6 +1,6 @@
 from pages import *
-from flask import Flask, request, redirect
-from data import TextData, pages_path
+from flask import Flask, request, redirect, abort
+from data import TextData, pages_path, games_short_names_list
 from flask_login import login_user
 from login import *
 
@@ -107,6 +107,65 @@ def add_spot_page_ru():
                 case 'to_main':
                     return redirect('/ru')
     return return_add_spot_page_ru()
+
+
+def return_game_info_page_en(short_name: str):
+    data = TextData(pages_path + short_name + '_info_en.json')
+    return create_game_info_page(data)
+
+
+def return_game_info_page_ru(short_name: str):
+    data = TextData(pages_path + short_name + '_info_ru.json')
+    return create_game_info_page(data)
+
+
+@app.route('/game/<string:game_short_name>/info', methods=['GET'])
+def game_info_page(game_short_name: str):
+    if game_short_name not in games_short_names_list:
+        abort(404)
+    request.accept_languages.best_match(['ru', 'en'])
+    lang = request.accept_languages.best
+    if lang == 'ru-RU':
+        return redirect(f'/game/{game_short_name}/info/ru')
+    return redirect(f'/game/{game_short_name}/info/en')
+
+
+@app.route('/game/<string:game_short_name>/info/ru', methods=['POST', 'GET'])
+def game_info_page_ru(game_short_name: str):
+    if game_short_name not in games_short_names_list:
+        abort(404)
+    if request.method == 'POST':
+        btn_pressed = request.form.get('btn', None)
+        if btn_pressed:
+            match btn_pressed:
+                case 'change_lang':
+                    return redirect(f'/game/{game_short_name}/info/en')
+                case 'autho':
+                    print('Авторизация пока недоступна')  # TODO
+                case 'to_game':
+                    return redirect(f'/game/{game_short_name}/ru')
+                case 'to_main':
+                    return redirect('/ru')
+    return return_game_info_page_ru(game_short_name)
+
+
+@app.route('/game/<string:game_short_name>/info/en', methods=['POST', 'GET'])
+def game_info_page_en(game_short_name: str):
+    if game_short_name not in games_short_names_list:
+        abort(404)
+    if request.method == 'POST':
+        btn_pressed = request.form.get('btn', None)
+        if btn_pressed:
+            match btn_pressed:
+                case 'change_lang':
+                    return redirect(f'/game/{game_short_name}/info/ru')
+                case 'autho':
+                    print('Авторизация пока недоступна')  # TODO
+                case 'to_game':
+                    return redirect(f'/game/{game_short_name}/en')
+                case 'to_main':
+                    return redirect('/en')
+    return return_game_info_page_en(game_short_name)
 
 
 # TODO: это после базы данных

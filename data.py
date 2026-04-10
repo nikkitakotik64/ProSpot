@@ -6,6 +6,7 @@ pages_path = path + 'static/pages/'
 templates_path = path + 'templates/'
 
 games_list = ('CS 2', 'Escape From Tarkov')
+games_short_names_list = ('cs2', 'eft')
 
 
 class TextData:
