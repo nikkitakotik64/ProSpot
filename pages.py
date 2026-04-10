@@ -1,4 +1,4 @@
-from textdata import games_list, TextData, templates_path
+from text_data import games_list, TextData, templates_path
 from flask import render_template
 from enum import Enum
 

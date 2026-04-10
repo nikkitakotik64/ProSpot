@@ -1,6 +1,6 @@
 from pages import *
-from flask import Flask, render_template, request, redirect
-from textdata import TextData, pages_path
+from flask import Flask, request, redirect
+from text_data import TextData, pages_path
 from flask_login import login_user
 from login import *
 
