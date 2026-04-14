@@ -181,6 +181,61 @@ def game_info_page_en(game_short_name: str):
     return return_game_info_page_en(game_short_name)
 
 
+def return_game_page_en(short_name: str):
+    data = TextData(pages_path + short_name + '_en.json')
+    return create_game_page(data)
+
+
+def return_game_page_ru(short_name: str):
+    data = TextData(pages_path + short_name + '_ru.json')
+    return create_game_page(data)
+
+
+@app.route('/game/<string:game_short_name>', methods=['GET'])
+def game_page(game_short_name: str):
+    if game_short_name not in games_short_names_list:
+        abort(404)
+    request.accept_languages.best_match(['ru', 'en'])
+    lang = request.accept_languages.best
+    if lang == 'ru-RU':
+        return redirect(f'/game/{game_short_name}/ru')
+    return redirect(f'/game/{game_short_name}/en')
+
+
+@app.route('/game/<string:game_short_name>/ru', methods=['POST', 'GET'])
+def game_page_ru(game_short_name: str):
+    if game_short_name not in games_short_names_list:
+        abort(404)
+    if request.method == 'POST':
+        btn_pressed = request.form.get('btn', None)
+        if btn_pressed:
+            match btn_pressed:
+                case 'change_lang':
+                    return redirect(f'/game/{game_short_name}/en')
+                case 'autho':
+                    print('Авторизация пока недоступна')  # TODO
+                case 'to_main':
+                    return redirect('/ru')
+    return return_game_page_ru(game_short_name)
+
+
+@app.route('/game/<string:game_short_name>/en', methods=['POST', 'GET'])
+def game_page_en(game_short_name: str):
+    if game_short_name not in games_short_names_list:
+        abort(404)
+    if request.method == 'POST':
+        btn_pressed = request.form.get('btn', None)
+        if btn_pressed:
+            match btn_pressed:
+                case 'change_lang':
+                    return redirect(f'/game/{game_short_name}/ru')
+                case 'autho':
+                    print('Авторизация пока недоступна')  # TODO
+                case 'to_main':
+                    return redirect('/en')
+    return return_game_page_en(game_short_name)
+
+
 # TODO: это после базы данных
 '''@app.route('/login')
 def login():

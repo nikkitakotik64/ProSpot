@@ -1,0 +1,10 @@
+{
+  "lang": "en",
+  "header": "Counter Strike 2",
+  "guide_btn": "Guide",
+  "maps": ["Mirage", "Dust II", "Anubis"],
+  "challenge_btn": "Challenge",
+  "learn_btn": "Learn spots",
+  "add_spot_button": "Propose a spot",
+  "tech_info": ""
+}

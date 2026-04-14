@@ -1,0 +1,10 @@
+{
+  "lang": "ru",
+  "header": "Counter Strike 2",
+  "guide_btn": "Гайд",
+  "maps": ["Mirage", "Dust II", "Anubis"],
+  "challenge_btn": "Испытание",
+  "learn_btn": "Учить позиции",
+  "add_spot_button": "Предложить позицию",
+  "tech_info": ""
+}
