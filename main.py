@@ -19,6 +19,12 @@ def main_page_ru():
                     return redirect('/en')
                 case 'autho':
                     print('Авторизация пока недоступна')  # TODO
+                case 'CS 2':
+                    return redirect('/game/cs2/ru')
+                case 'Escape From Tarkov':
+                    return redirect('/game/eft/ru')
+                case 'add_spot':
+                    return redirect('/add_spot/ru')
     return return_main_page_ru()
 
 
@@ -33,11 +39,18 @@ def main_page_en():
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
         if btn_pressed:
+            print(btn_pressed)
             match btn_pressed:
                 case 'change_lang':
                     return redirect('/ru')
                 case 'autho':
                     print('Авторизация пока недоступна')  # TODO
+                case 'CS 2':
+                    return redirect('/game/cs2/en')
+                case 'Escape From Tarkov':
+                    return redirect('/game/eft/en')
+                case 'add_spot':
+                    return redirect('/add_spot/en')
     return return_main_page_en()
 
 

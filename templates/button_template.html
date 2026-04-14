@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang=lang>
+<html lang="{{ lang }}">
 <head>
     <meta charset="utf-8">
     <title>ProSpot</title>
@@ -24,7 +24,6 @@
         {% else %}
             {% set div_count = btn_list | length // button_count %}
         {% endif %}
-        {% set button_count = button_count | default(5) %}
         <form method="post">
             {% for div_num in range(div_count) %}
             <div>
@@ -32,7 +31,7 @@
                 {% set end_ind = start_ind + button_count %}
                 {% for i in range(start_ind, end_ind) %}
                     {% if i < btn_list | length %}
-                        <button type="submit" name="btn" class="class" value=btn_list[i]>
+                        <button type="submit" name="btn" class="class" value="{{ btn_list[i] }}">
                             {{ btn_list[i] }}
                         </button>
                     {% endif %}
