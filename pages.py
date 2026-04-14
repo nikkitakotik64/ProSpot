@@ -94,19 +94,6 @@ def create_map_choice_page(data: TextData, maps: list[str], game_name: str) -> s
                            tech_info=data.get_phrase('tech_info'))
 
 
-def create_map_choice_to_guess_page(data: TextData) -> str:  # TODO: добавить форму
-    # TODO: добавить кнопку Random
-    return render_template('base_template.html',
-                           lang=data.get_lang(),
-                           title=title,
-                           autho_btn_text=data.get_autho_btn_text(),
-                           change_lang_btn_text=data.get_another_lang(),
-                           type = PagesType.with_game_btn.value,
-                           to_main_btn_text=data.get_to_main_btn_text(),
-                           to_game_btn_text=data.get_to_game_btn_text(),
-                           tech_info=data.get_phrase('tech_info'))
-
-
 def create_map_page(data: TextData) -> str:  # TODO: добавить форму
     return render_template('base_template.html',
                            lang=data.get_lang(),
