@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang=lang>
+<head>
+    <meta charset="utf-8">
+    <title>ProSpot</title>
+</head>
+<body>
+    <header>
+        <form method="post">
+            <h1>{{ title }}</h1>
+            <button type="submit" name="btn" class="authorization_btn" value="autho">{{ autho_btn_text }}</button>
+            <button type="submit" name="btn" class="change_lang_btn" value="change_lang">{{ change_lang_btn_text }}</button>
+            {% if type > 0 %}
+                <button type="submit" name="btn" class="to_main_btn" value="to_main">На главную</button>
+            {% endif %}
+            {% if type > 1 %}
+                <button type="submit" name="btn" class="to_game_btn" value="to_game">На страницу игры</button>
+            {% endif %}
+        </form>
+    </header>
+    <main role="main" class="container">
+        {% if btn_list | length % button_count != 0 %}
+            {% set div_count = ((btn_list | length / button_count) | int) + 1 %}
+        {% else %}
+            {% set div_count = btn_list | length // button_count %}
+        {% endif %}
+        {% set button_count = button_count | default(5) %}
+        <form method="post">
+            {% for div_num in range(div_count) %}
+            <div>
+                {% set start_ind = div_num * button_count %}
+                {% set end_ind = start_ind + button_count %}
+                {% for i in range(start_ind, end_ind) %}
+                    {% if i < btn_list | length %}
+                        <button type="submit" name="btn" class="class" value=btn_list[i]>
+                            {{ btn_list[i] }}
+                        </button>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </form>
+        {% block content %}{% endblock %}
+    </main>
+    <div>
+        <p>{{ tech_info }}</p>
+    </div>
+</body>
+
+

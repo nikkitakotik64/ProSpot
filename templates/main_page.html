@@ -1,27 +1,7 @@
-<!DOCTYPE html>
-<html lang=lang>
-<head>
-    <meta charset="utf-8">
-    <title>ProSpot</title>
-</head>
-<body>
-    <header>
-        <form method="post">
-            <h1>{{ title }}</h1>
-            <button type="submit" name="btn" class="authorization_btn" value="autho">{{ autho_btn_text }}</button>
-            <button type="submit" name="btn" class="change_lang_btn" value="change_lang">{{ change_lang_btn_text }}</button>
-            {% if type > 0 %}
-                <button type="submit" name="btn" class="to_main_btn" value="to_main">На главную</button>
-            {% endif %}
-            {% if type > 1 %}
-                <button type="submit" name="btn" class="to_game_btn" value="to_game">На страницу игры</button>
-            {% endif %}
-        </form>
-    </header>
-    <main role="main" class="container">
-        {% block content %}{% endblock %}
-    </main>
-    <div>
-        <p>{{ tech_info }}</p>
-    </div>
-</body>
+{% extends "button_template.html" %}
+
+{% block content %}
+<form method="post">
+    <button name="btn" value="add_spot">{{ add_spot_btn_text }}</button>
+</form>
+{% endblock %}
