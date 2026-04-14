@@ -82,7 +82,7 @@ def create_learn_page(data: TextData, map_name: str) -> str:  # TODO: добав
                            tech_info=data.get_phrase('tech_info'))
 
 
-def create_map_choice_to_learn_page(data: TextData) -> str:  # TODO: добавить форму
+def create_map_choice_page(data: TextData, maps: list[str], game_name: str) -> str:  # TODO: добавить форму
     return render_template('base_template.html',
                            lang=data.get_lang(),
                            title=title,

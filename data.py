@@ -8,6 +8,7 @@ templates_path = path + 'templates/'
 games_list = ('CS 2', 'Escape From Tarkov')
 games_short_names_list = ('cs2', 'eft')
 maps_dict = {'cs2': ['', '', ''], 'eft': ['', '', '']}
+games_dict = {'cs2': 'CS 2', 'eft': 'Escape From Tarkov'}
 
 
 class TextData:
