@@ -1,6 +1,6 @@
 from pages import *
 from flask import Flask, request, redirect, abort
-from data import TextData, pages_path, games_short_names_list
+from data import TextData, pages_path, games_short_names_list, maps_dict
 from flask_login import login_user
 from login import *
 
@@ -234,6 +234,71 @@ def game_page_en(game_short_name: str):
                 case 'to_main':
                     return redirect('/en')
     return return_game_page_en(game_short_name)
+
+
+def return_guess_page_en(short_name: str):
+    data = TextData(pages_path + short_name + '_guess_en.json')
+    return create_game_page(data)
+
+
+def return_guess_page_ru(short_name: str):
+    data = TextData(pages_path + short_name + '_guess_ru.json')
+    return create_game_page(data)
+
+
+@app.route('/guess/<string:game_short_name>/<int:map_id>', methods=['GET'])
+def guess_page(game_short_name: str, map_id: int):
+    if game_short_name not in games_short_names_list:
+        abort(404)
+    if map_id < 0 or map_id > len(maps_dict[game_short_name]):
+        abort(404)
+    request.accept_languages.best_match(['ru', 'en'])
+    lang = request.accept_languages.best
+    if lang == 'ru-RU':
+        return redirect(f'/guess/{game_short_name}/{map_id}/ru')
+    return redirect(f'/guess/{game_short_name}/{map_id}/en')
+
+
+@app.route('/guess/<string:game_short_name>/<int:map_id>/ru', methods=['POST', 'GET'])
+def guess_page_ru(game_short_name: str, map_id: int):
+    if game_short_name not in games_short_names_list:
+        abort(404)
+    if map_id < 0 or map_id > len(maps_dict[game_short_name]):
+        abort(404)
+    if request.method == 'POST':
+        btn_pressed = request.form.get('btn', None)
+        if btn_pressed:
+            match btn_pressed:
+                case 'change_lang':
+                    return redirect(f'/guess/{game_short_name}/{map_id}/en')
+                case 'autho':
+                    print('Авторизация пока недоступна')  # TODO
+                case 'to_main':
+                    return redirect('/ru')
+                case 'to_game':
+                    return redirect(f'/game/{game_short_name}/ru')
+    return return_guess_page_ru(game_short_name)
+
+
+@app.route('/guess/<string:game_short_name>/<int:map_id>/en', methods=['POST', 'GET'])
+def guess_page_en(game_short_name: str, map_id: int):
+    if game_short_name not in games_short_names_list:
+        abort(404)
+    if map_id < 0 or map_id > len(maps_dict[game_short_name]):
+        abort(404)
+    if request.method == 'POST':
+        btn_pressed = request.form.get('btn', None)
+        if btn_pressed:
+            match btn_pressed:
+                case 'change_lang':
+                    return redirect(f'/guess/{game_short_name}/{map_id}/ru')
+                case 'autho':
+                    print('Авторизация пока недоступна')  # TODO
+                case 'to_main':
+                    return redirect('/en')
+                case 'to_game':
+                    return redirect(f'/game/{game_short_name}/en')
+    return return_guess_page_en(game_short_name)
 
 
 # TODO: это после базы данных

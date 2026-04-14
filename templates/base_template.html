@@ -11,10 +11,10 @@
             <button type="submit" name="btn" class="authorization_btn" value="autho">{{ autho_btn_text }}</button>
             <button type="submit" name="btn" class="change_lang_btn" value="change_lang">{{ change_lang_btn_text }}</button>
             {% if type > 0 %}
-                <button type="submit" name="btn" class="to_main_btn" value="to_main">На главную</button>
+                <button type="submit" name="btn" class="to_main_btn" value="to_main">{{ to_main_btn_text }}</button>
             {% endif %}
             {% if type > 1 %}
-                <button type="submit" name="btn" class="to_game_btn" value="to_game">На страницу игры</button>
+                <button type="submit" name="btn" class="to_game_btn" value="to_game">{{ to_game_btn_text }}</button>
             {% endif %}
         </form>
     </header>

@@ -7,6 +7,7 @@ templates_path = path + 'templates/'
 
 games_list = ('CS 2', 'Escape From Tarkov')
 games_short_names_list = ('cs2', 'eft')
+maps_dict = {'cs2': ['', '', ''], 'eft': ['', '', '']}
 
 
 class TextData:
@@ -22,3 +23,12 @@ class TextData:
 
     def get_another_lang(self) -> str:
         return 'ru' if self.get_lang() == 'en' else 'en'
+
+    def get_to_main_btn_text(self) -> str:
+        return 'На главную' if self.get_lang() == 'ru' else 'To main page'
+
+    def get_to_game_btn_text(self) -> str:
+        return 'На страницу игры' if self.get_lang() == 'ru' else 'To game page'
+
+    def get_autho_btn_text(self) -> str:
+        return 'Авторизация' if self.get_lang() == 'ru' else 'Authorization'
