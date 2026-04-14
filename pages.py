@@ -70,7 +70,7 @@ def create_guess_page(data: TextData) -> str:  # TODO: добавить форм
                            tech_info=data.get_phrase('tech_info'))
 
 
-def create_learn_page(data: TextData) -> str:  # TODO: добавить форму
+def create_learn_page(data: TextData, map_name: str) -> str:  # TODO: добавить форму
     return render_template('base_template.html',
                            lang=data.get_lang(),
                            title=title,
