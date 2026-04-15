@@ -1,5 +1,10 @@
 {% extends "button_template.html" %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/main-page.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/game-buttons.css') }}">
+{% endblock %}
+
 {% block content %}
 <form method="post">
     <button name="btn" value="add_spot">{{ add_spot_btn_text }}</button>
