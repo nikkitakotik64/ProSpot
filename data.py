@@ -4,11 +4,32 @@ import os
 path = os.path.dirname(os.path.abspath(__file__)) + '/'
 pages_path = path + 'static/pages/'
 templates_path = path + 'templates/'
+maps_path = path + 'static/maps/'
 
-games_list = ('CS 2', 'Escape From Tarkov')
-games_short_names_list = ('cs2', 'eft')
-maps_dict = {'cs2': ['', '', ''], 'eft': ['', '', '']}
-games_dict = {'cs2': 'CS 2', 'eft': 'Escape From Tarkov'}
+games_list = ('CS 2', 'Escape From Tarkov')  # список названий игр
+games_short_names_list = ('cs2', 'eft')  # сокращённые названия игр (для ссылок)
+maps_dict = {  # названия карт (доступ по [язык][игра][айди карты])
+    'ru': {
+        'cs2': ['', '', ''],
+        'eft': ['', '', '']
+    },
+    'en': {
+        'cs2': ['', '', ''],
+        'eft': ['', '', '']
+    }
+}
+games_dict = {'cs2': 'CS 2', 'eft': 'Escape From Tarkov'}  # названия по сокращению
+games_with_spots = ('cs2', )  # список игр, где можно учить позиции
+map_descriptions = {  # список файлов описания карт (доступ по [язык][игра][айди карты])
+    'ru': {
+        'cs2': ['', '', ''],
+        'eft': ['', '', '']
+    },
+    'en': {
+        'cs2': ['', '', ''],
+        'eft': ['', '', '']
+    }
+}
 
 
 class TextData:

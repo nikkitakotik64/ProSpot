@@ -1,6 +1,7 @@
 from pages import *
 from flask import Flask, request, redirect, abort
-from data import TextData, pages_path, games_short_names_list, maps_dict, games_dict
+from data import TextData, pages_path, games_short_names_list, maps_dict, games_dict, games_with_spots, \
+    map_descriptions, maps_path
 from flask_login import login_user
 from login import *
 
@@ -22,9 +23,9 @@ def main_page_ru():
                 case 'autho':
                     print('Авторизация пока недоступна')  # TODO
                 case 'CS 2':
-                    return redirect('/game/cs2/ru')
+                    return redirect('/cs2/ru')
                 case 'Escape From Tarkov':
-                    return redirect('/game/eft/ru')
+                    return redirect('/eft/ru')
                 case 'add_spot':
                     return redirect('/add_spot/ru')
     return return_main_page_ru()
@@ -48,9 +49,9 @@ def main_page_en():
                 case 'autho':
                     print('Авторизация пока недоступна')  # TODO
                 case 'CS 2':
-                    return redirect('/game/cs2/en')
+                    return redirect('/cs2/en')
                 case 'Escape From Tarkov':
-                    return redirect('/game/eft/en')
+                    return redirect('/eft/en')
                 case 'add_spot':
                     return redirect('/add_spot/en')
     return return_main_page_en()
@@ -134,18 +135,18 @@ def return_game_info_page_ru(short_name: str):
     return create_game_info_page(data)
 
 
-@app.route('/game/<string:game_short_name>/info', methods=['GET'])
+@app.route('/<string:game_short_name>/info', methods=['GET'])
 def game_info_page(game_short_name: str):
     if game_short_name not in games_short_names_list:
         abort(404)
     request.accept_languages.best_match(['ru', 'en'])
     lang = request.accept_languages.best
     if lang == 'ru-RU':
-        return redirect(f'/game/{game_short_name}/info/ru')
-    return redirect(f'/game/{game_short_name}/info/en')
+        return redirect(f'/{game_short_name}/info/ru')
+    return redirect(f'/{game_short_name}/info/en')
 
 
-@app.route('/game/<string:game_short_name>/info/ru', methods=['POST', 'GET'])
+@app.route('/<string:game_short_name>/info/ru', methods=['POST', 'GET'])
 def game_info_page_ru(game_short_name: str):
     if game_short_name not in games_short_names_list:
         abort(404)
@@ -154,17 +155,17 @@ def game_info_page_ru(game_short_name: str):
         if btn_pressed:
             match btn_pressed:
                 case 'change_lang':
-                    return redirect(f'/game/{game_short_name}/info/en')
+                    return redirect(f'/{game_short_name}/info/en')
                 case 'autho':
                     print('Авторизация пока недоступна')  # TODO
                 case 'to_game':
-                    return redirect(f'/game/{game_short_name}/ru')
+                    return redirect(f'/{game_short_name}/ru')
                 case 'to_main':
                     return redirect('/ru')
     return return_game_info_page_ru(game_short_name)
 
 
-@app.route('/game/<string:game_short_name>/info/en', methods=['POST', 'GET'])
+@app.route('/<string:game_short_name>/info/en', methods=['POST', 'GET'])
 def game_info_page_en(game_short_name: str):
     if game_short_name not in games_short_names_list:
         abort(404)
@@ -173,11 +174,11 @@ def game_info_page_en(game_short_name: str):
         if btn_pressed:
             match btn_pressed:
                 case 'change_lang':
-                    return redirect(f'/game/{game_short_name}/info/ru')
+                    return redirect(f'/{game_short_name}/info/ru')
                 case 'autho':
                     print('Авторизация пока недоступна')  # TODO
                 case 'to_game':
-                    return redirect(f'/game/{game_short_name}/en')
+                    return redirect(f'/{game_short_name}/en')
                 case 'to_main':
                     return redirect('/en')
     return return_game_info_page_en(game_short_name)
@@ -193,18 +194,18 @@ def return_game_page_ru(short_name: str):
     return create_game_page(data)
 
 
-@app.route('/game/<string:game_short_name>', methods=['GET'])
+@app.route('/<string:game_short_name>', methods=['GET'])
 def game_page(game_short_name: str):
     if game_short_name not in games_short_names_list:
         abort(404)
     request.accept_languages.best_match(['ru', 'en'])
     lang = request.accept_languages.best
     if lang == 'ru-RU':
-        return redirect(f'/game/{game_short_name}/ru')
-    return redirect(f'/game/{game_short_name}/en')
+        return redirect(f'/{game_short_name}/ru')
+    return redirect(f'/{game_short_name}/en')
 
 
-@app.route('/game/<string:game_short_name>/ru', methods=['POST', 'GET'])
+@app.route('/<string:game_short_name>/ru', methods=['POST', 'GET'])
 def game_page_ru(game_short_name: str):
     if game_short_name not in games_short_names_list:
         abort(404)
@@ -213,7 +214,7 @@ def game_page_ru(game_short_name: str):
         if btn_pressed:
             match btn_pressed:
                 case 'change_lang':
-                    return redirect(f'/game/{game_short_name}/en')
+                    return redirect(f'/{game_short_name}/en')
                 case 'autho':
                     print('Авторизация пока недоступна')  # TODO
                 case 'to_main':
@@ -221,7 +222,7 @@ def game_page_ru(game_short_name: str):
     return return_game_page_ru(game_short_name)
 
 
-@app.route('/game/<string:game_short_name>/en', methods=['POST', 'GET'])
+@app.route('/<string:game_short_name>/en', methods=['POST', 'GET'])
 def game_page_en(game_short_name: str):
     if game_short_name not in games_short_names_list:
         abort(404)
@@ -230,7 +231,7 @@ def game_page_en(game_short_name: str):
         if btn_pressed:
             match btn_pressed:
                 case 'change_lang':
-                    return redirect(f'/game/{game_short_name}/ru')
+                    return redirect(f'/{game_short_name}/ru')
                 case 'autho':
                     print('Авторизация пока недоступна')  # TODO
                 case 'to_main':
@@ -248,139 +249,139 @@ def return_guess_page_ru(short_name: str):
     return create_game_page(data)
 
 
-@app.route('/guess/<string:game_short_name>/<int:map_id>', methods=['GET'])
+@app.route('/<string:game_short_name>/guess/<int:map_id>', methods=['GET'])
 def guess_page(game_short_name: str, map_id: int):
     if game_short_name not in games_short_names_list:
         abort(404)
-    if map_id < 0 or map_id > len(maps_dict[game_short_name]):
+    if map_id < 0 or map_id > len(maps_dict['ru'][game_short_name]):
         abort(404)
     request.accept_languages.best_match(['ru', 'en'])
     lang = request.accept_languages.best
     if lang == 'ru-RU':
-        return redirect(f'/guess/{game_short_name}/{map_id}/ru')
-    return redirect(f'/guess/{game_short_name}/{map_id}/en')
+        return redirect(f'/{game_short_name}/guess/{map_id}/ru')
+    return redirect(f'/{game_short_name}/guess/{map_id}/en')
 
 
-@app.route('/guess/<string:game_short_name>/<int:map_id>/ru', methods=['POST', 'GET'])
+@app.route('/<string:game_short_name>/guess/<int:map_id>/ru', methods=['POST', 'GET'])
 def guess_page_ru(game_short_name: str, map_id: int):
     if game_short_name not in games_short_names_list:
         abort(404)
-    if map_id < 0 or map_id > len(maps_dict[game_short_name]):
+    if map_id < 0 or map_id > len(maps_dict['ru'][game_short_name]):
         abort(404)
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
         if btn_pressed:
             match btn_pressed:
                 case 'change_lang':
-                    return redirect(f'/guess/{game_short_name}/{map_id}/en')
+                    return redirect(f'/{game_short_name}/guess/{map_id}/en')
                 case 'autho':
                     print('Авторизация пока недоступна')  # TODO
                 case 'to_main':
                     return redirect('/ru')
                 case 'to_game':
-                    return redirect(f'/game/{game_short_name}/ru')
+                    return redirect(f'/{game_short_name}/ru')
     return return_guess_page_ru(game_short_name)
 
 
-@app.route('/guess/<string:game_short_name>/<int:map_id>/en', methods=['POST', 'GET'])
+@app.route('/<string:game_short_name>/guess/<int:map_id>/en', methods=['POST', 'GET'])
 def guess_page_en(game_short_name: str, map_id: int):
     if game_short_name not in games_short_names_list:
         abort(404)
-    if map_id < 0 or map_id > len(maps_dict[game_short_name]):
+    if map_id < 0 or map_id > len(maps_dict['en'][game_short_name]):
         abort(404)
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
         if btn_pressed:
             match btn_pressed:
                 case 'change_lang':
-                    return redirect(f'/guess/{game_short_name}/{map_id}/ru')
+                    return redirect(f'/{game_short_name}/guess/{map_id}/ru')
                 case 'autho':
                     print('Авторизация пока недоступна')  # TODO
                 case 'to_main':
                     return redirect('/en')
                 case 'to_game':
-                    return redirect(f'/game/{game_short_name}/en')
+                    return redirect(f'/{game_short_name}/en')
     return return_guess_page_en(game_short_name)
 
 
 def return_learn_page_en(short_name: str, map_id: int):
     data = TextData(pages_path + 'learn_en.json')
-    return create_learn_page(data, maps_dict[short_name][map_id])
+    return create_learn_page(data, maps_dict['en'][short_name][map_id])
 
 
 def return_learn_page_ru(short_name: str, map_id: int):
     data = TextData(pages_path + 'learn_ru.json')
-    return create_learn_page(data, maps_dict[short_name][map_id])
+    return create_learn_page(data, maps_dict['ru'][short_name][map_id])
 
 
-@app.route('/learn/<string:game_short_name>/<int:map_id>', methods=['GET'])
+@app.route('/<string:game_short_name>/learn/<int:map_id>', methods=['GET'])
 def learn_page(game_short_name: str, map_id: int):
     if game_short_name not in games_short_names_list:
         abort(404)
-    if map_id < 1 or map_id > len(maps_dict[game_short_name]):
+    if map_id < 1 or map_id > len(maps_dict['ru'][game_short_name]):
         abort(404)
     request.accept_languages.best_match(['ru', 'en'])
     lang = request.accept_languages.best
     if lang == 'ru-RU':
-        return redirect(f'/learn/{game_short_name}/{map_id}/ru')
-    return redirect(f'/learn/{game_short_name}/{map_id}/en')
+        return redirect(f'/{game_short_name}/learn/{map_id}/ru')
+    return redirect(f'/{game_short_name}/learn/{map_id}/en')
 
 
-@app.route('/learn/<string:game_short_name>/<int:map_id>/ru', methods=['POST', 'GET'])
+@app.route('/<string:game_short_name>/learn/<int:map_id>/ru', methods=['POST', 'GET'])
 def learn_page_ru(game_short_name: str, map_id: int):
     if game_short_name not in games_short_names_list:
         abort(404)
-    if map_id < 1 or map_id > len(maps_dict[game_short_name]):
+    if map_id < 1 or map_id > len(maps_dict['ru'][game_short_name]):
         abort(404)
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
         if btn_pressed:
             match btn_pressed:
                 case 'change_lang':
-                    return redirect(f'/learn/{game_short_name}/{map_id}/en')
+                    return redirect(f'/{game_short_name}/learn/{map_id}/en')
                 case 'autho':
                     print('Авторизация пока недоступна')  # TODO
                 case 'to_main':
                     return redirect('/ru')
                 case 'to_game':
-                    return redirect(f'/game/{game_short_name}/ru')
+                    return redirect(f'/{game_short_name}/ru')
     return return_learn_page_ru(game_short_name, map_id)
 
 
-@app.route('/learn/<string:game_short_name>/<int:map_id>/en', methods=['POST', 'GET'])
+@app.route('/<string:game_short_name>/learn/<int:map_id>/en', methods=['POST', 'GET'])
 def learn_page_en(game_short_name: str, map_id: int):
     if game_short_name not in games_short_names_list:
         abort(404)
-    if map_id < 1 or map_id > len(maps_dict[game_short_name]):
+    if map_id < 1 or map_id > len(maps_dict['en'][game_short_name]):
         abort(404)
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
         if btn_pressed:
             match btn_pressed:
                 case 'change_lang':
-                    return redirect(f'/learn/{game_short_name}/{map_id}/ru')
+                    return redirect(f'/{game_short_name}/learn/{map_id}/ru')
                 case 'autho':
                     print('Авторизация пока недоступна')  # TODO
                 case 'to_main':
                     return redirect('/en')
                 case 'to_game':
-                    return redirect(f'/game/{game_short_name}/en')
+                    return redirect(f'/{game_short_name}/en')
     return return_learn_page_en(game_short_name, map_id)
 
 
 def return_map_choice_page_en(short_name: str, is_guess: bool):
-    data = TextData(pages_path + 'learn_en.json')
-    return create_map_choice_page(data, (['Random'] if is_guess else []) + maps_dict[short_name],
+    data = TextData(pages_path + 'map_choice_en.json')
+    return create_map_choice_page(data, (['Random'] if is_guess else []) + maps_dict['en'][short_name],
                                   games_dict[short_name])
 
 
 def return_map_choice_page_ru(short_name: str, is_guess: bool):
-    data = TextData(pages_path + 'learn_ru.json')
-    return create_map_choice_page(data, (['Случайная'] if is_guess else []) + maps_dict[short_name],
+    data = TextData(pages_path + 'map_choice_ru.json')
+    return create_map_choice_page(data, (['Случайная'] if is_guess else []) + maps_dict['ru'][short_name],
                                   games_dict[short_name])
 
 
-@app.route('/map_choice/<string:game_short_name>/<int:map_choice_type>', methods=['GET'])
+@app.route('/<string:game_short_name>/map_choice/<int:map_choice_type>', methods=['GET'])
 def map_choice_page(game_short_name: str, map_choice_type: int):
     if game_short_name not in games_short_names_list:
         abort(404)
@@ -389,11 +390,11 @@ def map_choice_page(game_short_name: str, map_choice_type: int):
     request.accept_languages.best_match(['ru', 'en'])
     lang = request.accept_languages.best
     if lang == 'ru-RU':
-        return redirect(f'/map_choice/{game_short_name}/{map_choice_type}/ru')
-    return redirect(f'/map_choice/{game_short_name}/{map_choice_type}/en')
+        return redirect(f'/{game_short_name}/map_choice/{map_choice_type}/ru')
+    return redirect(f'/{game_short_name}/map_choice/{map_choice_type}/en')
 
 
-@app.route('/map_choice/<string:game_short_name>/<int:map_choice_type>/ru', methods=['POST', 'GET'])
+@app.route('/<string:game_short_name>/map_choice/<int:map_choice_type>/ru', methods=['POST', 'GET'])
 def map_choice_page_ru(game_short_name: str, map_choice_type: int):
     if game_short_name not in games_short_names_list:
         abort(404)
@@ -404,17 +405,17 @@ def map_choice_page_ru(game_short_name: str, map_choice_type: int):
         if btn_pressed:
             match btn_pressed:
                 case 'change_lang':
-                    return redirect(f'/map_choice/{game_short_name}/{map_choice_type}/en')
+                    return redirect(f'/{game_short_name}/map_choice/{map_choice_type}/en')
                 case 'autho':
                     print('Авторизация пока недоступна')  # TODO
                 case 'to_main':
                     return redirect('/ru')
                 case 'to_game':
-                    return redirect(f'/game/{game_short_name}/ru')
+                    return redirect(f'/{game_short_name}/ru')
     return return_map_choice_page_ru(game_short_name, map_choice_type == 2)
 
 
-@app.route('/map_choice/<string:game_short_name>/<int:map_choice_type>/en', methods=['POST', 'GET'])
+@app.route('/<string:game_short_name>/map_choice/<int:map_choice_type>/en', methods=['POST', 'GET'])
 def map_choice_page_en(game_short_name: str, map_choice_type: int):
     if game_short_name not in games_short_names_list:
         abort(404)
@@ -425,14 +426,81 @@ def map_choice_page_en(game_short_name: str, map_choice_type: int):
         if btn_pressed:
             match btn_pressed:
                 case 'change_lang':
-                    return redirect(f'/map_choice/{game_short_name}/{map_choice_type}/ru')
+                    return redirect(f'/{game_short_name}/map_choice/{map_choice_type}/ru')
                 case 'autho':
                     print('Авторизация пока недоступна')  # TODO
                 case 'to_main':
                     return redirect('/en')
                 case 'to_game':
-                    return redirect(f'/game/{game_short_name}/en')
+                    return redirect(f'/{game_short_name}/en')
     return return_map_choice_page_en(game_short_name, map_choice_type == 2)
+
+
+def return_map_page_en(map_name: str, is_have_spots: bool, description_file: str):
+    data = TextData(pages_path + 'map_en.json')
+    return create_map_page(data, map_name, is_have_spots, description_file)
+
+
+def return_map_page_ru(map_name: str, is_have_spots: bool, description_file: str):
+    data = TextData(pages_path + 'map_ru.json')
+    return create_map_page(data, map_name, is_have_spots, description_file)
+
+
+@app.route('/<string:game_short_name>/map/<int:map_id>', methods=['GET'])
+def map_page(game_short_name: str, map_id: int):
+    if game_short_name not in games_short_names_list:
+        abort(404)
+    if map_id < 1 or map_id > len(maps_dict['ru'][game_short_name]):
+        abort(404)
+    request.accept_languages.best_match(['ru', 'en'])
+    lang = request.accept_languages.best
+    if lang == 'ru-RU':
+        return redirect(f'/{game_short_name}/map/{map_id}/ru')
+    return redirect(f'/{game_short_name}/map/{map_id}/en')
+
+
+@app.route('/<string:game_short_name>/map/<int:map_id>/ru', methods=['POST', 'GET'])
+def map_page_ru(game_short_name: str, map_id: int):
+    if game_short_name not in games_short_names_list:
+        abort(404)
+    if map_id < 1 or map_id > len(maps_dict['ru'][game_short_name]):
+        abort(404)
+    if request.method == 'POST':
+        btn_pressed = request.form.get('btn', None)
+        if btn_pressed:
+            match btn_pressed:
+                case 'change_lang':
+                    return redirect(f'/{game_short_name}/map/{map_id}/en')
+                case 'autho':
+                    print('Авторизация пока недоступна')  # TODO
+                case 'to_main':
+                    return redirect('/ru')
+                case 'to_game':
+                    return redirect(f'/{game_short_name}/ru')
+    return return_map_page_ru(maps_dict['ru'][game_short_name][map_id], game_short_name in games_with_spots,
+                              maps_path + map_descriptions['ru'][game_short_name][map_id])
+
+
+@app.route('/<string:game_short_name>/map/<int:map_id>/en', methods=['POST', 'GET'])
+def map_page_en(game_short_name: str, map_id: int):
+    if game_short_name not in games_short_names_list:
+        abort(404)
+    if map_id < 1 or map_id > len(maps_dict['en'][game_short_name]):
+        abort(404)
+    if request.method == 'POST':
+        btn_pressed = request.form.get('btn', None)
+        if btn_pressed:
+            match btn_pressed:
+                case 'change_lang':
+                    return redirect(f'/{game_short_name}/map/{map_id}/ru')
+                case 'autho':
+                    print('Авторизация пока недоступна')  # TODO
+                case 'to_main':
+                    return redirect('/en')
+                case 'to_game':
+                    return redirect(f'/{game_short_name}/en')
+    return return_map_page_ru(maps_dict['en'][game_short_name][map_id], game_short_name in games_with_spots,
+                              maps_path + map_descriptions['en'][game_short_name][map_id])
 
 
 # TODO: это после базы данных
