@@ -5,17 +5,17 @@
 }
 
 body {
-font-family: Arial, sans-serif;
-min-height: 100vh;
-display: flex;
-flex-direction: column;
-background-color: #f5f5f5;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #273954;
 }
 
 main {
     flex: 1;
     padding: 20px;
-    background-color: #f5f5f5;
+    background-color: #273954;
 }
 
 body > div:last-child {
