@@ -3,7 +3,6 @@ import os
 
 path = os.path.dirname(os.path.abspath(__file__)) + '/'
 pages_path = path + 'static/pages/'
-templates_path = path + 'templates/'
 maps_path = path + 'static/maps/'
 db_path = path + 'static/data/'
 
