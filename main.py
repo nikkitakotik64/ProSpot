@@ -1,7 +1,7 @@
 from pages import *
 from flask import Flask, request, redirect, abort
 from data import TextData, pages_path, games_short_names_list, maps_dict, games_dict, games_with_spots, \
-    map_descriptions, maps_path
+    map_descriptions, maps_path, SpotData
 from flask_login import login_user
 from login import *
 
@@ -503,8 +503,66 @@ def map_page_en(game_short_name: str, map_id: int):
                               maps_path + map_descriptions['en'][game_short_name][map_id])
 
 
+def return_moder_page_en():
+    data = TextData(pages_path + 'moder_en.json')
+    spot_info = SpotData()
+    return create_moder_page(data, spot_info)
+
+
+def return_moder_page_ru():
+    data = TextData(pages_path + 'moder_ru.json')
+    spot_info = SpotData()
+    return create_moder_page(data, spot_info)
+
+
+@app.route('/moder', methods=['GET'])
+def moder_page():
+    if True:
+        abort(403)  # не админ
+    request.accept_languages.best_match(['ru', 'en'])
+    lang = request.accept_languages.best
+    if lang == 'ru-RU':
+        return redirect('/moder/ru')
+    return redirect('/moder/en')
+
+
+@app.route('/moder/en', methods=['POST', 'GET'])
+def moder_page_en():
+    if True:
+        abort(403)  # не админ
+    if request.method == 'POST':
+        btn_pressed = request.form.get('btn', None)
+        if btn_pressed:
+            match btn_pressed:
+                case 'change_lang':
+                    return redirect('/moder/ru')
+                case 'autho':
+                    print('Авторизация пока недоступна')  # TODO
+                case 'to_main':
+                    return redirect('/en')
+    return return_add_spot_page_en()
+
+
+@app.route('/moder/ru', methods=['POST', 'GET'])
+def moder_page_ru():
+    if True:
+        abort(403)  # не админ
+    if request.method == 'POST':
+        btn_pressed = request.form.get('btn', None)
+        if btn_pressed:
+            match btn_pressed:
+                case 'change_lang':
+                    return redirect('/moder/en')
+                case 'autho':
+                    print('Авторизация пока недоступна')  # TODO
+                case 'to_main':
+                    return redirect('/ru')
+    return return_add_spot_page_ru()
+
+
 # TODO: это после базы данных
-'''@app.route('/login')
+'''
+@app.route('/login')
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -518,6 +576,24 @@ def login():
                                form=form)
     return render_template('login.html', title='Авторизация', form=form)
 '''
+
+# узнать, что пользователь закрыл страницу
+# пока пусть тут полежит на всякий
+'''
+<script>
+    window.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'hidden') {
+            // Данные, которые хотим передать (например, ID сессии)
+            const data = new FormData();
+            data.append('status', 'left');
+
+            // Отправляем запрос на Flask
+            navigator.sendBeacon('/on_page_close', data);
+        }
+    });
+</script>
+'''
+
 
 if __name__ == '__main__':
     app.run(port=8080, host='127.0.0.1')

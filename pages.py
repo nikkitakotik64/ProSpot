@@ -1,4 +1,4 @@
-from data import games_list, TextData
+from data import games_list, TextData, SpotData
 from flask import render_template
 from enum import Enum
 
@@ -107,7 +107,7 @@ def create_map_page(data: TextData, map_name: str, is_have_spots: bool,
                            tech_info=data.get_phrase('tech_info'))
 
 
-def create_moder_page(data: TextData) -> str:  # TODO: добавить форму
+def create_moder_page(data: TextData, spot_info: SpotData) -> str:  # TODO: добавить форму
     return render_template('base_template.html',
                            lang=data.get_lang(),
                            title=title,

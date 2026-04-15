@@ -5,6 +5,7 @@ path = os.path.dirname(os.path.abspath(__file__)) + '/'
 pages_path = path + 'static/pages/'
 templates_path = path + 'templates/'
 maps_path = path + 'static/maps/'
+db_path = path + 'static/data/'
 
 games_list = ('CS 2', 'Escape From Tarkov')  # список названий игр
 games_short_names_list = ('cs2', 'eft')  # сокращённые названия игр (для ссылок)
@@ -30,6 +31,7 @@ map_descriptions = {  # список файлов описания карт (д�
         'eft': ['', '', '']
     }
 }
+now_in_moder_work = dict()
 
 
 class TextData:
@@ -54,3 +56,21 @@ class TextData:
 
     def get_autho_btn_text(self) -> str:
         return 'Авторизация' if self.get_lang() == 'ru' else 'Authorization'
+
+
+class SpotData:
+    def __init__(self, db_name: str = db_path + 'add_spots.sqlite', save_mode: bool = False) -> None:
+        if save_mode:
+            # сохранить все данные от пользователя в бд
+            pass
+        else:
+            self.ind = 0  # получить индекс ещё не обработанной заявки на добавление (использовать now_in_moder_work)
+            # получить все данные
+
+    def accept(self) -> None:
+        # сохранить в бд
+        pass
+
+    def refuse(self) -> None:
+        # Удалить запись из бд
+        pass
