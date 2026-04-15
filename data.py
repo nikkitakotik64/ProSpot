@@ -72,5 +72,9 @@ class SpotData:
         pass
 
     def refuse(self) -> None:
-        # Удалить запись из бд
+        # eдалить запись из бд
+        pass
+
+    def sleep(self) -> None:
+        # удалить из now_in_moder_work
         pass
