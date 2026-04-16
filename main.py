@@ -1,9 +1,10 @@
 from pages import *
-from flask import Flask, request, redirect, abort
+from flask import Flask, request, redirect, abort, send_from_directory
 from data import TextData, pages_path, games_short_names_list, maps_dict, games_dict, games_with_spots, \
     map_descriptions, maps_path, SpotData
 from flask_login import login_user
 from login import *
+import os
 
 app = Flask(__name__)
 login_manager.init_app(app)

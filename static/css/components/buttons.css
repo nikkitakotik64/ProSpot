@@ -7,43 +7,31 @@ button {
     display: block;
     margin: 30px auto;
     padding: 12px 24px;
-    background-color: #b01717;
-    color: white;
-    border: 2px solid #2c3e50;
-    border-radius: 8px;
     font-size: 16px;
     font-weight: bold;
 }
 
 button.add-spot-btn:hover {
-    background-color: #e67e22;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
 /* Все кнопки внутри div */
-div > button {
+button {
     padding: 10px 20px;
-    background-color: #ecf0f1;
-    color: #2c3e50;
+    background-color: #df4f00;
+    color: black;
     border: 2px solid #34495e;
     border-radius: 8px;
+    border-color: #bf2f00;
     font-size: 14px;
     margin: 5px;
 }
 
-div > button:hover {
-    background-color: #e67e22;
+button:hover {
+    background-color: #ff4f00;
     color: white;
+    border-color: #df4f00;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-button:not(.authorization_btn):not(.change_lang_btn):not(.to_main_btn):not(.to_game_btn) {
-    transition: all 0.3s ease;
-}
-
-button:not(.authorization_btn):not(.change_lang_btn):not(.to_main_btn):not(.to_game_btn):hover {
-    background-color: #e67e22;
-    color: white;
 }

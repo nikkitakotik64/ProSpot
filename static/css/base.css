@@ -9,13 +9,13 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background-color: #273954;
+    background-color: black;
 }
 
 main {
     flex: 1;
     padding: 20px;
-    background-color: #273954;
+    background-color: black;
 }
 
 body > div:last-child {
