@@ -7,5 +7,7 @@
   "name_label_text": "Spot name",
   "picture_name": "Spot screenshot",
   "send_btn_text": "Send",
+  "select_game_text": "Select game",
+  "select_map_text": "Select map",
   "tech_info": ""
 }

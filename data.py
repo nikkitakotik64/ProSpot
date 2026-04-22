@@ -21,6 +21,7 @@ maps_dict = {  # названия карт (доступ по [язык][игр�
     }
 }
 games_dict = {'cs2': 'CS 2', 'eft': 'Escape From Tarkov'}  # названия по сокращению
+games_short_name_dict = {'CS 2': 'cs2', 'Escape From Tarkov': 'eft'}  # сокращение по названию
 games_with_spots = ('cs2', )  # список игр, где можно учить позиции
 map_descriptions = {  # список файлов описания карт (доступ по [язык][игра][айди карты]), лежат в папке static/maps
     'ru': {

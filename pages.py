@@ -1,4 +1,5 @@
-from data import games_list, TextData, SpotData
+from click import pass_obj
+from data import games_list, TextData, SpotData, maps_dict, games_short_names_list, games_short_name_dict
 from flask import render_template
 from enum import Enum
 
@@ -24,15 +25,35 @@ def create_main_page(data: TextData) -> str:
                            add_spot_btn_text=data.get_phrase('add_spot_button'))
 
 
-def create_add_spot_page(data: TextData) -> str:  # TODO: добавить форму
-    return render_template('base_template.html',
+def create_add_spot_page(data: TextData, game: str | None, map_name: str | None,
+                         pos: tuple[float, float] | None, name: str | None) -> str:
+    if game is not None:
+        if map_name is not None:
+            maps = [map_name]
+            for mp in maps_dict[data.get_lang()][games_short_name_dict[game]]:
+                if mp != map_name:
+                    maps.append(mp)
+            maps.append(data.get_phrase('select_map_text'))
+        else:
+            maps = [data.get_phrase('select_map_text')] + maps_dict[data.get_lang()][games_short_name_dict[game]]
+        games = [game]
+        for g in games_list:
+            if g != game:
+                games.append(g)
+        games.append(data.get_phrase('select_game_text'))
+    else:
+        maps = [data.get_phrase('select_map_text')]
+        games = [data.get_phrase('select_game_text'), *games_list]
+    return render_template('add_spot.html',
                            lang=data.get_lang(),
                            title=title,
                            autho_btn_text=data.get_autho_btn_text(),
                            change_lang_btn_text=data.get_another_lang(),
                            type = PagesType.without_game_btn.value,
                            to_main_btn_text=data.get_to_main_btn_text(),
-                           tech_info=data.get_phrase('tech_info'))
+                           tech_info=data.get_phrase('tech_info'),
+                           games=games,
+                           maps=maps,)
 
 
 def create_game_info_page(data: TextData) -> str:  # TODO: добавить форму

@@ -4,7 +4,6 @@ from data import TextData, pages_path, games_short_names_list, maps_dict, games_
     map_descriptions, maps_path, SpotData
 from flask_login import login_user
 from login import *
-import os
 
 app = Flask(__name__)
 login_manager.init_app(app)
@@ -73,18 +72,22 @@ def main_page():
     return redirect('/en')
 
 
-def return_add_spot_page_en():
+def return_add_spot_page_en(game: str | None = None, map_name: str | None = None,
+                            pos: tuple[float, float] | None = None, name: str | None = None):
     data = TextData(pages_path + 'add_spot_en.json')
-    return create_add_spot_page(data)
+    return create_add_spot_page(data, game, map_name, pos, name)
 
 
-def return_add_spot_page_ru():
+def return_add_spot_page_ru(game: str | None = None, map_name: str | None = None,
+                            pos: tuple[float, float] | None = None, name: str | None = None):
     data = TextData(pages_path + 'add_spot_ru.json')
-    return create_add_spot_page(data)
+    return create_add_spot_page(data, game, map_name, pos, name)
 
 
 @app.route('/add_spot', methods=['GET'])
 def add_spot_page():
+    if False:
+        abort(403)  # TODO: пользователь не авторизован
     request.accept_languages.best_match(['ru', 'en'])
     lang = request.accept_languages.best
     if lang == 'ru-RU':
@@ -94,8 +97,18 @@ def add_spot_page():
 
 @app.route('/add_spot/en', methods=['POST', 'GET'])
 def add_spot_page_en():
+    if False:
+        abort(403)  # TODO: пользователь не авторизован
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
+        game = request.form.get('game', None)
+        if game not in games_list:
+            game = None
+            map_name = None
+        else:
+            map_name = request.form.get('map', None)
+            if map_name not in maps_dict['en'][games_short_name_dict[game]]:
+                map_name = None
         if btn_pressed:
             match btn_pressed:
                 case 'change_lang':
@@ -106,11 +119,14 @@ def add_spot_page_en():
                     print('Sent!')  # TODO: Считать все данные с формы
                 case 'to_main':
                     return redirect('/en')
+        return return_add_spot_page_en(game=game, map_name=map_name)
     return return_add_spot_page_en()
 
 
 @app.route('/add_spot/ru', methods=['POST', 'GET'])
 def add_spot_page_ru():
+    if False:
+        abort(403)  # TODO: пользователь не авторизован
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
         if btn_pressed:
@@ -594,7 +610,6 @@ def login():
     });
 </script>
 '''
-
 
 if __name__ == '__main__':
     app.run(port=8080, host='127.0.0.1')

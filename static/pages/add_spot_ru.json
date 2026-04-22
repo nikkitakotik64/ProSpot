@@ -7,5 +7,7 @@
   "name_label_text": "Название позиции",
   "picture_name": "Скриншот позиции",
   "send_btn_text": "Отправить",
+  "select_game_text": "Выберите игру",
+  "select_map_text": "Выберите карту",
   "tech_info": ""
 }

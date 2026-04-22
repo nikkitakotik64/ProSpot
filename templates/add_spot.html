@@ -1,0 +1,90 @@
+{% extends "base_template.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/add-spot.css') }}">
+{% endblock %}
+
+{% block content %}
+<form method="post">
+    <div>
+        <label for="game"></label>
+        <select name="game" id="game" class="select" onchange="this.form.submit()">
+            {% for game in games %}
+                <option value="{{ game }}">{{ game }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <label for="map"></label>
+        <select name="map" id="map" class="select">
+            {% for map in maps %}
+                <option value="{{ map }}">{{ map }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</form>
+<div id="viewer" style="width: 100%; height: 500px; background: #333;"></div>
+<button id="send-data">Отправить на сервер</button>
+<script src="/static/openseadragon/openseadragon.min.js"></script>
+<script>
+// 1. Инициализация
+const viewer = OpenSeadragon({
+    id: "viewer",
+    prefixUrl: "/static/openseadragon/images/", // Иконки интерфейса
+    tileSources: {
+        type: 'image',
+        url: "{{ url_for('static', filename='favicon.jpg') }}"
+    },
+    gestureSettingsMouse: { clickToZoom: false } // Отключаем зум по клику, чтобы ставить точку
+});
+
+let marker = null;
+
+// 2. Обработка клика
+viewer.addHandler('canvas-click', function(event) {
+    // Получаем координаты точки относительно изображения (от 0 до 1)
+    const webPoint = event.position;
+    const viewportPoint = viewer.viewport.pointFromPixel(webPoint);
+    const imagePoint = viewer.viewport.viewportToImageCoordinates(viewportPoint);
+
+    // Если маркер уже есть — удаляем его
+    if (marker) {
+        viewer.removeOverlay(marker);
+    }
+
+    // Создаем HTML-элемент для маркера
+    marker = document.createElement("div");
+    marker.id = "my-marker";
+    marker.style.width = "20px";
+    marker.style.height = "20px";
+    marker.style.background = "orange";
+    marker.style.borderRadius = "50%";
+    marker.style.border = "2px solid white";
+
+    // Добавляем маркер на карту
+    viewer.addOverlay({
+        element: marker,
+        location: viewportPoint,
+        placement: OpenSeadragon.Placement.CENTER
+    });
+
+    // Сохраняем пиксельные координаты для отправки
+    marker.dataset.x = Math.round(imagePoint.x);
+    marker.dataset.y = Math.round(imagePoint.y);
+});
+
+// 3. Отправка POST
+document.getElementById('send-data').onclick = function() {
+    if (!marker) return alert("Поставьте точку!");
+
+    fetch('/save-point', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            x: marker.dataset.x,
+            y: marker.dataset.y
+        })
+    }).then(res => res.json()).then(data => alert("Сохранено!"));
+};
+</script>
+{% endblock %}
