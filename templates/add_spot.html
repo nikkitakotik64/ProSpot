@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-<form method="post">
+<form method="post" enctype="multipart/form-data">
     <div>
         <label for="game"></label>
         <select name="game" id="game" class="select" onchange="this.form.submit()">
@@ -22,9 +22,21 @@
             {% endfor %}
         </select>
     </div>
+    <input type="hidden" name="x_coord" id="input-x">
+    <input type="hidden" name="y_coord" id="input-y">
+    <div id="viewer" style="width: 100%; background: #333;"></div>
+    <div>
+        <label>
+            <input type="text" name="spot_name" value="{{ name }}">
+        </label>
+    </div>
+    <div>
+        <input type="file" name="file">
+    </div>
+    <div>
+        <button type="submit" name="btn" value="send">{{ send_btn_txt }}</button>
+    </div>
 </form>
-<div id="viewer" style="width: 100%; height: 500px; background: #333;"></div>
-<button id="send-data">Отправить на сервер</button>
 <script src="/static/openseadragon/openseadragon.min.js"></script>
 <script>
 // 1. Инициализация
@@ -33,58 +45,109 @@ const viewer = OpenSeadragon({
     prefixUrl: "/static/openseadragon/images/", // Иконки интерфейса
     tileSources: {
         type: 'image',
-        url: "{{ url_for('static', filename='favicon.jpg') }}"
+        url: "{{ url_for('static', filename=map_image) }}"
     },
-    gestureSettingsMouse: { clickToZoom: false } // Отключаем зум по клику, чтобы ставить точку
+    gestureSettingsMouse: { clickToZoom: false }, // Отключаем зум по клику, чтобы ставить точку
+    showNavigationControl: false,
+    visibilityRatio: 1.0,
+    minZoomImageRatio: 1.0,
+    maxZoomPixelRatio: 3.0,
+    constrainDuringPan: true
+});
+
+// 3. Установка начального маркера при загрузке
+viewer.addHandler('open', function() {
+    // Получаем значения из шаблона
+    const startX = {{ pos_x }};
+    const startY = {{ pos_y }};
+    const viewerElement = document.getElementById("viewer");
+    const aspectRatio = viewer.source.aspectRatio;
+    const currentWidth = viewerElement.offsetWidth;
+    const newHeight = currentWidth / aspectRatio;
+    viewerElement.style.height = Math.round(newHeight) + "px";
+    viewer.forceRedraw();
+    viewer.viewport.goHome(true);
+    viewer.viewport.fitHorizontally(true);
+
+    // Если координаты валидны (не -1)
+    if (startX !== -1 && startY !== -1) {
+        // Конвертируем пиксели изображения в координаты вьюпорта
+        const imagePoint = new OpenSeadragon.Point(startX, startY);
+        const viewportPoint = viewer.viewport.imageToViewportCoordinates(imagePoint);
+
+        // Создаем элемент маркера
+        marker = document.createElement("div");
+        marker.id = "my-marker";
+        marker.style.width = "20px";
+        marker.style.height = "20px";
+        marker.style.background = "orange";
+        marker.style.borderRadius = "50%";
+        marker.style.border = "2px solid white";
+        marker.style.pointerEvents = "none";
+
+        // Добавляем на слой
+        viewer.addOverlay({
+            element: marker,
+            location: viewportPoint,
+            placement: OpenSeadragon.Placement.CENTER
+        });
+    }
 });
 
 let marker = null;
 
-// 2. Обработка клика
-viewer.addHandler('canvas-click', function(event) {
-    // Получаем координаты точки относительно изображения (от 0 до 1)
-    const webPoint = event.position;
-    const viewportPoint = viewer.viewport.pointFromPixel(webPoint);
-    const imagePoint = viewer.viewport.viewportToImageCoordinates(viewportPoint);
+let pressPoint = null; // Точка нажатия
 
-    // Если маркер уже есть — удаляем его
-    if (marker) {
-        viewer.removeOverlay(marker);
-    }
-
-    // Создаем HTML-элемент для маркера
-    marker = document.createElement("div");
-    marker.id = "my-marker";
-    marker.style.width = "20px";
-    marker.style.height = "20px";
-    marker.style.background = "orange";
-    marker.style.borderRadius = "50%";
-    marker.style.border = "2px solid white";
-
-    // Добавляем маркер на карту
-    viewer.addOverlay({
-        element: marker,
-        location: viewportPoint,
-        placement: OpenSeadragon.Placement.CENTER
-    });
-
-    // Сохраняем пиксельные координаты для отправки
-    marker.dataset.x = Math.round(imagePoint.x);
-    marker.dataset.y = Math.round(imagePoint.y);
+// 1. Запоминаем, где нажали
+viewer.addHandler('canvas-press', function(event) {
+    pressPoint = event.position;
 });
 
-// 3. Отправка POST
-document.getElementById('send-data').onclick = function() {
-    if (!marker) return alert("Поставьте точку!");
+// 2. Проверяем при отпускании
+viewer.addHandler('canvas-release', function(event) {
+    if (!pressPoint) return;
 
-    fetch('/save-point', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            x: marker.dataset.x,
-            y: marker.dataset.y
-        })
-    }).then(res => res.json()).then(data => alert("Сохранено!"));
-};
+    // Считаем расстояние между нажатием и отпусканием (в пикселях)
+    const dist = Math.sqrt(
+        Math.pow(event.position.x - pressPoint.x, 2) +
+        Math.pow(event.position.y - pressPoint.y, 2)
+    );
+
+    // Если сдвиг меньше 5 пикселей — считаем это кликом, а не драгом
+    if (dist < 5) {
+        const webPoint = event.position;
+        const viewportPoint = viewer.viewport.pointFromPixel(webPoint);
+        const imagePoint = viewer.viewport.viewportToImageCoordinates(viewportPoint);
+
+        if (marker) {
+            viewer.removeOverlay(marker);
+        }
+
+        marker = document.createElement("div");
+        marker.id = "my-marker";
+        marker.style.width = "20px";
+        marker.style.height = "20px";
+        marker.style.background = "orange";
+        marker.style.borderRadius = "50%";
+        marker.style.border = "2px solid white";
+        marker.style.pointerEvents = "none";
+        marker.style.transition = "opacity 0.2s"; // Ваш эффект
+        marker.style.opacity = "0"; // Начальное состояние для анимации
+
+        viewer.addOverlay({
+            element: marker,
+            location: viewportPoint,
+            placement: OpenSeadragon.Placement.CENTER
+        });
+
+        // Запускаем анимацию появления
+        setTimeout(() => marker.style.opacity = "1", 10);
+
+        document.getElementById('input-x').value = Math.round(imagePoint.x);
+        document.getElementById('input-y').value = Math.round(imagePoint.y);
+    }
+
+    pressPoint = null; // Сбрасываем точку
+});
 </script>
 {% endblock %}

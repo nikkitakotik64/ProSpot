@@ -27,6 +27,7 @@ def create_main_page(data: TextData) -> str:
 
 def create_add_spot_page(data: TextData, game: str | None, map_name: str | None,
                          pos: tuple[float, float] | None, name: str | None) -> str:
+    # TODO: надо чтобы картинка карты бралась из бд
     if game is not None:
         if map_name is not None:
             maps = [map_name]
@@ -34,8 +35,13 @@ def create_add_spot_page(data: TextData, game: str | None, map_name: str | None,
                 if mp != map_name:
                     maps.append(mp)
             maps.append(data.get_phrase('select_map_text'))
+            if pos is not None:
+                pos_x, pos_y = pos
+            else:
+                pos_x, pos_y = -1, -1
         else:
             maps = [data.get_phrase('select_map_text')] + maps_dict[data.get_lang()][games_short_name_dict[game]]
+            pos_x, pos_y = -1, -1
         games = [game]
         for g in games_list:
             if g != game:
@@ -44,6 +50,9 @@ def create_add_spot_page(data: TextData, game: str | None, map_name: str | None,
     else:
         maps = [data.get_phrase('select_map_text')]
         games = [data.get_phrase('select_game_text'), *games_list]
+        pos_x, pos_y = -1, -1
+    if name is None:
+        name = ''
     return render_template('add_spot.html',
                            lang=data.get_lang(),
                            title=title,
@@ -53,7 +62,12 @@ def create_add_spot_page(data: TextData, game: str | None, map_name: str | None,
                            to_main_btn_text=data.get_to_main_btn_text(),
                            tech_info=data.get_phrase('tech_info'),
                            games=games,
-                           maps=maps,)
+                           maps=maps,
+                           map_image='favicon.jpg',
+                           pos_x=pos_x,
+                           pos_y=pos_y,
+                           send_btn_txt=data.get_phrase('send_btn_text'),
+                           name=name)
 
 
 def create_game_info_page(data: TextData) -> str:  # TODO: добавить форму

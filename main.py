@@ -109,6 +109,11 @@ def add_spot_page_en():
             map_name = request.form.get('map', None)
             if map_name not in maps_dict['en'][games_short_name_dict[game]]:
                 map_name = None
+        pos = (request.form.get('x_coord', None), request.form.get('y_coord', None))
+        if pos[0] is None or pos[1] is None or not pos[0] or not pos[1]:
+            pos = None
+        name = request.form.get('spot_name', None)
+        file = request.files.get('file', None)
         if btn_pressed:
             match btn_pressed:
                 case 'change_lang':
@@ -116,10 +121,10 @@ def add_spot_page_en():
                 case 'autho':
                     print('Авторизация пока недоступна')  # TODO
                 case 'send':
-                    print('Sent!')  # TODO: Считать все данные с формы
+                    pass  # TODO
                 case 'to_main':
                     return redirect('/en')
-        return return_add_spot_page_en(game=game, map_name=map_name)
+        return return_add_spot_page_en(game=game, map_name=map_name, pos=pos, name=name)
     return return_add_spot_page_en()
 
 
@@ -129,6 +134,19 @@ def add_spot_page_ru():
         abort(403)  # TODO: пользователь не авторизован
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
+        game = request.form.get('game', None)
+        if game not in games_list:
+            game = None
+            map_name = None
+        else:
+            map_name = request.form.get('map', None)
+            if map_name not in maps_dict['en'][games_short_name_dict[game]]:
+                map_name = None
+        pos = (request.form.get('x_coord', None), request.form.get('y_coord', None))
+        if pos[0] is None or pos[1] is None or not pos[0] or not pos[1]:
+            pos = None
+        name = request.form.get('spot_name', None)
+        file = request.files.get('file', None)
         if btn_pressed:
             match btn_pressed:
                 case 'change_lang':
@@ -136,9 +154,15 @@ def add_spot_page_ru():
                 case 'autho':
                     print('Авторизация пока недоступна')  # TODO
                 case 'send':
-                    print('Sent!')  # TODO: Считать все данные с формы
+                    print("Данные с формы:")  # TODO
+                    print("Игра:", game)
+                    print('Карта:', map_name)
+                    print('Позиция:', pos)
+                    print('Название:', name)
+                    print('Файл:', file.read(100))
                 case 'to_main':
                     return redirect('/ru')
+        return return_add_spot_page_ru(game=game, map_name=map_name, pos=pos, name=name)
     return return_add_spot_page_ru()
 
 
