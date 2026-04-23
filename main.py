@@ -1,9 +1,11 @@
 from pages import *
 from flask import Flask, request, redirect, abort, send_from_directory
 from data import TextData, pages_path, games_short_names_list, maps_dict, games_dict, games_with_spots, \
-    map_descriptions, maps_path, SpotData
+    map_descriptions, maps_path, SpotData, db_path
 from flask_login import login_user
+from PIL import Image
 from login import *
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 login_manager.init_app(app)
@@ -73,15 +75,19 @@ def main_page():
 
 
 def return_add_spot_page_en(game: str | None = None, map_name: str | None = None,
-                            pos: tuple[float, float] | None = None, name: str | None = None):
+                            pos: tuple[float, float] | None = None, name: str | None = None,
+                            game_errors: list | None = None, map_errors: list | None = None,
+                            spot_name_errors: list | None = None, file_errors: list | None = None):
     data = TextData(pages_path + 'add_spot_en.json')
-    return create_add_spot_page(data, game, map_name, pos, name)
+    return create_add_spot_page(data, game, map_name, pos, name, game_errors, map_errors, spot_name_errors, file_errors)
 
 
 def return_add_spot_page_ru(game: str | None = None, map_name: str | None = None,
-                            pos: tuple[float, float] | None = None, name: str | None = None):
+                            pos: tuple[float, float] | None = None, name: str | None = None,
+                            game_errors: list | None = None, map_errors: list | None = None,
+                            spot_name_errors: list | None = None, file_errors: list | None = None):
     data = TextData(pages_path + 'add_spot_ru.json')
-    return create_add_spot_page(data, game, map_name, pos, name)
+    return create_add_spot_page(data, game, map_name, pos, name, game_errors, map_errors, spot_name_errors, file_errors)
 
 
 @app.route('/add_spot', methods=['GET'])
@@ -147,6 +153,13 @@ def add_spot_page_ru():
             pos = None
         name = request.form.get('spot_name', None)
         file = request.files.get('file', None)
+        try:
+            img = Image.open(file)
+            img.verify()
+            file.seek(0)
+            file.save('a.jpg') # TODO: вставить путь
+        except:
+            file = -1
         if btn_pressed:
             match btn_pressed:
                 case 'change_lang':
@@ -154,12 +167,26 @@ def add_spot_page_ru():
                 case 'autho':
                     print('Авторизация пока недоступна')  # TODO
                 case 'send':
-                    print("Данные с формы:")  # TODO
-                    print("Игра:", game)
-                    print('Карта:', map_name)
-                    print('Позиция:', pos)
-                    print('Название:', name)
-                    print('Файл:', file.read(100))
+                    game_errors = []
+                    if game is None:
+                        game_errors.append('game_not_chosen')
+                    map_errors = []
+                    if map_name is None:
+                        map_errors.append('map_not_chosen')
+                    name_errors = []
+                    if not name:
+                        name_errors.append('name_not_input')
+                    file_errors = []
+                    if file is None:
+                        file_errors.append('file_not_chosen')
+                    elif file == -1:
+                        file_errors.append('file_is_not_image')
+                    if game_errors or map_errors or name_errors or file_errors:
+                        return return_add_spot_page_ru(game=game, map_name=map_name, pos=pos, name=name,
+                                                       game_errors=game_errors, map_errors=map_errors,
+                                                       spot_name_errors=name_errors, file_errors=file_errors)
+                    else:
+                        return redirect('/en')  # TODO страничка, что всё успешно отправлено
                 case 'to_main':
                     return redirect('/ru')
         return return_add_spot_page_ru(game=game, map_name=map_name, pos=pos, name=name)

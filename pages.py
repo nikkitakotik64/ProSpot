@@ -26,7 +26,8 @@ def create_main_page(data: TextData) -> str:
 
 
 def create_add_spot_page(data: TextData, game: str | None, map_name: str | None,
-                         pos: tuple[float, float] | None, name: str | None) -> str:
+                         pos: tuple[float, float] | None, name: str | None, game_errors: list | None,
+                         map_errors: list | None, spot_name_errors: list | None, file_errors: list | None) -> str:
     # TODO: надо чтобы картинка карты бралась из бд
     if game is not None:
         if map_name is not None:
@@ -52,7 +53,27 @@ def create_add_spot_page(data: TextData, game: str | None, map_name: str | None,
         games = [data.get_phrase('select_game_text'), *games_list]
         pos_x, pos_y = -1, -1
     if name is None:
-        name = ''
+        name = data.get_phrase('input_name_text')
+    if game_errors is None:
+        game_errors = list()
+    else:
+        for ind in range(len(game_errors)):
+            game_errors[ind] = data.get_phrase(game_errors[ind])
+    if map_errors is None:
+        map_errors = list()
+    else:
+        for ind in range(len(map_errors)):
+            map_errors[ind] = data.get_phrase(map_errors[ind])
+    if spot_name_errors is None:
+        spot_name_errors = list()
+    else:
+        for ind in range(len(spot_name_errors)):
+            spot_name_errors[ind] = data.get_phrase(spot_name_errors[ind])
+    if file_errors is None:
+        file_errors = list()
+    else:
+        for ind in range(len(file_errors)):
+            file_errors[ind] = data.get_phrase(file_errors[ind])
     return render_template('add_spot.html',
                            lang=data.get_lang(),
                            title=title,
@@ -67,7 +88,11 @@ def create_add_spot_page(data: TextData, game: str | None, map_name: str | None,
                            pos_x=pos_x,
                            pos_y=pos_y,
                            send_btn_txt=data.get_phrase('send_btn_text'),
-                           name=name)
+                           name=name,
+                           game_errors=game_errors,
+                           map_errors=map_errors,
+                           spot_name_errors=spot_name_errors,
+                           file_errors=file_errors)
 
 
 def create_game_info_page(data: TextData) -> str:  # TODO: добавить форму

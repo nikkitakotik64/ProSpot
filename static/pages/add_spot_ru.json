@@ -9,5 +9,11 @@
   "send_btn_text": "Отправить",
   "select_game_text": "Выберите игру",
   "select_map_text": "Выберите карту",
+  "game_not_chosen": "Игра не выбрана",
+  "map_not_chosen": "Карта не выбрана",
+  "name_not_input": "Название позиции не введено",
+  "file_not_chosen": "Файл не выбран",
+  "input_name_text": "Введите название позиции",
+  "file_is_not_image": "Файл не является изображением или повреждён",
   "tech_info": ""
 }

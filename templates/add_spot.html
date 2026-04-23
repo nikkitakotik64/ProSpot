@@ -13,6 +13,11 @@
                 <option value="{{ game }}">{{ game }}</option>
             {% endfor %}
         </select>
+        {% for error in game_errors %}
+            <div class="alert alert-danger" role="alert" style="color: #ff0000">
+                {{ error }}
+            </div>
+        {% endfor %}
     </div>
     <div>
         <label for="map"></label>
@@ -21,6 +26,11 @@
                 <option value="{{ map }}">{{ map }}</option>
             {% endfor %}
         </select>
+        {% for error in map_errors %}
+            <div class="alert alert-danger" role="alert" style="color: #ff0000">
+                {{ error }}
+            </div>
+        {% endfor %}
     </div>
     <input type="hidden" name="x_coord" id="input-x">
     <input type="hidden" name="y_coord" id="input-y">
@@ -30,9 +40,19 @@
             <input type="text" name="spot_name" value="{{ name }}">
         </label>
     </div>
+    {% for error in spot_name_errors %}
+        <div class="alert alert-danger" role="alert" style="color: #ff0000">
+            {{ error }}
+        </div>
+    {% endfor %}
     <div>
-        <input type="file" name="file">
+        <input type="file" name="file" style="color: #ffffff">
     </div>
+    {% for error in file_errors %}
+        <div class="alert alert-danger" role="alert" style="color: #ff0000">
+            {{ error }}
+        </div>
+    {% endfor %}
     <div>
         <button type="submit" name="btn" value="send">{{ send_btn_txt }}</button>
     </div>
