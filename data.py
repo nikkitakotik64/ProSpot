@@ -4,7 +4,13 @@ import os
 path = os.path.dirname(os.path.abspath(__file__)) + '/'
 pages_path = path + 'static/pages/'
 maps_path = path + 'static/maps/'
+games_path = path + 'static/games/'
 db_path = path + 'static/data/'
+images_path = path + 'static/images/'
+map_images_path = images_path + 'maps/'
+game_images_path = images_path + 'games/'
+spot_images_path = images_path + 'spots/'
+memory_images_path = images_path + 'memory/'
 
 games_list = ('CS 2', 'Escape From Tarkov')  # список названий игр
 games_short_names_list = ('cs2', 'eft')  # сокращённые названия игр (для ссылок)

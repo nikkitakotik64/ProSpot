@@ -1,11 +1,10 @@
 from pages import *
-from flask import Flask, request, redirect, abort, send_from_directory
+from flask import Flask, request, redirect, abort
 from data import TextData, pages_path, games_short_names_list, maps_dict, games_dict, games_with_spots, \
-    map_descriptions, maps_path, SpotData, db_path
+    map_descriptions, maps_path, SpotData, images_path
 from flask_login import login_user
 from PIL import Image
 from login import *
-from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 login_manager.init_app(app)
@@ -157,7 +156,7 @@ def add_spot_page_ru():
             img = Image.open(file)
             img.verify()
             file.seek(0)
-            file.save('a.jpg') # TODO: вставить путь
+            file.save(images_path + 'test.jpg') # TODO: вставить путь
         except:
             file = -1
         if btn_pressed:
@@ -186,7 +185,8 @@ def add_spot_page_ru():
                                                        game_errors=game_errors, map_errors=map_errors,
                                                        spot_name_errors=name_errors, file_errors=file_errors)
                     else:
-                        return redirect('/en')  # TODO страничка, что всё успешно отправлено
+                        # TODO: сохранить всё
+                        return redirect('/')  # TODO страничка, что всё успешно отправлено
                 case 'to_main':
                     return redirect('/ru')
         return return_add_spot_page_ru(game=game, map_name=map_name, pos=pos, name=name)

@@ -53,7 +53,7 @@ def create_add_spot_page(data: TextData, game: str | None, map_name: str | None,
         games = [data.get_phrase('select_game_text'), *games_list]
         pos_x, pos_y = -1, -1
     if name is None:
-        name = data.get_phrase('input_name_text')
+        name = ''
     if game_errors is None:
         game_errors = list()
     else:
@@ -89,6 +89,7 @@ def create_add_spot_page(data: TextData, game: str | None, map_name: str | None,
                            pos_y=pos_y,
                            send_btn_txt=data.get_phrase('send_btn_text'),
                            name=name,
+                           input_placeholder=data.get_phrase('input_name_text'),
                            game_errors=game_errors,
                            map_errors=map_errors,
                            spot_name_errors=spot_name_errors,
