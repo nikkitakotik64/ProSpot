@@ -1,0 +1,11 @@
+{% extends "base_template.html" %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block content %}
+<p>{{ success_text }}</p>
+<form method="POST">
+  <button name="btn" value="to_main">{{ to_main_btn_text }}</button>
+</form>
+{% endblock %}

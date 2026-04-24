@@ -17,7 +17,7 @@ def create_main_page(data: TextData) -> str:
                            title=title,
                            autho_btn_text=data.get_autho_btn_text(),
                            change_lang_btn_text=data.get_another_lang(),
-                           type = PagesType.main.value,
+                           type=PagesType.main.value,
                            tech_info=data.get_phrase('tech_info'),
                            btn_list=games_list,
                            button_count=5,
@@ -78,7 +78,7 @@ def create_add_spot_page(data: TextData, game: str | None, map_name: str | None,
                            title=title,
                            autho_btn_text=data.get_autho_btn_text(),
                            change_lang_btn_text=data.get_another_lang(),
-                           type = PagesType.without_game_btn.value,
+                           type=PagesType.without_game_btn.value,
                            to_main_btn_text=data.get_to_main_btn_text(),
                            tech_info=data.get_phrase('tech_info'),
                            games=games,
@@ -102,14 +102,14 @@ def create_game_info_page(data: TextData, game: str) -> str:
                            title=title,
                            autho_btn_text=data.get_autho_btn_text(),
                            change_lang_btn_text=data.get_another_lang(),
-                           type = PagesType.with_game_btn.value,
+                           type=PagesType.with_game_btn.value,
                            to_main_btn_text=data.get_to_main_btn_text(),
                            to_game_btn_text=data.get_to_game_btn_text(),
                            tech_info=data.get_phrase('tech_info'),
                            game_title=data.get_phrase('header'),
                            game_image='',
                            game_name=games_dict[game],
-                           game_description=data.get_phrase('text'),)
+                           game_description=data.get_phrase('text'), )
 
 
 def create_game_page(data: TextData, game: str) -> str:
@@ -121,14 +121,14 @@ def create_game_page(data: TextData, game: str) -> str:
                            title=title,
                            autho_btn_text=data.get_autho_btn_text(),
                            change_lang_btn_text=data.get_another_lang(),
-                           type = PagesType.without_game_btn.value,
+                           type=PagesType.without_game_btn.value,
                            to_main_btn_text=data.get_to_main_btn_text(),
                            tech_info=data.get_phrase('tech_info'),
                            game_title=data.get_phrase('header'),
                            game_name=games_dict[game],
                            add_spot_btn_text=data.get_phrase('add_spot_button'),
                            btn_list=btn_list,
-                           button_count=len(btn_list),)
+                           button_count=len(btn_list), )
 
 
 def create_guess_page(data: TextData) -> str:  # TODO: добавить форму
@@ -137,7 +137,7 @@ def create_guess_page(data: TextData) -> str:  # TODO: добавить форм
                            title=title,
                            autho_btn_text=data.get_autho_btn_text(),
                            change_lang_btn_text=data.get_another_lang(),
-                           type = PagesType.with_game_btn.value,
+                           type=PagesType.with_game_btn.value,
                            to_main_btn_text=data.get_to_main_btn_text(),
                            to_game_btn_text=data.get_to_game_btn_text(),
                            tech_info=data.get_phrase('tech_info'))
@@ -149,7 +149,7 @@ def create_learn_page(data: TextData, map_name: str) -> str:  # TODO: добав
                            title=title,
                            autho_btn_text=data.get_autho_btn_text(),
                            change_lang_btn_text=data.get_another_lang(),
-                           type = PagesType.with_game_btn.value,
+                           type=PagesType.with_game_btn.value,
                            to_main_btn_text=data.get_to_main_btn_text(),
                            to_game_btn_text=data.get_to_game_btn_text(),
                            tech_info=data.get_phrase('tech_info'))
@@ -161,7 +161,7 @@ def create_map_choice_page(data: TextData, maps: list[str], game_name: str) -> s
                            title=title,
                            autho_btn_text=data.get_autho_btn_text(),
                            change_lang_btn_text=data.get_another_lang(),
-                           type = PagesType.with_game_btn.value,
+                           type=PagesType.with_game_btn.value,
                            to_main_btn_text=data.get_to_main_btn_text(),
                            to_game_btn_text=data.get_to_game_btn_text(),
                            tech_info=data.get_phrase('tech_info'),
@@ -179,7 +179,7 @@ def create_map_page(data: TextData, map_name: str, game: str, description_file: 
                            title=title,
                            autho_btn_text=data.get_autho_btn_text(),
                            change_lang_btn_text=data.get_another_lang(),
-                           type = PagesType.with_game_btn.value,
+                           type=PagesType.with_game_btn.value,
                            to_main_btn_text=data.get_to_main_btn_text(),
                            to_game_btn_text=data.get_to_game_btn_text(),
                            game_name=games_dict[game],
@@ -190,13 +190,25 @@ def create_map_page(data: TextData, map_name: str, game: str, description_file: 
                            tech_info=data.get_phrase('tech_info'))
 
 
+def create_send_success_page(data: TextData) -> str:
+    return render_template('send_success_page.html',
+                           lang=data.get_lang(),
+                           title=title,
+                           autho_btn_text=data.get_autho_btn_text(),
+                           change_lang_btn_text=data.get_another_lang(),
+                           type=PagesType.main.value,
+                           tech_info=data.get_phrase('tech_info'),
+                           to_main_btn_text=data.get_to_main_btn_text(),
+                           success_text=data.get_phrase('success_text'))
+
+
 def create_moder_page(data: TextData, spot_info: SpotData) -> str:  # TODO: добавить форму
     return render_template('base_template.html',
                            lang=data.get_lang(),
                            title=title,
                            autho_btn_text=data.get_autho_btn_text(),
                            change_lang_btn_text=data.get_another_lang(),
-                           type = PagesType.without_game_btn.value,
+                           type=PagesType.without_game_btn.value,
                            to_main_btn_text=data.get_to_main_btn_text(),
                            tech_info=data.get_phrase('tech_info'))
 
@@ -207,6 +219,6 @@ def create_account_page(data: TextData) -> str:  # TODO: добавить фор
                            title=title,
                            autho_btn_text=data.get_autho_btn_text(),
                            change_lang_btn_text=data.get_another_lang(),
-                           type = PagesType.without_game_btn.value,
+                           type=PagesType.without_game_btn.value,
                            to_main_btn_text=data.get_to_main_btn_text(),
                            tech_info=data.get_phrase('tech_info'))

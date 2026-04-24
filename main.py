@@ -25,18 +25,17 @@ map_choice_type_names = {1: 'learn', 2: 'guess', 3: 'map'}
 def main_page_ru():
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
-        if btn_pressed:
-            match btn_pressed:
-                case 'change_lang':
-                    return redirect('/en')
-                case 'autho':
-                    print('Авторизация пока недоступна')  # TODO
-                case 'CS 2':
-                    return redirect('/cs2/ru')
-                case 'Escape From Tarkov':
-                    return redirect('/eft/ru')
-                case 'add_spot':
-                    return redirect('/add_spot/ru')
+        match btn_pressed:
+            case 'change_lang':
+                return redirect('/en')
+            case 'autho':
+                print('Авторизация пока недоступна')  # TODO
+            case 'CS 2':
+                return redirect('/cs2/ru')
+            case 'Escape From Tarkov':
+                return redirect('/eft/ru')
+            case 'add_spot':
+                return redirect('/add_spot/ru')
     return return_main_page_ru()
 
 
@@ -50,19 +49,17 @@ def return_main_page_ru():
 def main_page_en():
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
-        if btn_pressed:
-            print(btn_pressed)
-            match btn_pressed:
-                case 'change_lang':
-                    return redirect('/ru')
-                case 'autho':
-                    print('Авторизация пока недоступна')  # TODO
-                case 'CS 2':
-                    return redirect('/cs2/en')
-                case 'Escape From Tarkov':
-                    return redirect('/eft/en')
-                case 'add_spot':
-                    return redirect('/add_spot/en')
+        match btn_pressed:
+            case 'change_lang':
+                return redirect('/ru')
+            case 'autho':
+                print('Авторизация пока недоступна')  # TODO
+            case 'CS 2':
+                return redirect('/cs2/en')
+            case 'Escape From Tarkov':
+                return redirect('/eft/en')
+            case 'add_spot':
+                return redirect('/add_spot/en')
     return return_main_page_en()
 
 
@@ -127,47 +124,46 @@ def add_spot_page_en():
             pos = None
         name = request.form.get('spot_name', None)
         file = request.files.get('file', None)
-        if btn_pressed:
-            match btn_pressed:
-                case 'change_lang':
-                    return redirect('/add_spot/ru')
-                case 'autho':
-                    print('Авторизация пока недоступна')  # TODO
-                case 'send':
-                    game_errors = []
-                    if game is None:
-                        game_errors.append('game_not_chosen')
-                    map_errors = []
-                    if map_name is None:
-                        map_errors.append('map_not_chosen')
-                    name_errors = []
-                    if not name:
-                        name_errors.append('name_not_input')
-                    file_errors = []
-                    if file is None:
-                        file_errors.append('file_not_chosen')
-                    elif file == -1:
-                        file_errors.append('file_is_not_image')
-                    if game_errors or map_errors or name_errors or file_errors:
-                        return return_add_spot_page_ru(game=game, map_name=map_name, pos=pos, name=name,
-                                                       game_errors=game_errors, map_errors=map_errors,
-                                                       spot_name_errors=name_errors, file_errors=file_errors)
-                    else:
-                        # TODO: сохранить всё
-                        return redirect('/')  # TODO страничка, что всё успешно отправлено
-                case 'to_main':
-                    return redirect('/en')
-                case _:
-                    if not game:
-                        try:
-                            dct = dict()
-                            for s in btn_pressed.split('; '):
-                                key, value = s.split(': ')
-                                dct[key] = value
-                            game = dct.get('game', None)
-                            map_name = dct.get('map_name', None)
-                        except:
-                            pass
+        match btn_pressed:
+            case 'change_lang':
+                return redirect('/add_spot/ru')
+            case 'autho':
+                print('Авторизация пока недоступна')  # TODO
+            case 'send':
+                game_errors = []
+                if game is None:
+                    game_errors.append('game_not_chosen')
+                map_errors = []
+                if map_name is None:
+                    map_errors.append('map_not_chosen')
+                name_errors = []
+                if not name:
+                    name_errors.append('name_not_input')
+                file_errors = []
+                if file is None:
+                    file_errors.append('file_not_chosen')
+                elif file == -1:
+                    file_errors.append('file_is_not_image')
+                if game_errors or map_errors or name_errors or file_errors:
+                    return return_add_spot_page_ru(game=game, map_name=map_name, pos=pos, name=name,
+                                                   game_errors=game_errors, map_errors=map_errors,
+                                                   spot_name_errors=name_errors, file_errors=file_errors)
+                else:
+                    # TODO: сохранить всё
+                    return redirect('/success/en')
+            case 'to_main':
+                return redirect('/en')
+            case _:
+                if not game:
+                    try:
+                        dct = dict()
+                        for s in btn_pressed.split('; '):
+                            key, value = s.split(': ')
+                            dct[key] = value
+                        game = dct.get('game', None)
+                        map_name = dct.get('map_name', None)
+                    except:
+                        pass
         return return_add_spot_page_en(game=game, map_name=map_name, pos=pos, name=name)
     return return_add_spot_page_en()
 
@@ -198,47 +194,46 @@ def add_spot_page_ru():
             file.save(images_path + 'test.jpg') # TODO: вставить путь
         except:
             file = -1
-        if btn_pressed:
-            match btn_pressed:
-                case 'change_lang':
-                    return redirect('/add_spot/en')
-                case 'autho':
-                    print('Авторизация пока недоступна')  # TODO
-                case 'send':
-                    game_errors = []
-                    if game is None:
-                        game_errors.append('game_not_chosen')
-                    map_errors = []
-                    if map_name is None:
-                        map_errors.append('map_not_chosen')
-                    name_errors = []
-                    if not name:
-                        name_errors.append('name_not_input')
-                    file_errors = []
-                    if file is None:
-                        file_errors.append('file_not_chosen')
-                    elif file == -1:
-                        file_errors.append('file_is_not_image')
-                    if game_errors or map_errors or name_errors or file_errors:
-                        return return_add_spot_page_ru(game=game, map_name=map_name, pos=pos, name=name,
-                                                       game_errors=game_errors, map_errors=map_errors,
-                                                       spot_name_errors=name_errors, file_errors=file_errors)
-                    else:
-                        # TODO: сохранить всё
-                        return redirect('/')  # TODO страничка, что всё успешно отправлено
-                case 'to_main':
-                    return redirect('/ru')
-                case _:
-                    if not game:
-                        try:
-                            dct = dict()
-                            for s in btn_pressed.split('; '):
-                                key, value = s.split(': ')
-                                dct[key] = value
-                            game = dct.get('game', None)
-                            map_name = dct.get('map_name', None)
-                        except:
-                            pass
+        match btn_pressed:
+            case 'change_lang':
+                return redirect('/add_spot/en')
+            case 'autho':
+                print('Авторизация пока недоступна')  # TODO
+            case 'send':
+                game_errors = []
+                if game is None:
+                    game_errors.append('game_not_chosen')
+                map_errors = []
+                if map_name is None:
+                    map_errors.append('map_not_chosen')
+                name_errors = []
+                if not name:
+                    name_errors.append('name_not_input')
+                file_errors = []
+                if file is None:
+                    file_errors.append('file_not_chosen')
+                elif file == -1:
+                    file_errors.append('file_is_not_image')
+                if game_errors or map_errors or name_errors or file_errors:
+                    return return_add_spot_page_ru(game=game, map_name=map_name, pos=pos, name=name,
+                                                   game_errors=game_errors, map_errors=map_errors,
+                                                   spot_name_errors=name_errors, file_errors=file_errors)
+                else:
+                    # TODO: сохранить всё
+                    return redirect('/success/ru')
+            case 'to_main':
+                return redirect('/ru')
+            case _:
+                if not game:
+                    try:
+                        dct = dict()
+                        for s in btn_pressed.split('; '):
+                            key, value = s.split(': ')
+                            dct[key] = value
+                        game = dct.get('game', None)
+                        map_name = dct.get('map_name', None)
+                    except:
+                        pass
         return return_add_spot_page_ru(game=game, map_name=map_name, pos=pos, name=name)
     return return_add_spot_page_ru()
 
@@ -270,16 +265,15 @@ def game_info_page_ru(game_short_name: str):
         abort(404)
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
-        if btn_pressed:
-            match btn_pressed:
-                case 'change_lang':
-                    return redirect(f'/{game_short_name}/info/en')
-                case 'autho':
-                    print('Авторизация пока недоступна')  # TODO
-                case 'to_game':
-                    return redirect(f'/{game_short_name}/ru')
-                case 'to_main':
-                    return redirect('/ru')
+        match btn_pressed:
+            case 'change_lang':
+                return redirect(f'/{game_short_name}/info/en')
+            case 'autho':
+                print('Авторизация пока недоступна')  # TODO
+            case 'to_game':
+                return redirect(f'/{game_short_name}/ru')
+            case 'to_main':
+                return redirect('/ru')
     return return_game_info_page_ru(game_short_name)
 
 
@@ -289,16 +283,15 @@ def game_info_page_en(game_short_name: str):
         abort(404)
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
-        if btn_pressed:
-            match btn_pressed:
-                case 'change_lang':
-                    return redirect(f'/{game_short_name}/info/ru')
-                case 'autho':
-                    print('Авторизация пока недоступна')  # TODO
-                case 'to_game':
-                    return redirect(f'/{game_short_name}/en')
-                case 'to_main':
-                    return redirect('/en')
+        match btn_pressed:
+            case 'change_lang':
+                return redirect(f'/{game_short_name}/info/ru')
+            case 'autho':
+                print('Авторизация пока недоступна')  # TODO
+            case 'to_game':
+                return redirect(f'/{game_short_name}/en')
+            case 'to_main':
+                return redirect('/en')
     return return_game_info_page_en(game_short_name)
 
 
@@ -329,22 +322,21 @@ def game_page_ru(game_short_name: str):
         abort(404)
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
-        if btn_pressed:
-            match btn_pressed:
-                case 'change_lang':
-                    return redirect(f'/{game_short_name}/en')
-                case 'autho':
-                    print('Авторизация пока недоступна')  # TODO
-                case 'to_main':
-                    return redirect('/ru')
-                case 'Гайд':
-                    return redirect(f'/{game_short_name}/info/ru')
-                case 'Карты':
-                    return redirect(f'/{game_short_name}/map_choice/{MapChoiceType.map.value}/ru')
-                case 'Испытание':
-                    return redirect(f'/{game_short_name}/map_choice/{MapChoiceType.guess.value}/ru')
-                case 'Учить позиции':
-                    return redirect(f'/{game_short_name}/map_choice/{MapChoiceType.learn.value}/ru')
+        match btn_pressed:
+            case 'change_lang':
+                return redirect(f'/{game_short_name}/en')
+            case 'autho':
+                print('Авторизация пока недоступна')  # TODO
+            case 'to_main':
+                return redirect('/ru')
+            case 'Гайд':
+                return redirect(f'/{game_short_name}/info/ru')
+            case 'Карты':
+                return redirect(f'/{game_short_name}/map_choice/{MapChoiceType.map.value}/ru')
+            case 'Испытание':
+                return redirect(f'/{game_short_name}/map_choice/{MapChoiceType.guess.value}/ru')
+            case 'Учить позиции':
+                return redirect(f'/{game_short_name}/map_choice/{MapChoiceType.learn.value}/ru')
     return return_game_page_ru(game_short_name)
 
 
@@ -354,22 +346,21 @@ def game_page_en(game_short_name: str):
         abort(404)
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
-        if btn_pressed:
-            match btn_pressed:
-                case 'change_lang':
-                    return redirect(f'/{game_short_name}/ru')
-                case 'autho':
-                    print('Авторизация пока недоступна')  # TODO
-                case 'to_main':
-                    return redirect('/en')
-                case 'Guide':
-                    return redirect(f'/{game_short_name}/info/en')
-                case 'Maps':
-                    return redirect(f'/{game_short_name}/map_choice/{MapChoiceType.map.value}/en')
-                case 'Challenge':
-                    return redirect(f'/{game_short_name}/map_choice/{MapChoiceType.guess.value}/en')
-                case 'Learn spots':
-                    return redirect(f'/{game_short_name}/map_choice/{MapChoiceType.learn.value}/en')
+        match btn_pressed:
+            case 'change_lang':
+                return redirect(f'/{game_short_name}/ru')
+            case 'autho':
+                print('Авторизация пока недоступна')  # TODO
+            case 'to_main':
+                return redirect('/en')
+            case 'Guide':
+                return redirect(f'/{game_short_name}/info/en')
+            case 'Maps':
+                return redirect(f'/{game_short_name}/map_choice/{MapChoiceType.map.value}/en')
+            case 'Challenge':
+                return redirect(f'/{game_short_name}/map_choice/{MapChoiceType.guess.value}/en')
+            case 'Learn spots':
+                return redirect(f'/{game_short_name}/map_choice/{MapChoiceType.learn.value}/en')
     return return_game_page_en(game_short_name)
 
 
@@ -404,16 +395,15 @@ def guess_page_ru(game_short_name: str, map_id: int):
         abort(404)
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
-        if btn_pressed:
-            match btn_pressed:
-                case 'change_lang':
-                    return redirect(f'/{game_short_name}/guess/{map_id}/en')
-                case 'autho':
-                    print('Авторизация пока недоступна')  # TODO
-                case 'to_main':
-                    return redirect('/ru')
-                case 'to_game':
-                    return redirect(f'/{game_short_name}/ru')
+        match btn_pressed:
+            case 'change_lang':
+                return redirect(f'/{game_short_name}/guess/{map_id}/en')
+            case 'autho':
+                print('Авторизация пока недоступна')  # TODO
+            case 'to_main':
+                return redirect('/ru')
+            case 'to_game':
+                return redirect(f'/{game_short_name}/ru')
     return return_guess_page_ru(game_short_name)
 
 
@@ -425,16 +415,15 @@ def guess_page_en(game_short_name: str, map_id: int):
         abort(404)
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
-        if btn_pressed:
-            match btn_pressed:
-                case 'change_lang':
-                    return redirect(f'/{game_short_name}/guess/{map_id}/ru')
-                case 'autho':
-                    print('Авторизация пока недоступна')  # TODO
-                case 'to_main':
-                    return redirect('/en')
-                case 'to_game':
-                    return redirect(f'/{game_short_name}/en')
+        match btn_pressed:
+            case 'change_lang':
+                return redirect(f'/{game_short_name}/guess/{map_id}/ru')
+            case 'autho':
+                print('Авторизация пока недоступна')  # TODO
+            case 'to_main':
+                return redirect('/en')
+            case 'to_game':
+                return redirect(f'/{game_short_name}/en')
     return return_guess_page_en(game_short_name)
 
 
@@ -469,16 +458,15 @@ def learn_page_ru(game_short_name: str, map_id: int):
         abort(404)
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
-        if btn_pressed:
-            match btn_pressed:
-                case 'change_lang':
-                    return redirect(f'/{game_short_name}/learn/{map_id}/en')
-                case 'autho':
-                    print('Авторизация пока недоступна')  # TODO
-                case 'to_main':
-                    return redirect('/ru')
-                case 'to_game':
-                    return redirect(f'/{game_short_name}/ru')
+        match btn_pressed:
+            case 'change_lang':
+                return redirect(f'/{game_short_name}/learn/{map_id}/en')
+            case 'autho':
+                print('Авторизация пока недоступна')  # TODO
+            case 'to_main':
+                return redirect('/ru')
+            case 'to_game':
+                return redirect(f'/{game_short_name}/ru')
     return return_learn_page_ru(game_short_name, map_id - 1)
 
 
@@ -490,16 +478,15 @@ def learn_page_en(game_short_name: str, map_id: int):
         abort(404)
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
-        if btn_pressed:
-            match btn_pressed:
-                case 'change_lang':
-                    return redirect(f'/{game_short_name}/learn/{map_id}/ru')
-                case 'autho':
-                    print('Авторизация пока недоступна')  # TODO
-                case 'to_main':
-                    return redirect('/en')
-                case 'to_game':
-                    return redirect(f'/{game_short_name}/en')
+        match btn_pressed:
+            case 'change_lang':
+                return redirect(f'/{game_short_name}/learn/{map_id}/ru')
+            case 'autho':
+                print('Авторизация пока недоступна')  # TODO
+            case 'to_main':
+                return redirect('/en')
+            case 'to_game':
+                return redirect(f'/{game_short_name}/en')
     return return_learn_page_en(game_short_name, map_id - 1)
 
 
@@ -536,28 +523,27 @@ def map_choice_page_ru(game_short_name: str, map_choice_type: int):
         abort(404)
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
-        if btn_pressed:
-            match btn_pressed:
-                case 'change_lang':
-                    return redirect(f'/{game_short_name}/map_choice/{map_choice_type}/en')
-                case 'autho':
-                    print('Авторизация пока недоступна')  # TODO
-                case 'to_main':
-                    return redirect('/ru')
-                case 'to_game':
-                    return redirect(f'/{game_short_name}/ru')
-                case 'Случайная':
-                    return redirect(f'/{game_short_name}/guess/0/ru')
-                case _:
-                    if btn_pressed in maps_dict['ru'][game_short_name]:
-                        ind = maps_dict['ru'][game_short_name].index(btn_pressed) + 1
-                        match map_choice_type:
-                            case MapChoiceType.map.value:
-                                return redirect(f'/{game_short_name}/map/{ind}/ru')
-                            case MapChoiceType.guess.value:
-                                return redirect(f'/{game_short_name}/guess/{ind}/ru')
-                            case MapChoiceType.learn.value:
-                                return redirect(f'/{game_short_name}/learn/{ind}/ru')
+        match btn_pressed:
+            case 'change_lang':
+                return redirect(f'/{game_short_name}/map_choice/{map_choice_type}/en')
+            case 'autho':
+                print('Авторизация пока недоступна')  # TODO
+            case 'to_main':
+                return redirect('/ru')
+            case 'to_game':
+                return redirect(f'/{game_short_name}/ru')
+            case 'Случайная':
+                return redirect(f'/{game_short_name}/guess/0/ru')
+            case _:
+                if btn_pressed in maps_dict['ru'][game_short_name]:
+                    ind = maps_dict['ru'][game_short_name].index(btn_pressed) + 1
+                    match map_choice_type:
+                        case MapChoiceType.map.value:
+                            return redirect(f'/{game_short_name}/map/{ind}/ru')
+                        case MapChoiceType.guess.value:
+                            return redirect(f'/{game_short_name}/guess/{ind}/ru')
+                        case MapChoiceType.learn.value:
+                            return redirect(f'/{game_short_name}/learn/{ind}/ru')
     return return_map_choice_page_ru(game_short_name, map_choice_type == MapChoiceType.guess.value)
 
 
@@ -569,28 +555,27 @@ def map_choice_page_en(game_short_name: str, map_choice_type: int):
         abort(404)
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
-        if btn_pressed:
-            match btn_pressed:
-                case 'change_lang':
-                    return redirect(f'/{game_short_name}/map_choice/{map_choice_type}/ru')
-                case 'autho':
-                    print('Авторизация пока недоступна')  # TODO
-                case 'to_main':
-                    return redirect('/en')
-                case 'to_game':
-                    return redirect(f'/{game_short_name}/en')
-                case 'Random':
-                    return redirect(f'/{game_short_name}/guess/0/en')
-                case _:
-                    if btn_pressed in maps_dict['en'][game_short_name]:
-                        ind = maps_dict['en'][game_short_name].index(btn_pressed) + 1
-                        match map_choice_type:
-                            case MapChoiceType.map.value:
-                                return redirect(f'/{game_short_name}/map/{ind}/en')
-                            case MapChoiceType.guess.value:
-                                return redirect(f'/{game_short_name}/guess/{ind}/en')
-                            case MapChoiceType.learn.value:
-                                return redirect(f'/{game_short_name}/learn/{ind}/en')
+        match btn_pressed:
+            case 'change_lang':
+                return redirect(f'/{game_short_name}/map_choice/{map_choice_type}/ru')
+            case 'autho':
+                print('Авторизация пока недоступна')  # TODO
+            case 'to_main':
+                return redirect('/en')
+            case 'to_game':
+                return redirect(f'/{game_short_name}/en')
+            case 'Random':
+                return redirect(f'/{game_short_name}/guess/0/en')
+            case _:
+                if btn_pressed in maps_dict['en'][game_short_name]:
+                    ind = maps_dict['en'][game_short_name].index(btn_pressed) + 1
+                    match map_choice_type:
+                        case MapChoiceType.map.value:
+                            return redirect(f'/{game_short_name}/map/{ind}/en')
+                        case MapChoiceType.guess.value:
+                            return redirect(f'/{game_short_name}/guess/{ind}/en')
+                        case MapChoiceType.learn.value:
+                            return redirect(f'/{game_short_name}/learn/{ind}/en')
     return return_map_choice_page_en(game_short_name, map_choice_type == MapChoiceType.guess.value)
 
 
@@ -625,16 +610,15 @@ def map_page_ru(game_short_name: str, map_id: int):
         abort(404)
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
-        if btn_pressed:
-            match btn_pressed:
-                case 'change_lang':
-                    return redirect(f'/{game_short_name}/map/{map_id}/en')
-                case 'autho':
-                    print('Авторизация пока недоступна')  # TODO
-                case 'to_main':
-                    return redirect('/ru')
-                case 'to_game':
-                    return redirect(f'/{game_short_name}/ru')
+        match btn_pressed:
+            case 'change_lang':
+                return redirect(f'/{game_short_name}/map/{map_id}/en')
+            case 'autho':
+                print('Авторизация пока недоступна')  # TODO
+            case 'to_main':
+                return redirect('/ru')
+            case 'to_game':
+                return redirect(f'/{game_short_name}/ru')
     return return_map_page_ru(maps_dict['ru'][game_short_name][map_id], game_short_name,
                               maps_path + map_descriptions['ru'][game_short_name][map_id])
 
@@ -647,16 +631,15 @@ def map_page_en(game_short_name: str, map_id: int):
         abort(404)
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
-        if btn_pressed:
-            match btn_pressed:
-                case 'change_lang':
-                    return redirect(f'/{game_short_name}/map/{map_id}/ru')
-                case 'autho':
-                    print('Авторизация пока недоступна')  # TODO
-                case 'to_main':
-                    return redirect('/en')
-                case 'to_game':
-                    return redirect(f'/{game_short_name}/en')
+        match btn_pressed:
+            case 'change_lang':
+                return redirect(f'/{game_short_name}/map/{map_id}/ru')
+            case 'autho':
+                print('Авторизация пока недоступна')  # TODO
+            case 'to_main':
+                return redirect('/en')
+            case 'to_game':
+                return redirect(f'/{game_short_name}/en')
     return return_map_page_en(maps_dict['en'][game_short_name][map_id], game_short_name,
                               maps_path + map_descriptions['en'][game_short_name][map_id])
 
@@ -690,14 +673,13 @@ def moder_page_en():
         abort(403)  # не админ
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
-        if btn_pressed:
-            match btn_pressed:
-                case 'change_lang':
-                    return redirect('/moder/ru')
-                case 'autho':
-                    print('Авторизация пока недоступна')  # TODO
-                case 'to_main':
-                    return redirect('/en')
+        match btn_pressed:
+            case 'change_lang':
+                return redirect('/moder/ru')
+            case 'autho':
+                print('Авторизация пока недоступна')  # TODO
+            case 'to_main':
+                return redirect('/en')
     return return_add_spot_page_en()
 
 
@@ -707,15 +689,44 @@ def moder_page_ru():
         abort(403)  # не админ
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
-        if btn_pressed:
-            match btn_pressed:
-                case 'change_lang':
-                    return redirect('/moder/en')
-                case 'autho':
-                    print('Авторизация пока недоступна')  # TODO
-                case 'to_main':
-                    return redirect('/ru')
+        match btn_pressed:
+            case 'change_lang':
+                return redirect('/moder/en')
+            case 'autho':
+                print('Авторизация пока недоступна')  # TODO
+            case 'to_main':
+                return redirect('/ru')
     return return_add_spot_page_ru()
+
+
+@app.route('/success/ru', methods=['POST', 'GET'])
+def return_success_send_page_ru():
+    if request.method == 'POST':
+        btn_pressed = request.form.get('btn', None)
+        match btn_pressed:
+            case 'to_main':
+                return redirect('/ru')
+            case 'change_lang':
+                return redirect('/success/en')
+            case 'autho':
+                print('')  # TODO
+    data = TextData(pages_path + 'success_ru.json')
+    return create_send_success_page(data)
+
+
+@app.route('/success/en', methods=['POST', 'GET'])
+def return_success_send_page_en():
+    if request.method == 'POST':
+        btn_pressed = request.form.get('btn', None)
+        match btn_pressed:
+            case 'to_main':
+                return redirect('/en')
+            case 'change_lang':
+                return redirect('/success/ru')
+            case 'autho':
+                print('')  # TODO
+    data = TextData(pages_path + 'success_en.json')
+    return create_send_success_page(data)
 
 
 # TODO: это после базы данных
