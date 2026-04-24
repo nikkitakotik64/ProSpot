@@ -5,11 +5,16 @@ from data import TextData, pages_path, games_short_names_list, maps_dict, games_
 from flask_login import login_user
 from PIL import Image
 from login import *
+from enum import Enum
 
 app = Flask(__name__)
 login_manager.init_app(app)
 
-map_choice_types = {1: 'learn', 2: 'guess', 3: 'map'}
+
+class MapChoiceType(Enum):
+    learn = 1
+    guess = 2
+    map = 3
 
 
 @app.route('/ru', methods=['POST', 'GET'])
@@ -189,6 +194,17 @@ def add_spot_page_ru():
                         return redirect('/')  # TODO страничка, что всё успешно отправлено
                 case 'to_main':
                     return redirect('/ru')
+                case _:
+                    if not game:
+                        try:
+                            dct = dict()
+                            for s in btn_pressed.split('; '):
+                                key, value = s.split(': ')
+                                dct[key] = value
+                            game = dct.get('game', None)
+                            map_name = dct.get('map_name', None)
+                        except:
+                            pass
         return return_add_spot_page_ru(game=game, map_name=map_name, pos=pos, name=name)
     return return_add_spot_page_ru()
 
@@ -254,12 +270,12 @@ def game_info_page_en(game_short_name: str):
 
 def return_game_page_en(short_name: str):
     data = TextData(pages_path + short_name + '_en.json')
-    return create_game_page(data)
+    return create_game_page(data, short_name)
 
 
 def return_game_page_ru(short_name: str):
     data = TextData(pages_path + short_name + '_ru.json')
-    return create_game_page(data)
+    return create_game_page(data, short_name)
 
 
 @app.route('/<string:game_short_name>', methods=['GET'])
@@ -287,6 +303,14 @@ def game_page_ru(game_short_name: str):
                     print('Авторизация пока недоступна')  # TODO
                 case 'to_main':
                     return redirect('/ru')
+                case 'Гайд':
+                    return redirect(f'/{game_short_name}/info/ru')
+                case 'Карты':
+                    return redirect(f'/{game_short_name}/map_choice/{MapChoiceType.map.value}/ru')
+                case 'Испытание':
+                    return redirect(f'/{game_short_name}/map_choice/{MapChoiceType.guess.value}/ru')
+                case 'Учить позиции':
+                    return redirect(f'/{game_short_name}/map_choice/{MapChoiceType.learn.value}/ru')
     return return_game_page_ru(game_short_name)
 
 
@@ -304,17 +328,25 @@ def game_page_en(game_short_name: str):
                     print('Авторизация пока недоступна')  # TODO
                 case 'to_main':
                     return redirect('/en')
+                case 'Guide':
+                    return redirect(f'/{game_short_name}/info/en')
+                case 'Maps':
+                    return redirect(f'/{game_short_name}/map_choice/{MapChoiceType.map.value}/en')
+                case 'Challenge':
+                    return redirect(f'/{game_short_name}/map_choice/{MapChoiceType.guess.value}/en')
+                case 'Learn spots':
+                    return redirect(f'/{game_short_name}/map_choice/{MapChoiceType.learn.value}/en')
     return return_game_page_en(game_short_name)
 
 
 def return_guess_page_en(short_name: str):
     data = TextData(pages_path + short_name + '_guess_en.json')
-    return create_game_page(data)
+    return create_guess_page(data)
 
 
 def return_guess_page_ru(short_name: str):
     data = TextData(pages_path + short_name + '_guess_ru.json')
-    return create_game_page(data)
+    return create_guess_page(data)
 
 
 @app.route('/<string:game_short_name>/guess/<int:map_id>', methods=['GET'])
@@ -453,7 +485,7 @@ def return_map_choice_page_ru(short_name: str, is_guess: bool):
 def map_choice_page(game_short_name: str, map_choice_type: int):
     if game_short_name not in games_short_names_list:
         abort(404)
-    if map_choice_type not in map_choice_types.keys():
+    if map_choice_type not in (MapChoiceType.map.value, MapChoiceType.guess.value, MapChoiceType.learn.value):
         abort(404)
     request.accept_languages.best_match(['ru', 'en'])
     lang = request.accept_languages.best
@@ -466,7 +498,7 @@ def map_choice_page(game_short_name: str, map_choice_type: int):
 def map_choice_page_ru(game_short_name: str, map_choice_type: int):
     if game_short_name not in games_short_names_list:
         abort(404)
-    if map_choice_type not in map_choice_types.keys():
+    if map_choice_type not in (MapChoiceType.map.value, MapChoiceType.guess.value, MapChoiceType.learn.value):
         abort(404)
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
@@ -480,14 +512,14 @@ def map_choice_page_ru(game_short_name: str, map_choice_type: int):
                     return redirect('/ru')
                 case 'to_game':
                     return redirect(f'/{game_short_name}/ru')
-    return return_map_choice_page_ru(game_short_name, map_choice_type == 2)
+    return return_map_choice_page_ru(game_short_name, map_choice_type == MapChoiceType.guess.value)
 
 
 @app.route('/<string:game_short_name>/map_choice/<int:map_choice_type>/en', methods=['POST', 'GET'])
 def map_choice_page_en(game_short_name: str, map_choice_type: int):
     if game_short_name not in games_short_names_list:
         abort(404)
-    if map_choice_type not in map_choice_types.keys():
+    if map_choice_type not in (MapChoiceType.map.value, MapChoiceType.guess.value, MapChoiceType.learn.value):
         abort(404)
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
@@ -501,7 +533,7 @@ def map_choice_page_en(game_short_name: str, map_choice_type: int):
                     return redirect('/en')
                 case 'to_game':
                     return redirect(f'/{game_short_name}/en')
-    return return_map_choice_page_en(game_short_name, map_choice_type == 2)
+    return return_map_choice_page_en(game_short_name, map_choice_type == MapChoiceType.guess.value)
 
 
 def return_map_page_en(map_name: str, is_have_spots: bool, description_file: str):

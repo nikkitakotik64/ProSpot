@@ -1,5 +1,4 @@
-from click import pass_obj
-from data import games_list, TextData, SpotData, maps_dict, games_short_names_list, games_short_name_dict
+from data import games_list, TextData, SpotData, maps_dict, games_dict, games_short_name_dict, games_with_spots
 from flask import render_template
 from enum import Enum
 
@@ -108,15 +107,23 @@ def create_game_info_page(data: TextData) -> str:  # TODO: добавить фо
                            tech_info=data.get_phrase('tech_info'))
 
 
-def create_game_page(data: TextData) -> str:  # TODO: добавить форму
-    return render_template('base_template.html',
+def create_game_page(data: TextData, game: str) -> str:  # TODO: добавить форму
+    btn_list = [data.get_phrase('guide_btn'), data.get_phrase('maps_btn'), data.get_phrase('challenge_btn')]
+    if game in games_with_spots:
+        btn_list.append(data.get_phrase('learn_btn'))
+    return render_template('game_page.html',
                            lang=data.get_lang(),
                            title=title,
                            autho_btn_text=data.get_autho_btn_text(),
                            change_lang_btn_text=data.get_another_lang(),
                            type = PagesType.without_game_btn.value,
                            to_main_btn_text=data.get_to_main_btn_text(),
-                           tech_info=data.get_phrase('tech_info'))
+                           tech_info=data.get_phrase('tech_info'),
+                           game_title=data.get_phrase('header'),
+                           game_name=games_dict[game],
+                           add_spot_btn_text=data.get_phrase('add_spot_button'),
+                           btn_list=btn_list,
+                           button_count=len(btn_list),)
 
 
 def create_guess_page(data: TextData) -> str:  # TODO: добавить форму

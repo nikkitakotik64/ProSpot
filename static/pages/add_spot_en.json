@@ -13,7 +13,7 @@
   "map_not_chosen": "Map not selected",
   "name_not_input": "Spot name not input",
   "file_not_chosen": "File not selected",
-  "input_name_text": "Input spot name",
+  "input_name_text": "Input spot name...",
   "file_is_not_image": "File is not an image or is corrupted",
   "tech_info": ""
 }

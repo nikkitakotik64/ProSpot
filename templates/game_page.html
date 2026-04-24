@@ -1,0 +1,14 @@
+{% extends 'button_template.html' %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block name %}
+<h1>{{ game_title }}</h1>
+{% endblock %}
+
+{% block content %}
+<form method="post" action="/add_spot/{{ lang }}">
+    <button class="add-spot-btn" name="btn" value="game: {{ game_name }}">{{ add_spot_btn_text }}</button>
+</form>
+{% endblock %}

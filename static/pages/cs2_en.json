@@ -2,7 +2,7 @@
   "lang": "en",
   "header": "Counter Strike 2",
   "guide_btn": "Guide",
-  "maps": ["Mirage", "Dust II", "Anubis"],
+  "maps_btn": "Maps",
   "challenge_btn": "Challenge",
   "learn_btn": "Learn spots",
   "add_spot_button": "Propose a spot",
