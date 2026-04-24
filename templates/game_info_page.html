@@ -1,0 +1,10 @@
+{% extends "base_template.html" %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block content %}
+<h2>{{ game_title }}</h2>
+<img src="{{ game_image }}" alt="{{ game_title }}">
+<p>{{ game_description }}</p>
+{% endblock %}

@@ -4,7 +4,6 @@ import os
 path = os.path.dirname(os.path.abspath(__file__)) + '/'
 pages_path = path + 'static/pages/'
 maps_path = path + 'static/maps/'
-games_path = path + 'static/games/'
 db_path = path + 'static/data/'
 images_path = path + 'static/images/'
 map_images_path = images_path + 'maps/'
@@ -27,6 +26,7 @@ maps_dict = {  # названия карт (доступ по [язык][игр�
     }
 }
 games_dict = {'cs2': 'CS 2', 'eft': 'Escape From Tarkov'}  # названия по сокращению
+full_game_name = {'cs2': 'Counter-Strike 2', 'eft': 'Escape From Tarkov'}  # полные названия
 games_short_name_dict = {'CS 2': 'cs2', 'Escape From Tarkov': 'eft'}  # сокращение по названию
 games_with_spots = ('cs2', )  # список игр, где можно учить позиции
 map_descriptions = {  # список файлов описания карт (доступ по [язык][игра][айди карты]), лежат в папке static/maps

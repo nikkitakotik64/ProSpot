@@ -95,8 +95,9 @@ def create_add_spot_page(data: TextData, game: str | None, map_name: str | None,
                            file_errors=file_errors)
 
 
-def create_game_info_page(data: TextData) -> str:  # TODO: добавить форму
-    return render_template('base_template.html',
+def create_game_info_page(data: TextData) -> str:
+    # TODO: получить картинку
+    return render_template('game_info_page.html',
                            lang=data.get_lang(),
                            title=title,
                            autho_btn_text=data.get_autho_btn_text(),
@@ -104,7 +105,10 @@ def create_game_info_page(data: TextData) -> str:  # TODO: добавить фо
                            type = PagesType.with_game_btn.value,
                            to_main_btn_text=data.get_to_main_btn_text(),
                            to_game_btn_text=data.get_to_game_btn_text(),
-                           tech_info=data.get_phrase('tech_info'))
+                           tech_info=data.get_phrase('tech_info'),
+                           game_title=data.get_phrase('header'),
+                           game_image='',
+                           game_description=data.get_phrase('text'),)
 
 
 def create_game_page(data: TextData, game: str) -> str:  # TODO: добавить форму
@@ -150,8 +154,8 @@ def create_learn_page(data: TextData, map_name: str) -> str:  # TODO: добав
                            tech_info=data.get_phrase('tech_info'))
 
 
-def create_map_choice_page(data: TextData, maps: list[str], game_name: str) -> str:  # TODO: добавить форму
-    return render_template('base_template.html',
+def create_map_choice_page(data: TextData, maps: list[str], game_name: str) -> str:
+    return render_template('map_choice.html',
                            lang=data.get_lang(),
                            title=title,
                            autho_btn_text=data.get_autho_btn_text(),
@@ -159,7 +163,11 @@ def create_map_choice_page(data: TextData, maps: list[str], game_name: str) -> s
                            type = PagesType.with_game_btn.value,
                            to_main_btn_text=data.get_to_main_btn_text(),
                            to_game_btn_text=data.get_to_game_btn_text(),
-                           tech_info=data.get_phrase('tech_info'))
+                           tech_info=data.get_phrase('tech_info'),
+                           btn_list=maps,
+                           button_count=5,
+                           game_name=game_name,
+                           subheader=data.get_phrase('choice'))
 
 
 def create_map_page(data: TextData, map_name: str, is_have_spots: bool,

@@ -1,7 +1,7 @@
 from pages import *
 from flask import Flask, request, redirect, abort
 from data import TextData, pages_path, games_short_names_list, maps_dict, games_dict, games_with_spots, \
-    map_descriptions, maps_path, SpotData, images_path
+    map_descriptions, maps_path, SpotData, images_path, full_game_name
 from flask_login import login_user
 from PIL import Image
 from login import *
@@ -15,6 +15,9 @@ class MapChoiceType(Enum):
     learn = 1
     guess = 2
     map = 3
+
+
+map_choice_type_names = {1: 'learn', 2: 'guess', 3: 'map'}
 
 
 @app.route('/ru', methods=['POST', 'GET'])
@@ -445,7 +448,7 @@ def learn_page_ru(game_short_name: str, map_id: int):
                     return redirect('/ru')
                 case 'to_game':
                     return redirect(f'/{game_short_name}/ru')
-    return return_learn_page_ru(game_short_name, map_id)
+    return return_learn_page_ru(game_short_name, map_id - 1)
 
 
 @app.route('/<string:game_short_name>/learn/<int:map_id>/en', methods=['POST', 'GET'])
@@ -466,26 +469,26 @@ def learn_page_en(game_short_name: str, map_id: int):
                     return redirect('/en')
                 case 'to_game':
                     return redirect(f'/{game_short_name}/en')
-    return return_learn_page_en(game_short_name, map_id)
+    return return_learn_page_en(game_short_name, map_id - 1)
 
 
 def return_map_choice_page_en(short_name: str, is_guess: bool):
     data = TextData(pages_path + 'map_choice_en.json')
     return create_map_choice_page(data, (['Random'] if is_guess else []) + maps_dict['en'][short_name],
-                                  games_dict[short_name])
+                                  full_game_name[short_name])
 
 
 def return_map_choice_page_ru(short_name: str, is_guess: bool):
     data = TextData(pages_path + 'map_choice_ru.json')
     return create_map_choice_page(data, (['Случайная'] if is_guess else []) + maps_dict['ru'][short_name],
-                                  games_dict[short_name])
+                                  full_game_name[short_name])
 
 
 @app.route('/<string:game_short_name>/map_choice/<int:map_choice_type>', methods=['GET'])
 def map_choice_page(game_short_name: str, map_choice_type: int):
     if game_short_name not in games_short_names_list:
         abort(404)
-    if map_choice_type not in (MapChoiceType.map.value, MapChoiceType.guess.value, MapChoiceType.learn.value):
+    if map_choice_type not in map_choice_type_names.keys():
         abort(404)
     request.accept_languages.best_match(['ru', 'en'])
     lang = request.accept_languages.best
@@ -498,7 +501,7 @@ def map_choice_page(game_short_name: str, map_choice_type: int):
 def map_choice_page_ru(game_short_name: str, map_choice_type: int):
     if game_short_name not in games_short_names_list:
         abort(404)
-    if map_choice_type not in (MapChoiceType.map.value, MapChoiceType.guess.value, MapChoiceType.learn.value):
+    if map_choice_type not in map_choice_type_names.keys():
         abort(404)
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
@@ -512,6 +515,18 @@ def map_choice_page_ru(game_short_name: str, map_choice_type: int):
                     return redirect('/ru')
                 case 'to_game':
                     return redirect(f'/{game_short_name}/ru')
+                case 'Случайная':
+                    return redirect(f'/{game_short_name}/guess/0/ru')
+                case _:
+                    if btn_pressed in maps_dict['ru'][game_short_name]:
+                        ind = maps_dict['ru'][game_short_name].index(btn_pressed) + 1
+                        match map_choice_type:
+                            case MapChoiceType.map.value:
+                                return redirect(f'/{game_short_name}/map/{ind}/ru')
+                            case MapChoiceType.guess.value:
+                                return redirect(f'/{game_short_name}/guess/{ind}/ru')
+                            case MapChoiceType.learn.value:
+                                return redirect(f'/{game_short_name}/learn/{ind}/ru')
     return return_map_choice_page_ru(game_short_name, map_choice_type == MapChoiceType.guess.value)
 
 
@@ -519,7 +534,7 @@ def map_choice_page_ru(game_short_name: str, map_choice_type: int):
 def map_choice_page_en(game_short_name: str, map_choice_type: int):
     if game_short_name not in games_short_names_list:
         abort(404)
-    if map_choice_type not in (MapChoiceType.map.value, MapChoiceType.guess.value, MapChoiceType.learn.value):
+    if map_choice_type not in map_choice_type_names.keys():
         abort(404)
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
@@ -533,6 +548,18 @@ def map_choice_page_en(game_short_name: str, map_choice_type: int):
                     return redirect('/en')
                 case 'to_game':
                     return redirect(f'/{game_short_name}/en')
+                case 'Random':
+                    return redirect(f'/{game_short_name}/guess/0/en')
+                case _:
+                    if btn_pressed in maps_dict['en'][game_short_name]:
+                        ind = maps_dict['en'][game_short_name].index(btn_pressed) + 1
+                        match map_choice_type:
+                            case MapChoiceType.map.value:
+                                return redirect(f'/{game_short_name}/map/{ind}/en')
+                            case MapChoiceType.guess.value:
+                                return redirect(f'/{game_short_name}/guess/{ind}/en')
+                            case MapChoiceType.learn.value:
+                                return redirect(f'/{game_short_name}/learn/{ind}/en')
     return return_map_choice_page_en(game_short_name, map_choice_type == MapChoiceType.guess.value)
 
 
