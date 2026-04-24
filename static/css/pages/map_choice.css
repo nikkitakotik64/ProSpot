@@ -1,0 +1,55 @@
+.container form > div {
+    display: flex;
+    justify-content: center;
+    gap: 3%;
+    margin: 2% 0 8% 0;
+    flex-wrap: wrap;
+}
+
+.container form > div button  {
+    flex: 1;
+    padding: 15px 30px;
+    width: 13%
+    min-width: 13%;
+    max-width: 13%;
+    background-color: #df4f00;
+    color: black;
+    border: 2px solid #34495e;
+    border-radius: 8px;
+    border-color: #bf2f00;
+    font-size: 20px;
+    font-weight: 600;
+    margin: 5px;
+
+    box-sizing: border-box;
+}
+
+.container form > div button:hover {
+    background-color: #ff4f00;
+    color: white;
+    border-color: #df4f00;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+button:hover {
+    background-color: #ff4f00;
+    color: white;
+    border-color: #df4f00;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.add-spot-btn {
+    display: block;
+    height: 10%
+    width: 20%;
+    min-width: 20%;
+    max-width: 20%;
+    box-sizing: border-box;
+    padding: 18px 30px;
+    font-size: 20px;
+    margin: 30px auto 20px auto;
+    text-align: center;
+    background-color: #df4f00;
+}
