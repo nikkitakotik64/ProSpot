@@ -1,0 +1,15 @@
+{% extends "base_template.html" %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block content %}
+<h2>{{ map_name }}</h2>
+<img src="{{ map_image }}" alt="{{ map_name }}">
+{% for block in map_description %}
+    <p>{{ block }}</p>
+{% endfor %}
+<form method="post" action="/add_spot/{{ lang }}">
+    <button class="add-spot-btn" name="btn" value="game: {{ game_name }}; map_name: {{ map_name }}">{{ add_spot_btn_text }}</button>
+</form>
+{% endblock %}

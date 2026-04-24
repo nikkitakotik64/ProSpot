@@ -134,9 +134,40 @@ def add_spot_page_en():
                 case 'autho':
                     print('Авторизация пока недоступна')  # TODO
                 case 'send':
-                    pass  # TODO
+                    game_errors = []
+                    if game is None:
+                        game_errors.append('game_not_chosen')
+                    map_errors = []
+                    if map_name is None:
+                        map_errors.append('map_not_chosen')
+                    name_errors = []
+                    if not name:
+                        name_errors.append('name_not_input')
+                    file_errors = []
+                    if file is None:
+                        file_errors.append('file_not_chosen')
+                    elif file == -1:
+                        file_errors.append('file_is_not_image')
+                    if game_errors or map_errors or name_errors or file_errors:
+                        return return_add_spot_page_ru(game=game, map_name=map_name, pos=pos, name=name,
+                                                       game_errors=game_errors, map_errors=map_errors,
+                                                       spot_name_errors=name_errors, file_errors=file_errors)
+                    else:
+                        # TODO: сохранить всё
+                        return redirect('/')  # TODO страничка, что всё успешно отправлено
                 case 'to_main':
                     return redirect('/en')
+                case _:
+                    if not game:
+                        try:
+                            dct = dict()
+                            for s in btn_pressed.split('; '):
+                                key, value = s.split(': ')
+                                dct[key] = value
+                            game = dct.get('game', None)
+                            map_name = dct.get('map_name', None)
+                        except:
+                            pass
         return return_add_spot_page_en(game=game, map_name=map_name, pos=pos, name=name)
     return return_add_spot_page_en()
 
@@ -214,12 +245,12 @@ def add_spot_page_ru():
 
 def return_game_info_page_en(short_name: str):
     data = TextData(pages_path + short_name + '_info_en.json')
-    return create_game_info_page(data)
+    return create_game_info_page(data, short_name)
 
 
 def return_game_info_page_ru(short_name: str):
     data = TextData(pages_path + short_name + '_info_ru.json')
-    return create_game_info_page(data)
+    return create_game_info_page(data, short_name)
 
 
 @app.route('/<string:game_short_name>/info', methods=['GET'])
@@ -563,14 +594,14 @@ def map_choice_page_en(game_short_name: str, map_choice_type: int):
     return return_map_choice_page_en(game_short_name, map_choice_type == MapChoiceType.guess.value)
 
 
-def return_map_page_en(map_name: str, is_have_spots: bool, description_file: str):
+def return_map_page_en(map_name: str, short_game_name: str, description_file: str):
     data = TextData(pages_path + 'map_en.json')
-    return create_map_page(data, map_name, is_have_spots, description_file)
+    return create_map_page(data, map_name, short_game_name, description_file)
 
 
-def return_map_page_ru(map_name: str, is_have_spots: bool, description_file: str):
+def return_map_page_ru(map_name: str, short_game_name: str, description_file: str):
     data = TextData(pages_path + 'map_ru.json')
-    return create_map_page(data, map_name, is_have_spots, description_file)
+    return create_map_page(data, map_name, short_game_name, description_file)
 
 
 @app.route('/<string:game_short_name>/map/<int:map_id>', methods=['GET'])
@@ -604,7 +635,7 @@ def map_page_ru(game_short_name: str, map_id: int):
                     return redirect('/ru')
                 case 'to_game':
                     return redirect(f'/{game_short_name}/ru')
-    return return_map_page_ru(maps_dict['ru'][game_short_name][map_id], game_short_name in games_with_spots,
+    return return_map_page_ru(maps_dict['ru'][game_short_name][map_id], game_short_name,
                               maps_path + map_descriptions['ru'][game_short_name][map_id])
 
 
@@ -626,7 +657,7 @@ def map_page_en(game_short_name: str, map_id: int):
                     return redirect('/en')
                 case 'to_game':
                     return redirect(f'/{game_short_name}/en')
-    return return_map_page_ru(maps_dict['en'][game_short_name][map_id], game_short_name in games_with_spots,
+    return return_map_page_en(maps_dict['en'][game_short_name][map_id], game_short_name,
                               maps_path + map_descriptions['en'][game_short_name][map_id])
 
 
