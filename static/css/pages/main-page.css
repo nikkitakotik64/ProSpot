@@ -3,3 +3,52 @@
     max-width: 1200px;
     margin: 0 auto;
 }
+
+
+.container form > div button  {
+    padding: 15px 30px;
+    min-width: 200px;
+    max-height: 45%
+    max-width: 35%;
+    background-color: #df4f00;
+    color: black;
+    border: 2px solid #34495e;
+    border-radius: 8px;
+    border-color: #bf2f00;
+    font-size: 20px;
+    font-weight: 600;
+    margin: 5px;
+}
+
+.container form > div button:hover {
+    background-color: #ff4f00;
+    color: white;
+    border-color: #df4f00;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+button:hover {
+    background-color: #ff4f00;
+    color: white;
+    border-color: #df4f00;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.add-spot-btn {
+    display: block;
+    height: 10%
+    width: 60%;
+    min-width: 60%;
+    max-width: 60%;
+    box-sizing: border-box;
+    padding: 18px 30px;
+    font-size: 20px;
+    margin: 30px auto 20px auto;
+    margin-left: 17.8%;
+    text-align: center;
+    background-color: #df4f00;
+}
+
+
