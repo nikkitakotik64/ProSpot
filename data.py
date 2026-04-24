@@ -17,12 +17,14 @@ maps_dict = {  # названия карт (доступ по [язык][игр�
     'ru': {
         'cs2': ['Mirage', 'Dust II', 'Anubis', 'Overpass', 'Inferno', 'Nuke', 'Ancient', 'Train', 'Vertigo',
                 'Office', 'Italy'],
-        'eft': ['', '', '']
+        'eft': ['Лаборатория', 'Эпицентр', 'Улицы Таркова', 'Развязка', 'Таможня', 'Завод', 'Лес', 'Резерв',
+                'Маяк', 'Берег']
     },
     'en': {
         'cs2': ['Mirage', 'Dust II', 'Anubis', 'Overpass', 'Inferno', 'Nuke', 'Ancient', 'Train', 'Vertigo',
                 'Office', 'Italy'],
-        'eft': ['', '', '']
+        'eft': ['The Lab', 'Ground Zero', 'Streets of Tarkov', 'Interchange', 'Customs', 'Factory', 'Woods', 'Reserve',
+                'Lighthouse', 'Shoreline']
     }
 }
 games_dict = {'cs2': 'CS 2', 'eft': 'Escape From Tarkov'}  # названия по сокращению
