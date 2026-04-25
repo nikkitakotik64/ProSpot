@@ -1,8 +1,14 @@
 {
   "lang": "en",
   "header": "GuessTheSpot: Counter Strike 2",
-  "filters": "Filters",
-  "time": "Time:",
+  "map": "Map",
+  "time": "Time",
   "guess": "Guess!",
-  "tech_info": ""
+  "tech_info": "",
+  "random_map": "Random",
+  "start": "Start",
+  "next": "Next",
+  "pos_not_chosen": "Choose place on the map",
+  "pos": "Spot name",
+  "accuracy": "Accuracy"
 }

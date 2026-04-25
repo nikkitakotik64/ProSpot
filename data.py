@@ -1,5 +1,6 @@
 import json
 import os
+import sqlite3
 
 path = os.path.dirname(os.path.abspath(__file__)) + '/'
 pages_path = path + 'static/pages/'
@@ -92,3 +93,51 @@ class SpotData:
     def sleep(self) -> None:
         # удалить из now_in_moder_work
         pass
+
+
+class MakeConnection:
+    def __init__(self, filename: str) -> None:
+        self.filename = filename
+
+    def __enter__(self) -> sqlite3.Cursor:
+        self.connection = sqlite3.connect(self.filename)
+        return self.connection.cursor()
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        self.connection.commit()
+        self.connection.close()
+
+
+class DBData:
+    def __init__(self) -> None:
+        self.db = db_path + 'spots.sqlite'
+        self.connection_maker = MakeConnection(self.db)
+
+    def save_added(self, game: str, map_name: str, pos: tuple[int, int] | None, name: str, filename: str) -> None:
+        if pos is None:
+            pos_x, pos_y = -1, -1
+        else:
+            pos_x, pos_y = pos
+        with self.connection_maker as cur:
+            try:
+                ind = cur.execute('SELECT id FROM memory ORDER BY id').fetchall()[-1][0] + 1
+            except IndexError:
+                ind = 0
+            cur.execute(f'INSERT INTO memory (id, map, pos_x, pos_y, name, image) '
+                        f'VALUES ({ind}, "{map_name}", {pos_x}, {pos_y}, "{name}", "{filename}")')
+
+    def generate_spot(self, game: str, map_name: str) -> int:
+        # TODO
+        return 1
+
+    def get_spot(self, spot_id: int) -> tuple[str, int, int, str]:
+        # TODO
+        return 'Anubis', 190, 190, 'Connector'
+
+    def get_accuracy(self, game: str, map_name: str, pos: tuple[int, int],
+                     true_pos: tuple[int, int]) -> tuple[int, int]:
+        # TODO
+        return 100
+
+
+db_data = DBData()

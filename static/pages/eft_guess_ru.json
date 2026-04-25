@@ -1,8 +1,14 @@
 {
   "lang": "ru",
   "header": "GuessTheSpot: Escape From Tarkov",
-  "filters": "Фильтр",
-  "time": "Время:",
+  "map": "Карта",
+  "time": "Время",
   "guess": "Угадать!",
-  "tech_info": ""
+  "tech_info": "",
+  "random_map": "Случайная",
+  "start": "Начать",
+  "next": "Следующая позиция",
+  "pos_not_chosen": "Поставьте точку на карте",
+  "pos": "Название позиции",
+  "accuracy": "Точность"
 }

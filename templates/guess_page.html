@@ -1,0 +1,221 @@
+{% extends "base_template.html" %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block content %}
+<h2>{{ header }}</h2>
+<form method="POST">
+    <input type="hidden" name="x_coord" id="input-x">
+    <input type="hidden" name="y_coord" id="input-y">
+    <input type="hidden" name="timer" id="input-time">
+    <input type="hidden" name="mode" value="{{ mode }}">
+    <input type="hidden" name="accuracy">
+    {% if mode != 1 %}
+        <input type="hidden" name="spot_id" value="{{ spot_id }}">
+    {% endif %}
+    <div id="viewer" style="width: 45%; background: #333;"></div>
+    {% for error in map_errors %}
+        <div class="alert alert-danger" role="alert" style="color: #ff0000">
+            {{ error }}
+        </div>
+    {% endfor %}
+    <label>
+        <select name="map" id="map" class="select" onchange="this.form.submit()">
+            {% for map in maps %}
+                <option value="{{ map }}">{{ map }}</option>
+            {% endfor %}
+        </select>
+    </label>
+    <div>
+        {% if mode != 1 %}
+            <h3>{{ map_text }}: {{ curr_map_name }}</h3>
+            <h3 id="time">{{ time_text }}: {{ time }}</h3>
+            {% if mode == 2 %}
+                <h3>{{ pos_text }}: {{ spot_name }}</h3>
+                <h3>{{ accuracy_text }}: {{ accuracy }}</h3>
+            {% endif %}
+        {% endif %}
+    </div>
+    <img src="{{ spot_image }}" alt="">
+    <button type="submit" name="btn" value="guess">{{ guess_text }}</button>
+</form>
+<script src="/static/openseadragon/openseadragon.min.js"></script>
+<script>
+// 1. Инициализация
+const viewer = OpenSeadragon({
+    id: "viewer",
+    prefixUrl: "/static/openseadragon/images/", // Иконки интерфейса
+    tileSources: {
+        type: 'image',
+        url: "{{ url_for('static', filename=map_image) }}"
+    },
+    gestureSettingsMouse: { clickToZoom: false }, // Отключаем зум по клику, чтобы ставить точку
+    showNavigationControl: false,
+    visibilityRatio: 1.0,
+    minZoomImageRatio: 1.0,
+    maxZoomPixelRatio: 3.0,
+    constrainDuringPan: true
+});
+
+// 3. Установка начального маркера при загрузке
+viewer.addHandler('open', function() {
+    // Получаем значения из шаблона
+    const startX = {{ pos_x }};
+    const startY = {{ pos_y }};
+    const viewerElement = document.getElementById("viewer");
+    const aspectRatio = viewer.source.aspectRatio;
+    const currentWidth = viewerElement.offsetWidth;
+    const newHeight = currentWidth / aspectRatio;
+    viewerElement.style.height = Math.round(newHeight) + "px";
+    viewer.forceRedraw();
+    viewer.viewport.goHome(true);
+    viewer.viewport.fitHorizontally(true);
+
+    // Если координаты валидны (не -1)
+    if (startX !== -1 && startY !== -1) {
+        // Конвертируем пиксели изображения в координаты вьюпорта
+        const imagePoint = new OpenSeadragon.Point(startX, startY);
+        const viewportPoint = viewer.viewport.imageToViewportCoordinates(imagePoint);
+
+        // Создаем элемент маркера
+        marker = document.createElement("div");
+        marker.id = "my-marker";
+        marker.style.width = "20px";
+        marker.style.height = "20px";
+        marker.style.background = "orange";
+        marker.style.borderRadius = "50%";
+        marker.style.border = "2px solid white";
+        marker.style.pointerEvents = "none";
+
+        // Добавляем на слой
+        viewer.addOverlay({
+            element: marker,
+            location: viewportPoint,
+            placement: OpenSeadragon.Placement.CENTER
+        });
+    }
+    const trueX = {{ true_pos_x }};
+    const trueY = {{ true_pos_y }};
+
+    if (trueX !== -1 && trueY !== -1) {
+        const trueImagePoint = new OpenSeadragon.Point(trueX, trueY);
+        const trueViewportPoint = viewer.viewport.imageToViewportCoordinates(trueImagePoint);
+
+        // Создаем элемент красного маркера
+        const trueMarker = document.createElement("div");
+        trueMarker.id = "true-marker";
+        trueMarker.style.width = "20px";
+        trueMarker.style.height = "20px";
+        trueMarker.style.background = "red"; // Цвет красный
+        trueMarker.style.borderRadius = "50%";
+        trueMarker.style.border = "2px solid white";
+        trueMarker.style.pointerEvents = "none";
+        trueMarker.style.zIndex = "100"; // Чтобы была поверх, если наложатся
+
+        // Добавляем на слой
+        viewer.addOverlay({
+            element: trueMarker,
+            location: trueViewportPoint,
+            placement: OpenSeadragon.Placement.CENTER
+        });
+    }
+});
+
+let marker = null;
+
+let pressPoint = null; // Точка нажатия
+
+// 1. Запоминаем, где нажали
+viewer.addHandler('canvas-press', function(event) {
+    pressPoint = event.position;
+});
+
+// 2. Проверяем при отпускании
+viewer.addHandler('canvas-release', function(event) {
+    if (!pressPoint) return;
+
+    // Считаем расстояние между нажатием и отпусканием (в пикселях)
+    const dist = Math.sqrt(
+        Math.pow(event.position.x - pressPoint.x, 2) +
+        Math.pow(event.position.y - pressPoint.y, 2)
+    );
+
+    // Если сдвиг меньше 5 пикселей — считаем это кликом, а не драгом
+    if (dist < 5) {
+        const webPoint = event.position;
+        const viewportPoint = viewer.viewport.pointFromPixel(webPoint);
+        const imagePoint = viewer.viewport.viewportToImageCoordinates(viewportPoint);
+
+        if (marker) {
+            viewer.removeOverlay(marker);
+        }
+
+        marker = document.createElement("div");
+        marker.id = "my-marker";
+        marker.style.width = "20px";
+        marker.style.height = "20px";
+        marker.style.background = "orange";
+        marker.style.borderRadius = "50%";
+        marker.style.border = "2px solid white";
+        marker.style.pointerEvents = "none";
+        marker.style.transition = "opacity 0.2s"; // Ваш эффект
+        marker.style.opacity = "0"; // Начальное состояние для анимации
+
+        viewer.addOverlay({
+            element: marker,
+            location: viewportPoint,
+            placement: OpenSeadragon.Placement.CENTER
+        });
+
+        // Запускаем анимацию появления
+        setTimeout(() => marker.style.opacity = "1", 10);
+
+        document.getElementById('input-x').value = Math.round(imagePoint.x);
+        document.getElementById('input-y').value = Math.round(imagePoint.y);
+    }
+
+    pressPoint = null; // Сбрасываем точку
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const mode = Number("{{ mode }}");
+    const timeElement = document.getElementById('time');
+    const inputTime = document.getElementById('input-time'); // Находим наш инпут
+
+    if (mode === 0 && timeElement) {
+        const fullText = timeElement.innerText;
+        const lastColonIndex = fullText.lastIndexOf(':');
+
+        const labelAndMinutes = fullText.substring(0, lastColonIndex);
+        const secondsStr = fullText.substring(lastColonIndex + 1);
+
+        const firstColonIndex = labelAndMinutes.lastIndexOf(':');
+        const label = labelAndMinutes.substring(0, firstColonIndex);
+        let minutes = parseInt(labelAndMinutes.substring(firstColonIndex + 1).trim());
+        let seconds = parseInt(secondsStr.trim());
+
+        setInterval(() => {
+            seconds++;
+            if (seconds >= 60) {
+                minutes++;
+                seconds = 0;
+            }
+
+            const m = String(minutes).padStart(2, '0');
+            const s = String(seconds).padStart(2, '0');
+            const formattedTime = `${m}:${s}`;
+
+            // 1. Обновляем текст на странице
+            timeElement.innerText = `{{ time_text }}: ${formattedTime}`;
+
+            // 2. Сохраняем в input (используем .value для полей ввода)
+            if (inputTime) {
+                inputTime.value = formattedTime;
+            }
+        }, 1000);
+    }
+});
+</script>
+{% endblock %}

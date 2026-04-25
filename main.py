@@ -1,8 +1,9 @@
 from pages import *
 from flask import Flask, request, redirect, abort
-from data import TextData, pages_path, games_short_names_list, maps_dict, games_dict, games_with_spots, \
-    map_descriptions, maps_path, SpotData, images_path, full_game_name
+from data import TextData, pages_path, games_short_names_list, maps_dict, \
+    map_descriptions, maps_path, SpotData, images_path, full_game_name, memory_images_path, db_data
 from flask_login import login_user
+from datetime import datetime
 from PIL import Image
 from login import *
 from enum import Enum
@@ -124,6 +125,13 @@ def add_spot_page_en():
             pos = None
         name = request.form.get('spot_name', None)
         file = request.files.get('file', None)
+        try:
+            img = Image.open(file)
+            img.verify()
+            file.seek(0)
+            img.save(images_path + 'test.jpg', 'jpg') # TODO: вставить путь
+        except:
+            file = -1
         match btn_pressed:
             case 'change_lang':
                 return redirect('/add_spot/ru')
@@ -149,7 +157,9 @@ def add_spot_page_en():
                                                    game_errors=game_errors, map_errors=map_errors,
                                                    spot_name_errors=name_errors, file_errors=file_errors)
                 else:
-                    # TODO: сохранить всё
+                    filename = datetime.now().isoformat() + '.jpg'
+                    img.save(memory_images_path + filename, 'jpg')
+                    db_data.save_added(game, map_name, pos, name, filename)
                     return redirect('/success/en')
             case 'to_main':
                 return redirect('/en')
@@ -191,7 +201,7 @@ def add_spot_page_ru():
             img = Image.open(file)
             img.verify()
             file.seek(0)
-            file.save(images_path + 'test.jpg') # TODO: вставить путь
+            img.save(images_path + 'test.jpg', 'jpg') # TODO: вставить путь
         except:
             file = -1
         match btn_pressed:
@@ -219,7 +229,9 @@ def add_spot_page_ru():
                                                    game_errors=game_errors, map_errors=map_errors,
                                                    spot_name_errors=name_errors, file_errors=file_errors)
                 else:
-                    # TODO: сохранить всё
+                    filename = datetime.now().isoformat() + '.jpg'
+                    img.save(memory_images_path + filename, 'jpg')
+                    db_data.save_added(game, map_name, pos, name, filename)
                     return redirect('/success/ru')
             case 'to_main':
                 return redirect('/ru')
@@ -364,14 +376,18 @@ def game_page_en(game_short_name: str):
     return return_game_page_en(game_short_name)
 
 
-def return_guess_page_en(short_name: str):
+def return_guess_page_en(short_name: str, map_name: str, mode: GuessMode,
+                      pos: tuple[float, float] | None = None, map_errors: list[str] | None = None,
+                      time: str | None = None, spot_id: int | None = None):
     data = TextData(pages_path + short_name + '_guess_en.json')
-    return create_guess_page(data)
+    return create_guess_page(data, short_name, map_name, mode, pos, map_errors, time, spot_id)
 
 
-def return_guess_page_ru(short_name: str):
+def return_guess_page_ru(short_name: str, map_name: str, mode: GuessMode,
+                      pos: tuple[float, float] | None = None, map_errors: list[str] | None = None,
+                      time: str | None = None, spot_id: int | None = None):
     data = TextData(pages_path + short_name + '_guess_ru.json')
-    return create_guess_page(data)
+    return create_guess_page(data, short_name, map_name, mode, pos, map_errors, time, spot_id)
 
 
 @app.route('/<string:game_short_name>/guess/<int:map_id>', methods=['GET'])
@@ -393,8 +409,23 @@ def guess_page_ru(game_short_name: str, map_id: int):
         abort(404)
     if map_id < 0 or map_id > len(maps_dict['ru'][game_short_name]):
         abort(404)
+    map_name = maps_dict['ru'][game_short_name][map_id - 1] if map_id else 'Случайная'
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
+        pos_x, pos_y = request.form.get('x_coord', None), request.form.get('y_coord', None)
+        time = request.form.get('timer', None)
+        map_name = request.form.get('map', map_name)
+        mode = request.form.get('mode', None)
+        if mode is not None:
+            if mode == '1':
+                mode = GuessMode.start
+            elif mode == '2':
+                mode = GuessMode.end
+            elif mode == '0':
+                mode = GuessMode.guess
+            else:
+                mode = None
+        spot_id = request.form.get('spot_id', None)
         match btn_pressed:
             case 'change_lang':
                 return redirect(f'/{game_short_name}/guess/{map_id}/en')
@@ -404,7 +435,32 @@ def guess_page_ru(game_short_name: str, map_id: int):
                 return redirect('/ru')
             case 'to_game':
                 return redirect(f'/{game_short_name}/ru')
-    return return_guess_page_ru(game_short_name)
+            case 'guess':
+                match mode:
+                    case GuessMode.start:
+                        spot_id = db_data.generate_spot(game_short_name, map_name)
+                        time = '00:00'
+                        pos_x, pos_y = -1, -1
+                        return return_guess_page_ru(game_short_name, map_name, GuessMode.guess, (pos_x, pos_y),
+                                             [], time, spot_id)
+                    case GuessMode.guess:
+                        map_errors = []
+                        if pos_x is None or pos_y is None or not pos_x or not pos_y:
+                            map_errors.append('pos_not_chosen')
+                            pos_x, pos_y = -1, -1
+                        if map_errors:
+                            return return_guess_page_ru(game_short_name, map_name, GuessMode.guess, (pos_x, pos_y),
+                                                        map_errors, time, spot_id)
+                        else:
+                            return return_guess_page_ru(game_short_name, map_name, GuessMode.end, (pos_x, pos_y),
+                                                        map_errors, time, spot_id)
+                    case GuessMode.end:
+                        spot_id = db_data.generate_spot(game_short_name, map_name)
+                        time = '00:00'
+                        pos_x, pos_y = -1, -1
+                        return return_guess_page_ru(game_short_name, map_name, GuessMode.guess, (pos_x, pos_y),
+                                             [], time, spot_id)
+    return return_guess_page_ru(game_short_name, map_name, GuessMode.start)
 
 
 @app.route('/<string:game_short_name>/guess/<int:map_id>/en', methods=['POST', 'GET'])
@@ -424,7 +480,7 @@ def guess_page_en(game_short_name: str, map_id: int):
                 return redirect('/en')
             case 'to_game':
                 return redirect(f'/{game_short_name}/en')
-    return return_guess_page_en(game_short_name)
+    return return_guess_page_en(game_short_name, '', GuessMode.guess)
 
 
 def return_learn_page_en(short_name: str, map_id: int):

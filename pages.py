@@ -1,4 +1,4 @@
-from data import games_list, TextData, SpotData, maps_dict, games_dict, games_short_name_dict, games_with_spots
+from data import games_list, TextData, SpotData, maps_dict, games_dict, games_short_name_dict, games_with_spots, db_data
 from flask import render_template
 from enum import Enum
 
@@ -9,6 +9,12 @@ class PagesType(Enum):
     main = 0
     without_game_btn = 1
     with_game_btn = 2
+
+
+class GuessMode(Enum):
+    guess = 0
+    start = 1
+    end = 2
 
 
 def create_main_page(data: TextData) -> str:
@@ -131,16 +137,86 @@ def create_game_page(data: TextData, game: str) -> str:
                            button_count=len(btn_list), )
 
 
-def create_guess_page(data: TextData) -> str:  # TODO: добавить форму
-    return render_template('base_template.html',
+def create_guess_page(data: TextData, game: str, map_name: str, mode: GuessMode,
+                      pos: tuple[float, float] | None, map_errors: list[str] | None, time: str | None,
+                      spot_id: int | None) -> str:
+    # TODO: картинки из бд
+    maps = [map_name]
+    if map_name != data.get_phrase('random_map'):
+        maps.append(data.get_phrase('random_map'))
+    for mp in maps_dict[data.get_lang()][game]:
+        if mp != map_name:
+            maps.append(mp)
+    if mode == GuessMode.start:
+        map_errors = []
+        guess_text = data.get_phrase('start')
+        pos_x, pos_y = -1, -1
+        true_pos_x, true_pos_y = -1, -1
+        curr_map_name = None
+        spot_name = None
+        accuracy = None
+    elif mode == GuessMode.guess:
+        if time is None:
+            raise TypeError('Guess mode without time')
+        if spot_id is None:
+            raise TypeError('Guess mode without spot_id')
+        curr_map_name, *_ = db_data.get_spot(spot_id)
+        if pos is not None:
+            pos_x, pos_y = pos
+        else:
+            pos_x, pos_y = -1, -1
+        true_pos_x, true_pos_y = -1, -1
+        guess_text = data.get_phrase('guess')
+        spot_name = None
+        accuracy = None
+    else:
+        # TODO: сохранить точность в пользователя
+        if time is None:
+            raise TypeError('End mode without time')
+        if spot_id is None:
+            raise TypeError('End mode without spot_id')
+        if pos is None:
+            raise TypeError('End mode without pos')
+        curr_map_name, true_pos_x, true_pos_y, spot_name = db_data.get_spot(spot_id)
+        pos_x, pos_y = pos
+        guess_text = data.get_phrase('next')
+        accuracy = db_data.get_accuracy(game, map_name, (pos_x, pos_y), (true_pos_x, true_pos_y))
+    if map_errors is None:
+        map_errors = list()
+    else:
+        for ind in range(len(map_errors)):
+            map_errors[ind] = data.get_phrase(map_errors[ind])
+    return render_template('guess_page.html',
                            lang=data.get_lang(),
                            title=title,
+                           header=data.get_phrase('header'),
                            autho_btn_text=data.get_autho_btn_text(),
                            change_lang_btn_text=data.get_another_lang(),
                            type=PagesType.with_game_btn.value,
                            to_main_btn_text=data.get_to_main_btn_text(),
                            to_game_btn_text=data.get_to_game_btn_text(),
-                           tech_info=data.get_phrase('tech_info'))
+                           tech_info=data.get_phrase('tech_info'),
+                           maps=maps,
+                           pos_x=pos_x,
+                           pos_y=pos_y,
+                           map_errors=map_errors,
+                           map_text=data.get_phrase('map'),
+                           map_name=map_name,
+                           time_text=data.get_phrase('time'),
+                           time=time,
+                           guess_text=guess_text,
+                           map_image='favicon.jpg',
+                           mode=mode.value,
+                           curr_map_name=curr_map_name,
+                           spot_id=spot_id,
+                           spot_image='',
+                           pos_text=data.get_phrase('pos'),
+                           accuracy_text=data.get_phrase('accuracy'),
+                           spot_name=spot_name,
+                           accuracy=accuracy,
+                           true_pos_x=true_pos_x,
+                           true_pos_y=true_pos_y,)
+
 
 
 def create_learn_page(data: TextData, map_name: str) -> str:  # TODO: добавить форму
