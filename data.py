@@ -135,7 +135,7 @@ class DBData:
         return 'Anubis', 190, 190, 'Connector'
 
     def get_accuracy(self, game: str, map_name: str, pos: tuple[int, int],
-                     true_pos: tuple[int, int]) -> tuple[int, int]:
+                     true_pos: tuple[int, int]) -> int:
         # TODO
         return 100
 
