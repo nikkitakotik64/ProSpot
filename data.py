@@ -131,20 +131,26 @@ class DBData:
             map_name = cur.execute(f'SELECT title FROM maps WHERE id = {map_ind}').fetchone()[0]
         return map_name, pos_x, pos_y, name
 
-    def get_accuracy(self, game: str, map_name: str, pos: tuple[int, int],
+    def get_accuracy(self, short_name: str, map_name: str, pos: tuple[int, int],
                      true_pos: tuple[int, int]) -> int:
-        rad = self.get_radius(game, map_name)
+        pos = int(pos[0]), int(pos[1])
+        true_pos = int(true_pos[0]), int(true_pos[1])
+        rad = self.get_radius(short_name, map_name)
         dist = ((pos[0] - true_pos[0]) ** 2 + (pos[1] - true_pos[1]) ** 2) ** 0.5
         if dist < rad / 4:
             return 100
         dist -= rad / 4
-        img = Image.open(maps_path + self.get_map_image(game, map_name))
-        size = min(img.size) / 1.4
-        points = 100 - round((dist / size) ** 2)
+        img = Image.open(map_images_path + self.get_map_image(short_name, map_name))
+        size = min(img.size) / 2.8
+        points = round(100 * (1 - dist / size) ** 2)
+        if points == 100:
+            points = 99
+        if points < 0:
+            points = 0
         return points
 
-    def get_radius(self, game: str, map_name: str) -> int:
-        img = Image.open(maps_path + self.get_map_image(game, map_name))
+    def get_radius(self, short_name: str, map_name: str) -> int:
+        img = Image.open(map_images_path + self.get_map_image(short_name, map_name))
         size = min(img.size)
         return round(size * 0.06)
 

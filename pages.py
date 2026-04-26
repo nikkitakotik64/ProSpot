@@ -185,7 +185,7 @@ def create_guess_page(data: TextData, game: str, map_name: str, mode: GuessMode,
         curr_map_name, true_pos_x, true_pos_y, spot_name = db_data.get_spot(spot_id)
         pos_x, pos_y = pos
         guess_text = data.get_phrase('next')
-        accuracy = db_data.get_accuracy(game, map_name, (pos_x, pos_y), (true_pos_x, true_pos_y))
+        accuracy = db_data.get_accuracy(game, curr_map_name, (pos_x, pos_y), (true_pos_x, true_pos_y))
         spot_image = db_data.get_spot_image(spot_id)
         map_image = db_data.get_map_image(game, curr_map_name)
     if map_errors is None:
