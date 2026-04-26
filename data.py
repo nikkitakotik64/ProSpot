@@ -209,21 +209,3 @@ class DBData:
 
 
 db_data = DBData()  # глобальная константа для работы с бд
-
-
-class SpotData:
-    def __init__(self) -> None:
-        self.ind = 0  # получить индекс ещё не обработанной заявки на добавление (использовать now_in_moder_work)
-        # получить все данные
-
-    def accept(self) -> None:
-        # сохранить в бд
-        pass
-
-    def refuse(self) -> None:
-        # удалить запись из бд
-        pass
-
-    def sleep(self) -> None:
-        # удалить из now_in_moder_work
-        pass
