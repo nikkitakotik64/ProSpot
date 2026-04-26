@@ -7,9 +7,19 @@ from datetime import datetime
 from PIL import Image
 from login import *
 from enum import Enum
+from data_db import db_session
+from data_db.users import User
+from forms.user import RegisterForm
+from flask_login import LoginManager
 
 app = Flask(__name__)
+login_manager = LoginManager()
 login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    db_sess = db_session.create_session()
+    return db_sess.get(User,user_id)
 
 
 class MapChoiceType(Enum):
@@ -882,4 +892,5 @@ def login():
 '''
 
 if __name__ == '__main__':
+    db_session.global_init("db/users.sqlite")
     app.run(port=8080, host='127.0.0.1')
