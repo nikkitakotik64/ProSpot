@@ -18,13 +18,13 @@ games_short_names_list = ('cs2', 'eft')  # сокращённые названи
 maps_dict = {  # названия карт (доступ по [язык][игра][айди карты])
     'ru': {
         'cs2': ['Mirage', 'Dust II', 'Anubis', 'Overpass', 'Inferno', 'Nuke', 'Ancient', 'Train', 'Vertigo',
-                'Office', 'Italy'],
+                'Office', 'Italy', 'Cache'],
         'eft': ['Лаборатория', 'Эпицентр', 'Улицы Таркова', 'Развязка', 'Таможня', 'Завод', 'Лес', 'Резерв',
                 'Маяк', 'Берег']
     },
     'en': {
         'cs2': ['Mirage', 'Dust II', 'Anubis', 'Overpass', 'Inferno', 'Nuke', 'Ancient', 'Train', 'Vertigo',
-                'Office', 'Italy'],
+                'Office', 'Italy', 'Cache'],
         'eft': ['The Lab', 'Ground Zero', 'Streets of Tarkov', 'Interchange', 'Customs', 'Factory', 'Woods', 'Reserve',
                 'Lighthouse', 'Shoreline']
     }
@@ -37,13 +37,13 @@ map_descriptions = {  # список файлов описания карт (д�
     'ru': {
         'cs2': ['cs2_mirage_ru.txt', 'cs2_dust2_ru.txt', 'cs2_anubis_ru.txt', 'cs2_overpass_ru.txt',
                 'cs2_inferno_ru.txt', 'cs2_nuke_ru.txt', 'cs2_ancient_ru.txt', 'cs2_train_ru.txt',
-                'cs2_vertigo_ru.txt', 'cs2_office_ru.txt', 'cs2_italy_ru.txt'],
+                'cs2_vertigo_ru.txt', 'cs2_office_ru.txt', 'cs2_italy_ru.txt', 'cs2_cache_ru.txt'],
         'eft': ['', '', '']
     },
     'en': {
         'cs2': ['cs2_mirage_en.txt', 'cs2_dust2_en.txt', 'cs2_anubis_en.txt', 'cs2_overpass_en.txt',
                 'cs2_inferno_en.txt', 'cs2_nuke_en.txt', 'cs2_ancient_en.txt', 'cs2_train_en.txt',
-                'cs2_vertigo_en.txt', 'cs2_office_en.txt', 'cs2_italy_en.txt'],
+                'cs2_vertigo_en.txt', 'cs2_office_en.txt', 'cs2_italy_en.txt', 'cs2_cache_en.txt'],
         'eft': ['', '', '']
     }
 }
@@ -72,28 +72,6 @@ class TextData:
 
     def get_autho_btn_text(self) -> str:
         return 'Авторизация' if self.get_lang() == 'ru' else 'Authorization'
-
-
-class SpotData:
-    def __init__(self, db_name: str = db_path + 'add_spots.sqlite', save_mode: bool = False) -> None:
-        if save_mode:
-            # сохранить все данные от пользователя в бд
-            pass
-        else:
-            self.ind = 0  # получить индекс ещё не обработанной заявки на добавление (использовать now_in_moder_work)
-            # получить все данные
-
-    def accept(self) -> None:
-        # сохранить в бд
-        pass
-
-    def refuse(self) -> None:
-        # удалить запись из бд
-        pass
-
-    def sleep(self) -> None:
-        # удалить из now_in_moder_work
-        pass
 
 
 class MakeConnection:
@@ -215,4 +193,22 @@ class DBData:
         return image
 
 
-db_data = DBData()
+db_data = DBData()  # глобальная константа для работы с бд
+
+
+class SpotData:
+    def __init__(self) -> None:
+        self.ind = 0  # получить индекс ещё не обработанной заявки на добавление (использовать now_in_moder_work)
+        # получить все данные
+
+    def accept(self) -> None:
+        # сохранить в бд
+        pass
+
+    def refuse(self) -> None:
+        # удалить запись из бд
+        pass
+
+    def sleep(self) -> None:
+        # удалить из now_in_moder_work
+        pass

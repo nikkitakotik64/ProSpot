@@ -136,7 +136,7 @@ def create_game_page(data: TextData, game: str) -> str:
                            game_name=games_dict[game],
                            add_spot_btn_text=data.get_phrase('add_spot_button'),
                            btn_list=btn_list,
-                           button_count=len(btn_list),)
+                           button_count=len(btn_list))
 
 
 def create_guess_page(data: TextData, game: str, map_name: str, mode: GuessMode,
