@@ -1,7 +1,7 @@
 from pages import *
 from flask import Flask, request, redirect, abort
 from data import TextData, pages_path, games_short_names_list, maps_dict, \
-    map_descriptions, maps_path, SpotData, images_path, full_game_name, memory_images_path, db_data
+    map_descriptions, maps_path, images_path, full_game_name, memory_images_path, db_data
 from flask_login import login_user
 from datetime import datetime
 from PIL import Image
