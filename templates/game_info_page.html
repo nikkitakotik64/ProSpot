@@ -5,7 +5,7 @@
 
 {% block content %}
 <h2>{{ game_title }}</h2>
-<img src="{{ game_image }}" alt="{{ game_title }}">
+<img src="{{ url_for('static', filename='images/games/' + game_image) }}" alt="{{ game_title }}">
 <p>{{ game_description }}</p>
 <form method="post" action="/add_spot/{{ lang }}">
     <button class="add-spot-btn" name="btn" value="game: {{ game_name }}">{{ add_spot_btn_text }}</button>

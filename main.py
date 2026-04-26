@@ -737,8 +737,8 @@ def map_page_ru(game_short_name: str, map_id: int):
                 return redirect('/ru')
             case 'to_game':
                 return redirect(f'/{game_short_name}/ru')
-    return return_map_page_ru(maps_dict['ru'][game_short_name][map_id], game_short_name,
-                              maps_path + map_descriptions['ru'][game_short_name][map_id])
+    return return_map_page_ru(maps_dict['ru'][game_short_name][map_id - 1], game_short_name,
+                              maps_path + map_descriptions['ru'][game_short_name][map_id - 1])
 
 
 @app.route('/<string:game_short_name>/map/<int:map_id>/en', methods=['POST', 'GET'])
@@ -758,8 +758,8 @@ def map_page_en(game_short_name: str, map_id: int):
                 return redirect('/en')
             case 'to_game':
                 return redirect(f'/{game_short_name}/en')
-    return return_map_page_en(maps_dict['en'][game_short_name][map_id], game_short_name,
-                              maps_path + map_descriptions['en'][game_short_name][map_id])
+    return return_map_page_en(maps_dict['en'][game_short_name][map_id - 1], game_short_name,
+                              maps_path + map_descriptions['en'][game_short_name][map_id - 1])
 
 
 def return_moder_page_en():

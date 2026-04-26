@@ -5,7 +5,7 @@
 
 {% block content %}
 <h2>{{ map_name }}</h2>
-<img src="{{ map_image }}" alt="{{ map_name }}">
+<img src="{{ url_for('static', filename='images/maps/' + map_image) }}" alt="{{ map_name }}">
 {% for block in map_description %}
     <p>{{ block }}</p>
 {% endfor %}

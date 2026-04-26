@@ -21,7 +21,7 @@
     </div>
     <div>
         <label for="map"></label>
-        <select name="map" id="map" class="select">
+        <select name="map" id="map" class="select" onchange="this.form.submit()">
             {% for map in maps %}
                 <option value="{{ map }}">{{ map }}</option>
             {% endfor %}
@@ -65,7 +65,7 @@ const viewer = OpenSeadragon({
     prefixUrl: "/static/openseadragon/images/", // Иконки интерфейса
     tileSources: {
         type: 'image',
-        url: "{{ url_for('static', filename=map_image) }}"
+        url: "{{ url_for('static', filename='images/maps/' + map_image) }}"
     },
     gestureSettingsMouse: { clickToZoom: false }, // Отключаем зум по клику, чтобы ставить точку
     showNavigationControl: false,

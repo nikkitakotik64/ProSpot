@@ -1,6 +1,7 @@
 import json
 import os
 import sqlite3
+import random
 
 path = os.path.dirname(os.path.abspath(__file__)) + '/'
 pages_path = path + 'static/pages/'
@@ -129,13 +130,27 @@ class DBData:
             cur.execute(f'INSERT INTO memory (id, map, pos_x, pos_y, name, image) '
                         f'VALUES ({ind}, "{map_ind}", {pos_x}, {pos_y}, "{name}", "{filename}")')
 
-    def generate_spot(self, game: str, map_name: str) -> int:
-        # TODO
-        return 1
+    def generate_spot(self, short_name: str, map_name: str) -> int:
+        game_name = full_game_name[short_name]
+        if map_name != 'Random' and map_name != 'Случайная':
+            with self.connection_maker as cur:
+                game_ind = cur.execute(f'SELECT id FROM games WHERE title = "{game_name}"').fetchone()[0]
+                map_ind = cur.execute(f'SELECT id FROM maps WHERE title = "{map_name}" '
+                                      f'AND game = {game_ind}').fetchone()[0]
+                ids = cur.execute(f'SELECT id FROM spots WHERE map = {map_ind}').fetchall()
+        else:
+            with self.connection_maker as cur:
+                game_ind = cur.execute(f'SELECT id FROM games WHERE title = "{game_name}"').fetchone()[0]
+                ids = cur.execute(f'SELECT id FROM spots WHERE game = {game_ind}').fetchall()
+        ids = list(map(lambda x: x[0], ids))
+        return random.choice(ids)
 
     def get_spot(self, spot_id: int) -> tuple[str, int, int, str]:
-        # TODO
-        return 'Anubis', 190, 190, 'Connector'
+        with self.connection_maker as cur:
+            data = cur.execute(f'SELECT map, pos_x, pos_y, name FROM spots WHERE id = {spot_id}').fetchone()
+            map_ind, pos_x, pos_y, name = data
+            map_name = cur.execute(f'SELECT title FROM maps WHERE id = {map_ind}').fetchone()[0]
+        return map_name, pos_x, pos_y, name
 
     def get_accuracy(self, game: str, map_name: str, pos: tuple[int, int],
                      true_pos: tuple[int, int]) -> int:
@@ -146,13 +161,58 @@ class DBData:
         # TODO
         return 200
 
-    def get_spots(self, game: str, map_name: str) -> list[tuple[str, int, int]]:
-        # TODO
-        return [('Connector', 190, 190), ('xxx', 124, 406), ('135f', 135, 135)]
+    def get_spots(self, short_name: str, map_name: str) -> list[tuple[str, int, int]]:
+        game_name = full_game_name[short_name]
+        with self.connection_maker as cur:
+            game_ind = cur.execute(f'SELECT id FROM games WHERE title = "{game_name}"').fetchone()[0]
+            map_ind = cur.execute(f'SELECT id FROM maps WHERE title = "{map_name}" '
+                                  f'AND game = {game_ind}').fetchone()[0]
+            data = cur.execute(f'SELECT name, pos_x, pos_y FROM spots WHERE map = {map_ind}').fetchall()
+        return data
 
-    def get_images(self, game: str, map_name: str, spot: str) -> list[str]:
-        # TODO
-        return []
+    def get_images(self, short_name: str, map_name: str, spot: str) -> list[str]:
+        game = full_game_name[short_name]
+        images = []
+        with self.connection_maker as cur:
+            game_ind = cur.execute(f'SELECT id FROM games WHERE title = "{game}"').fetchone()[0]
+            map_ind = cur.execute(f'SELECT id FROM maps WHERE title = "{map_name}" '
+                                  f'AND game = {game_ind}').fetchone()[0]
+            image = cur.execute(f'SELECT image FROM spots WHERE map = "{map_ind}" '
+                                f'AND name = "{spot}"').fetchone()[0]
+            images.append(image)
+            try:
+                image2 = cur.execute(f'SELECT image2 FROM spots WHERE map = "{map_ind}" '
+                                     f'AND name = "{spot}"').fetchone()[0]
+                if image2 is None:
+                    raise TypeError
+                images.append(image2)
+                image3 = cur.execute(f'SELECT image3 FROM spots WHERE map = "{map_ind}" '
+                                     f'AND name = "{spot}"').fetchone()[0]
+                if image3 is None:
+                    raise TypeError
+                images.append(image3)
+            except TypeError:
+                pass
+        return images
+
+    def get_game_image(self, short_name: str) -> str:
+        game = full_game_name[short_name]
+        with self.connection_maker as cur:
+            image = cur.execute(f'SELECT image FROM games WHERE title = "{game}"').fetchone()[0]
+        return image
+
+    def get_map_image(self, short_name: str, map_name: str) -> str:
+        game = full_game_name[short_name]
+        with self.connection_maker as cur:
+            game_ind = cur.execute(f'SELECT id FROM games WHERE title = "{game}"').fetchone()[0]
+            image = cur.execute(f'SELECT image FROM maps WHERE title = "{map_name}" '
+                                f'AND game = {game_ind}').fetchone()[0]
+        return image
+
+    def get_spot_image(self, spot_id: int) -> str:
+        with self.connection_maker as cur:
+            image = cur.execute(f'SELECT image FROM spots WHERE id = {spot_id}').fetchone()[0]
+        return image
 
 
 db_data = DBData()

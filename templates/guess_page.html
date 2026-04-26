@@ -13,7 +13,7 @@
     {% if mode != 1 %}
         <input type="hidden" name="spot_id" value="{{ spot_id }}">
     {% endif %}
-    <div id="viewer" style="width: 45%; background: #333;"></div>
+    <div id="viewer" style="width: 100%; background: #333;"></div>
     {% for error in map_errors %}
         <div class="alert alert-danger" role="alert" style="color: #ff0000">
             {{ error }}
@@ -36,7 +36,7 @@
             {% endif %}
         {% endif %}
     </div>
-    <img src="{{ spot_image }}" alt="">
+    <img src="{{ url_for('static', filename='images/spots/' + spot_image) }}" alt="">
     <button type="submit" name="btn" value="guess">{{ guess_text }}</button>
 </form>
 <script src="/static/openseadragon/openseadragon.min.js"></script>
@@ -47,7 +47,7 @@ const viewer = OpenSeadragon({
     prefixUrl: "/static/openseadragon/images/", // Иконки интерфейса
     tileSources: {
         type: 'image',
-        url: "{{ url_for('static', filename=map_image) }}"
+        url: "{{ url_for('static', filename='images/maps/' + map_image) }}"
     },
     gestureSettingsMouse: { clickToZoom: false }, // Отключаем зум по клику, чтобы ставить точку
     showNavigationControl: false,

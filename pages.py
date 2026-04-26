@@ -33,9 +33,10 @@ def create_main_page(data: TextData) -> str:
 def create_add_spot_page(data: TextData, game: str | None, map_name: str | None,
                          pos: tuple[float, float] | None, name: str | None, game_errors: list | None,
                          map_errors: list | None, spot_name_errors: list | None, file_errors: list | None) -> str:
-    # TODO: надо чтобы картинка карты бралась из бд
+    map_image = 'None'
     if game is not None:
         if map_name is not None:
+            map_image = db_data.get_map_image(games_short_name_dict[game], map_name)
             maps = [map_name]
             for mp in maps_dict[data.get_lang()][games_short_name_dict[game]]:
                 if mp != map_name:
@@ -89,7 +90,7 @@ def create_add_spot_page(data: TextData, game: str | None, map_name: str | None,
                            tech_info=data.get_phrase('tech_info'),
                            games=games,
                            maps=maps,
-                           map_image='favicon.jpg',
+                           map_image=map_image,
                            pos_x=pos_x,
                            pos_y=pos_y,
                            send_btn_txt=data.get_phrase('send_btn_text'),
@@ -102,7 +103,7 @@ def create_add_spot_page(data: TextData, game: str | None, map_name: str | None,
 
 
 def create_game_info_page(data: TextData, game: str) -> str:
-    # TODO: получить картинку
+    game_image = db_data.get_game_image(game)
     return render_template('game_info_page.html',
                            lang=data.get_lang(),
                            title=title,
@@ -113,9 +114,10 @@ def create_game_info_page(data: TextData, game: str) -> str:
                            to_game_btn_text=data.get_to_game_btn_text(),
                            tech_info=data.get_phrase('tech_info'),
                            game_title=data.get_phrase('header'),
-                           game_image='',
+                           game_image=game_image,
                            game_name=games_dict[game],
-                           game_description=data.get_phrase('text'), )
+                           game_description=data.get_phrase('text'),
+                           add_spot_btn_text=data.get_phrase('add_spot_button'),)
 
 
 def create_game_page(data: TextData, game: str) -> str:
@@ -134,13 +136,12 @@ def create_game_page(data: TextData, game: str) -> str:
                            game_name=games_dict[game],
                            add_spot_btn_text=data.get_phrase('add_spot_button'),
                            btn_list=btn_list,
-                           button_count=len(btn_list), )
+                           button_count=len(btn_list),)
 
 
 def create_guess_page(data: TextData, game: str, map_name: str, mode: GuessMode,
                       pos: tuple[float, float] | None, map_errors: list[str] | None, time: str | None,
                       spot_id: int | None) -> str:
-    # TODO: картинки из бд
     maps = [map_name]
     if map_name != data.get_phrase('random_map'):
         maps.append(data.get_phrase('random_map'))
@@ -155,6 +156,8 @@ def create_guess_page(data: TextData, game: str, map_name: str, mode: GuessMode,
         curr_map_name = None
         spot_name = None
         accuracy = None
+        spot_image = 'None'
+        map_image = 'None'
     elif mode == GuessMode.guess:
         if time is None:
             raise TypeError('Guess mode without time')
@@ -169,6 +172,8 @@ def create_guess_page(data: TextData, game: str, map_name: str, mode: GuessMode,
         guess_text = data.get_phrase('guess')
         spot_name = None
         accuracy = None
+        spot_image = db_data.get_spot_image(spot_id)
+        map_image = db_data.get_map_image(game, curr_map_name)
     else:
         # TODO: сохранить точность в пользователя
         if time is None:
@@ -181,6 +186,8 @@ def create_guess_page(data: TextData, game: str, map_name: str, mode: GuessMode,
         pos_x, pos_y = pos
         guess_text = data.get_phrase('next')
         accuracy = db_data.get_accuracy(game, map_name, (pos_x, pos_y), (true_pos_x, true_pos_y))
+        spot_image = db_data.get_spot_image(spot_id)
+        map_image = db_data.get_map_image(game, curr_map_name)
     if map_errors is None:
         map_errors = list()
     else:
@@ -205,11 +212,11 @@ def create_guess_page(data: TextData, game: str, map_name: str, mode: GuessMode,
                            time_text=data.get_phrase('time'),
                            time=time,
                            guess_text=guess_text,
-                           map_image='favicon.jpg',
+                           map_image=map_image,
                            mode=mode.value,
                            curr_map_name=curr_map_name,
                            spot_id=spot_id,
-                           spot_image='',
+                           spot_image=spot_image,
                            pos_text=data.get_phrase('pos'),
                            accuracy_text=data.get_phrase('accuracy'),
                            spot_name=spot_name,
@@ -221,7 +228,6 @@ def create_guess_page(data: TextData, game: str, map_name: str, mode: GuessMode,
 
 def create_learn_page(data: TextData, game: str, map_name: str, spot: str, pos: tuple[int, int] | None) -> str:
     radius = db_data.get_radius(game, map_name)
-    # TODO: картинки из бд
     spots = [spot]
     true_pos_x, true_pos_y = -1, -1
     positions = list()
@@ -241,6 +247,7 @@ def create_learn_page(data: TextData, game: str, map_name: str, spot: str, pos: 
         images = db_data.get_images(game, map_name, spot)
     else:
         images = []
+    map_image = db_data.get_map_image(game, map_name)
     return render_template('learn_page.html',
                            lang=data.get_lang(),
                            title=title,
@@ -251,7 +258,7 @@ def create_learn_page(data: TextData, game: str, map_name: str, spot: str, pos: 
                            to_game_btn_text=data.get_to_game_btn_text(),
                            tech_info=data.get_phrase('tech_info'),
                            radius=radius,
-                           map_image='favicon.jpg',
+                           map_image=map_image,
                            spots=spots,
                            map_name=map_name,
                            images=images,
@@ -280,6 +287,7 @@ def create_map_choice_page(data: TextData, maps: list[str], game_name: str) -> s
 
 
 def create_map_page(data: TextData, map_name: str, game: str, description_file: str) -> str:
+    map_image = db_data.get_map_image(game, map_name)
     with open(description_file, 'r') as f:
         description = f.readlines()
     return render_template('map_page.html',
@@ -292,7 +300,7 @@ def create_map_page(data: TextData, map_name: str, game: str, description_file: 
                            to_game_btn_text=data.get_to_game_btn_text(),
                            game_name=games_dict[game],
                            map_name=map_name,
-                           map_image='',  # TODO: картинка
+                           map_image=map_image,
                            map_description=description,
                            add_spot_btn_text=data.get_phrase('add_spot_button'),
                            tech_info=data.get_phrase('tech_info'))

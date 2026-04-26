@@ -17,7 +17,7 @@
         </select>
     </label>
     {% for image in images %}
-        <img src="{{ image }}" alt="">
+        <img src="{{ url_for('static', filename='images/spots/' + image) }}" alt="">
     {% endfor %}
 </form>
 
@@ -33,7 +33,7 @@ const viewer = OpenSeadragon({
     prefixUrl: "/static/openseadragon/images/",
     tileSources: {
         type: 'image',
-        url: "{{ url_for('static', filename=map_image) }}"
+        url: "{{ url_for('static', filename='images/maps/' + map_image) }}"
     },
     gestureSettingsMouse: { clickToZoom: false },
     showNavigationControl: false,
