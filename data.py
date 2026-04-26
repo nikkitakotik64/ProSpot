@@ -114,6 +114,7 @@ class DBData:
         self.connection_maker = MakeConnection(self.db)
 
     def save_added(self, game: str, map_name: str, pos: tuple[int, int] | None, name: str, filename: str) -> None:
+        game_name = full_game_name[games_short_name_dict[game]]
         if pos is None:
             pos_x, pos_y = -1, -1
         else:
@@ -123,8 +124,10 @@ class DBData:
                 ind = cur.execute('SELECT id FROM memory ORDER BY id').fetchall()[-1][0] + 1
             except IndexError:
                 ind = 0
+            game_ind = cur.execute(f'SELECT id FROM games WHERE title = "{game_name}"').fetchone()[0]
+            map_ind = cur.execute(f'SELECT id FROM maps WHERE title = "{map_name}" AND game = {game_ind}').fetchone()[0]
             cur.execute(f'INSERT INTO memory (id, map, pos_x, pos_y, name, image) '
-                        f'VALUES ({ind}, "{map_name}", {pos_x}, {pos_y}, "{name}", "{filename}")')
+                        f'VALUES ({ind}, "{map_ind}", {pos_x}, {pos_y}, "{name}", "{filename}")')
 
     def generate_spot(self, game: str, map_name: str) -> int:
         # TODO

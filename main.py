@@ -129,7 +129,8 @@ def add_spot_page_en():
             img = Image.open(file)
             img.verify()
             file.seek(0)
-            img.save(images_path + 'test.jpg', 'jpg') # TODO: вставить путь
+            file.save(images_path + 'test.jpg')
+            file.seek(0)
         except:
             file = -1
         match btn_pressed:
@@ -157,8 +158,8 @@ def add_spot_page_en():
                                                    game_errors=game_errors, map_errors=map_errors,
                                                    spot_name_errors=name_errors, file_errors=file_errors)
                 else:
-                    filename = datetime.now().isoformat() + '.jpg'
-                    img.save(memory_images_path + filename, 'jpg')
+                    filename = datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + '.jpg'
+                    file.save(memory_images_path + filename)
                     db_data.save_added(game, map_name, pos, name, filename)
                     return redirect('/success/en')
             case 'to_main':
@@ -201,7 +202,8 @@ def add_spot_page_ru():
             img = Image.open(file)
             img.verify()
             file.seek(0)
-            img.save(images_path + 'test.jpg', 'jpg') # TODO: вставить путь
+            file.save(images_path + 'test.jpg')
+            file.seek(0)
         except:
             file = -1
         match btn_pressed:
@@ -229,8 +231,8 @@ def add_spot_page_ru():
                                                    game_errors=game_errors, map_errors=map_errors,
                                                    spot_name_errors=name_errors, file_errors=file_errors)
                 else:
-                    filename = datetime.now().isoformat() + '.jpg'
-                    img.save(memory_images_path + filename, 'jpg')
+                    filename = datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + '.jpg'
+                    file.save(memory_images_path + filename)
                     db_data.save_added(game, map_name, pos, name, filename)
                     return redirect('/success/ru')
             case 'to_main':
