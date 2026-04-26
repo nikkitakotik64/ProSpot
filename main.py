@@ -15,6 +15,7 @@ from flask_login import LoginManager
 app = Flask(__name__)
 login_manager = LoginManager()
 login_manager.init_app(app)
+app.config['SECRET_KEY'] = 'mi_crytie_ochen1_dva_geniya_prosto'
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -40,7 +41,7 @@ def main_page_ru():
             case 'change_lang':
                 return redirect('/en')
             case 'autho':
-                redirect('/autho/ru')  # TODO
+               return redirect('/regist/ru')  # TODO
             case 'CS 2':
                 return redirect('/cs2/ru')
             case 'Escape From Tarkov':
@@ -856,17 +857,17 @@ def return_success_send_page_en():
     data = TextData(pages_path + 'success_en.json')
     return create_send_success_page(data)
 
-@app.route("/autho/ru", methods=["POST", "GET"])
-def create_autho_page_ru():
+@app.route("/regist/ru", methods=["POST", "GET"])
+def reqister():
     form = RegisterForm()
     if form.validate_on_submit():
         if form.password.data != form.password_again.data:
-            return render_template('authorization.html', title='Регистрация',
+            return render_template('register.html', title='Регистрация',
                                    form=form,
                                    message="Пароли не совпадают")
         db_sess = db_session.create_session()
         if db_sess.query(User).filter(User.email == form.email.data).first():
-            return render_template('authorization.html', title='Регистрация',
+            return render_template('register.html', title='Регистрация',
                                    form=form,
                                    message="Такой пользователь уже есть")
         user = User(
@@ -878,8 +879,22 @@ def create_autho_page_ru():
         db_sess.add(user)
         db_sess.commit()
         return redirect('/login')
-    return render_template('authorization.html', title='Регистрация', form=form)
+    return render_template('register.html', title='Регистрация', form=form)
 
+@app.route('/autho/ru', methods=['POST', 'GET'])
+def create_autho_page_ru():
+    def login():
+        form = LoginForm()
+        if form.validate_on_submit():
+            db_sess = db_session.create_session()
+            user = db_sess.query(User).filter(User.email == form.email.data).first()
+            if user and user.check_password(form.password.data):
+                login_user(user, remember=form.remember_me.data)
+                return redirect("/")
+            return render_template('authorizarion.html',
+                                   message="Неправильный логин или пароль",
+                                   form=form)
+        return render_template('authorization.html', title='Авторизация', form=form)
 
 # TODO: это после базы данных
 '''
