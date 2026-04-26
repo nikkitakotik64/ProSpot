@@ -2,6 +2,7 @@ import json
 import os
 import sqlite3
 import random
+from PIL import Image
 
 path = os.path.dirname(os.path.abspath(__file__)) + '/'
 pages_path = path + 'static/pages/'
@@ -132,12 +133,20 @@ class DBData:
 
     def get_accuracy(self, game: str, map_name: str, pos: tuple[int, int],
                      true_pos: tuple[int, int]) -> int:
-        # TODO
-        return 100
+        rad = self.get_radius(game, map_name)
+        dist = ((pos[0] - true_pos[0]) ** 2 + (pos[1] - true_pos[1]) ** 2) ** 0.5
+        if dist < rad / 4:
+            return 100
+        dist -= rad / 4
+        img = Image.open(maps_path + self.get_map_image(game, map_name))
+        size = min(img.size) / 1.4
+        points = 100 - round((dist / size) ** 2)
+        return points
 
     def get_radius(self, game: str, map_name: str) -> int:
-        # TODO
-        return 60
+        img = Image.open(maps_path + self.get_map_image(game, map_name))
+        size = min(img.size)
+        return round(size * 0.06)
 
     def get_spots(self, short_name: str, map_name: str) -> list[tuple[str, int, int]]:
         game_name = full_game_name[short_name]
