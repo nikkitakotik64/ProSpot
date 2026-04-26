@@ -137,7 +137,7 @@ class DBData:
 
     def get_radius(self, game: str, map_name: str) -> int:
         # TODO
-        return 200
+        return 60
 
     def get_spots(self, short_name: str, map_name: str) -> list[tuple[str, int, int]]:
         game_name = full_game_name[short_name]

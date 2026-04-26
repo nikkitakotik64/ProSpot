@@ -234,10 +234,10 @@ def create_learn_page(data: TextData, game: str, map_name: str, spot: str, pos: 
     if pos is None:
         pos = [-1, -1]
     for spot_name, sp_pos_x, sp_pos_y in db_data.get_spots(game, map_name):
-        if pos == [-1, -1] or ((sp_pos_x - pos[0]) ** 2 + (sp_pos_y - pos[1]) ** 2) ** 0.5 <= radius / 3:
+        positions.append([sp_pos_x, sp_pos_y])
+        if pos == [-1, -1] or ((sp_pos_x - pos[0]) ** 2 + (sp_pos_y - pos[1]) ** 2) ** 0.5 <= radius:
             if spot_name != spot:
                 spots.append(spot_name)
-                positions.append([sp_pos_x, sp_pos_y])
             else:
                 true_pos_x, true_pos_y = sp_pos_x, sp_pos_y
         else:
@@ -316,17 +316,6 @@ def create_send_success_page(data: TextData) -> str:
                            tech_info=data.get_phrase('tech_info'),
                            to_main_btn_text=data.get_to_main_btn_text(),
                            success_text=data.get_phrase('success_text'))
-
-
-def create_moder_page(data: TextData, spot_info: SpotData) -> str:  # TODO: добавить форму
-    return render_template('base_template.html',
-                           lang=data.get_lang(),
-                           title=title,
-                           autho_btn_text=data.get_autho_btn_text(),
-                           change_lang_btn_text=data.get_another_lang(),
-                           type=PagesType.without_game_btn.value,
-                           to_main_btn_text=data.get_to_main_btn_text(),
-                           tech_info=data.get_phrase('tech_info'))
 
 
 def create_account_page(data: TextData) -> str:  # TODO: добавить форму
