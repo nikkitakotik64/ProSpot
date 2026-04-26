@@ -10,7 +10,6 @@
     <input type="hidden" name="y_coord" id="input-y">
     <input type="hidden" name="timer" id="input-time">
     <input type="hidden" name="mode" value="{{ mode }}">
-    <input type="hidden" name="accuracy">
     {% if mode != 1 %}
         <input type="hidden" name="spot_id" value="{{ spot_id }}">
     {% endif %}
@@ -141,8 +140,10 @@ viewer.addHandler('canvas-release', function(event) {
         Math.pow(event.position.y - pressPoint.y, 2)
     );
 
+    const mode = Number("{{ mode }}");
+
     // Если сдвиг меньше 5 пикселей — считаем это кликом, а не драгом
-    if (dist < 5) {
+    if (dist < 5 && mode === 0) {
         const webPoint = event.position;
         const viewportPoint = viewer.viewport.pointFromPixel(webPoint);
         const imagePoint = viewer.viewport.viewportToImageCoordinates(viewportPoint);

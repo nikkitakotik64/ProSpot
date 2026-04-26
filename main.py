@@ -469,8 +469,23 @@ def guess_page_en(game_short_name: str, map_id: int):
         abort(404)
     if map_id < 0 or map_id > len(maps_dict['en'][game_short_name]):
         abort(404)
+    map_name = maps_dict['en'][game_short_name][map_id - 1] if map_id else 'Random'
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
+        pos_x, pos_y = request.form.get('x_coord', None), request.form.get('y_coord', None)
+        time = request.form.get('timer', None)
+        map_name = request.form.get('map', map_name)
+        mode = request.form.get('mode', None)
+        if mode is not None:
+            if mode == '1':
+                mode = GuessMode.start
+            elif mode == '2':
+                mode = GuessMode.end
+            elif mode == '0':
+                mode = GuessMode.guess
+            else:
+                mode = None
+        spot_id = request.form.get('spot_id', None)
         match btn_pressed:
             case 'change_lang':
                 return redirect(f'/{game_short_name}/guess/{map_id}/ru')
@@ -480,17 +495,48 @@ def guess_page_en(game_short_name: str, map_id: int):
                 return redirect('/en')
             case 'to_game':
                 return redirect(f'/{game_short_name}/en')
-    return return_guess_page_en(game_short_name, '', GuessMode.guess)
+            case 'guess':
+                match mode:
+                    case GuessMode.start:
+                        spot_id = db_data.generate_spot(game_short_name, map_name)
+                        time = '00:00'
+                        pos_x, pos_y = -1, -1
+                        return return_guess_page_en(game_short_name, map_name, GuessMode.guess, (pos_x, pos_y),
+                                             [], time, spot_id)
+                    case GuessMode.guess:
+                        map_errors = []
+                        if pos_x is None or pos_y is None or not pos_x or not pos_y:
+                            map_errors.append('pos_not_chosen')
+                            pos_x, pos_y = -1, -1
+                        if map_errors:
+                            return return_guess_page_en(game_short_name, map_name, GuessMode.guess, (pos_x, pos_y),
+                                                        map_errors, time, spot_id)
+                        else:
+                            return return_guess_page_en(game_short_name, map_name, GuessMode.end, (pos_x, pos_y),
+                                                        map_errors, time, spot_id)
+                    case GuessMode.end:
+                        spot_id = db_data.generate_spot(game_short_name, map_name)
+                        time = '00:00'
+                        pos_x, pos_y = -1, -1
+                        return return_guess_page_en(game_short_name, map_name, GuessMode.guess, (pos_x, pos_y),
+                                             [], time, spot_id)
+    return return_guess_page_en(game_short_name, map_name, GuessMode.start)
 
 
-def return_learn_page_en(short_name: str, map_id: int):
+def return_learn_page_en(short_name: str, map_id: int, spot: str | None = None,
+                         pos: tuple[int, int] | None = None):
     data = TextData(pages_path + 'learn_en.json')
-    return create_learn_page(data, maps_dict['en'][short_name][map_id])
+    if spot is None:
+        spot = data.get_phrase('not_chosen')
+    return create_learn_page(data, short_name, maps_dict['en'][short_name][map_id], spot, pos)
 
 
-def return_learn_page_ru(short_name: str, map_id: int):
+def return_learn_page_ru(short_name: str, map_id: int, spot: str | None = None,
+                         pos: tuple[int, int] | None = None):
     data = TextData(pages_path + 'learn_ru.json')
-    return create_learn_page(data, maps_dict['ru'][short_name][map_id])
+    if spot is None:
+        spot = data.get_phrase('not_chosen')
+    return create_learn_page(data, short_name, maps_dict['ru'][short_name][map_id], spot, pos)
 
 
 @app.route('/<string:game_short_name>/learn/<int:map_id>', methods=['GET'])
@@ -523,6 +569,13 @@ def learn_page_ru(game_short_name: str, map_id: int):
                 return redirect('/ru')
             case 'to_game':
                 return redirect(f'/{game_short_name}/ru')
+        pos_x, pos_y = request.form.get('x_coord', None), request.form.get('y_coord', None)
+        spot = request.form.get('spot', None)
+        if not pos_x or not pos_y:
+            pos = None
+        else:
+            pos = [int(pos_x), int(pos_y)]
+        return return_learn_page_ru(game_short_name, map_id - 1, spot, pos)
     return return_learn_page_ru(game_short_name, map_id - 1)
 
 
@@ -543,6 +596,13 @@ def learn_page_en(game_short_name: str, map_id: int):
                 return redirect('/en')
             case 'to_game':
                 return redirect(f'/{game_short_name}/en')
+        pos_x, pos_y = request.form.get('x_coord', None), request.form.get('y_coord', None)
+        spot = request.form.get('spot', None)
+        if not pos_x or not pos_y:
+            pos = None
+        else:
+            pos = [int(pos_x), int(pos_y)]
+        return return_learn_page_en(game_short_name, map_id - 1, spot, pos)
     return return_learn_page_en(game_short_name, map_id - 1)
 
 

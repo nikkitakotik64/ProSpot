@@ -139,5 +139,17 @@ class DBData:
         # TODO
         return 100
 
+    def get_radius(self, game: str, map_name: str) -> int:
+        # TODO
+        return 200
+
+    def get_spots(self, game: str, map_name: str) -> list[tuple[str, int, int]]:
+        # TODO
+        return [('Connector', 190, 190), ('xxx', 124, 406), ('135f', 135, 135)]
+
+    def get_images(self, game: str, map_name: str, spot: str) -> list[str]:
+        # TODO
+        return []
+
 
 db_data = DBData()

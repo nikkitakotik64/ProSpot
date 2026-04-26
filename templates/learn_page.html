@@ -1,0 +1,143 @@
+{% extends "base_template.html" %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block content %}
+<h2>{{ header_start }}{{ map_name }}</h2>
+<form method="POST" id="form">
+    <input type="hidden" name="x_coord" id="input-x" value="{{ pos_x }}">
+    <input type="hidden" name="y_coord" id="input-y" value="{{ pos_y }}">
+    <div id="viewer" style="width: 100%; background: #333;"></div>
+    <label>
+        <select name="spot" onchange="this.form.submit()">
+            {% for option in spots %}
+                <option value="{{ option }}">{{ option }}</option>
+            {% endfor %}
+        </select>
+    </label>
+    {% for image in images %}
+        <img src="{{ image }}" alt="">
+    {% endfor %}
+</form>
+
+<script src="/static/openseadragon/openseadragon.min.js"></script>
+<script>
+// 1. Объявляем все переменные в начале
+const markerRadius = "{{ radius }}px";
+let marker = null;
+let pressPoint = null; // Обязательно объявляем здесь
+
+const viewer = OpenSeadragon({
+    id: "viewer",
+    prefixUrl: "/static/openseadragon/images/",
+    tileSources: {
+        type: 'image',
+        url: "{{ url_for('static', filename=map_image) }}"
+    },
+    gestureSettingsMouse: { clickToZoom: false },
+    showNavigationControl: false,
+    visibilityRatio: 1.0,
+    minZoomImageRatio: 1.0,
+    maxZoomPixelRatio: 1.0,
+    constrainDuringPan: true
+});
+
+viewer.addHandler('open', function() {
+    const viewerElement = document.getElementById("viewer");
+    const aspectRatio = viewer.source.aspectRatio;
+    viewerElement.style.height = Math.round(viewerElement.offsetWidth / aspectRatio) + "px";
+    viewer.forceRedraw();
+    viewer.viewport.goHome(true);
+    viewer.viewport.fitHorizontally(true);
+
+    const startX = {{ pos_x }};
+    const startY = {{ pos_y }};
+    if (startX !== -1 && startY !== -1) {
+        const pt = viewer.viewport.imageToViewportCoordinates(new OpenSeadragon.Point(startX, startY));
+        marker = createMarker(pt, "orange", "my-marker");
+    }
+
+    const positions = {{ positions|safe if positions else [] }};
+    positions.forEach(pos => {
+        const pt = viewer.viewport.imageToViewportCoordinates(new OpenSeadragon.Point(pos[0], pos[1]));
+        createMarker(pt, "red", "red-" + Math.random());
+    });
+
+    const tX = {{ true_pos_x }};
+    const tY = {{ true_pos_y }};
+    if (tX !== -1 && tY !== -1) {
+        const pt = viewer.viewport.imageToViewportCoordinates(new OpenSeadragon.Point(tX, tY));
+        createMarker(pt, "blue", "target-marker");
+    }
+});
+
+function createMarker(viewportPoint, color, id) {
+    const el = document.createElement("div");
+    el.id = id;
+
+    // Определяем размер числом для расчетов
+    const numSize = (color !== "orange") ? 20 : parseInt("{{ radius }}");
+    const size = numSize + "px";
+
+    el.style.width = size;
+    el.style.height = size;
+    el.style.background = color;
+    el.style.borderRadius = "50%";
+    el.style.border = "2px solid white";
+    el.style.pointerEvents = "none";
+    el.style.boxSizing = "border-box";
+
+    if (color === "orange") {
+        el.style.opacity = "0.6";
+        el.style.zIndex = "100";
+    } else if (color === "blue") {
+        el.style.zIndex = "102";
+    } else {
+        el.style.zIndex = "101";
+    }
+
+    viewer.addOverlay({
+        element: el,
+        location: viewportPoint,
+        placement: OpenSeadragon.Placement.CENTER
+    });
+
+    // Фиксируем размер, чтобы не менялся при зуме
+    const overlay = viewer.getOverlayById(el);
+
+    overlay.draw = function(position, size) {
+        this.element.style.left = (position.x - numSize / 2) + "px";
+        this.element.style.top = (position.y - numSize / 2) + "px";
+    };
+
+    return el;
+}
+
+viewer.addHandler('canvas-press', function(event) {
+    pressPoint = event.position;
+});
+
+viewer.addHandler('canvas-release', function(event) {
+    if (!pressPoint) return;
+    const dist = Math.sqrt(Math.pow(event.position.x - pressPoint.x, 2) + Math.pow(event.position.y - pressPoint.y, 2));
+
+    if (dist < 5) {
+        const viewportPoint = viewer.viewport.pointFromPixel(event.position);
+        const imagePoint = viewer.viewport.viewportToImageCoordinates(viewportPoint);
+
+        if (marker) {
+            viewer.removeOverlay(marker);
+        }
+
+        marker = createMarker(viewportPoint, "orange", "my-marker");
+
+        document.getElementById('input-x').value = Math.round(imagePoint.x);
+        document.getElementById('input-y').value = Math.round(imagePoint.y);
+
+        document.getElementById('form').submit();
+    }
+    pressPoint = null;
+});
+</script>
+{% endblock %}

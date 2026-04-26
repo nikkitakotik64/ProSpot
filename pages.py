@@ -219,8 +219,29 @@ def create_guess_page(data: TextData, game: str, map_name: str, mode: GuessMode,
 
 
 
-def create_learn_page(data: TextData, map_name: str) -> str:  # TODO: добавить форму
-    return render_template('base_template.html',
+def create_learn_page(data: TextData, game: str, map_name: str, spot: str, pos: tuple[int, int] | None) -> str:
+    radius = db_data.get_radius(game, map_name)
+    # TODO: картинки из бд
+    spots = [spot]
+    true_pos_x, true_pos_y = -1, -1
+    positions = list()
+    if pos is None:
+        pos = [-1, -1]
+    for spot_name, sp_pos_x, sp_pos_y in db_data.get_spots(game, map_name):
+        if pos == [-1, -1] or ((sp_pos_x - pos[0]) ** 2 + (sp_pos_y - pos[1]) ** 2) ** 0.5 <= radius / 3:
+            if spot_name != spot:
+                spots.append(spot_name)
+                positions.append([sp_pos_x, sp_pos_y])
+            else:
+                true_pos_x, true_pos_y = sp_pos_x, sp_pos_y
+        else:
+            if spot_name == spot:
+                spots[0] = data.get_phrase('not_chosen')
+    if spots[0] != data.get_phrase('not_chosen'):
+        images = db_data.get_images(game, map_name, spot)
+    else:
+        images = []
+    return render_template('learn_page.html',
                            lang=data.get_lang(),
                            title=title,
                            autho_btn_text=data.get_autho_btn_text(),
@@ -228,7 +249,18 @@ def create_learn_page(data: TextData, map_name: str) -> str:  # TODO: добав
                            type=PagesType.with_game_btn.value,
                            to_main_btn_text=data.get_to_main_btn_text(),
                            to_game_btn_text=data.get_to_game_btn_text(),
-                           tech_info=data.get_phrase('tech_info'))
+                           tech_info=data.get_phrase('tech_info'),
+                           radius=radius,
+                           map_image='favicon.jpg',
+                           spots=spots,
+                           map_name=map_name,
+                           images=images,
+                           positions=positions,
+                           pos_x=pos[0],
+                           pos_y=pos[1],
+                           true_pos_x=true_pos_x,
+                           true_pos_y=true_pos_y,
+                           header_start=data.get_phrase('header_start'),)
 
 
 def create_map_choice_page(data: TextData, maps: list[str], game_name: str) -> str:
