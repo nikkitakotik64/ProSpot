@@ -1,4 +1,4 @@
-from data import games_list, TextData, SpotData, maps_dict, games_dict, games_short_name_dict, games_with_spots, db_data
+from data import games_list, TextData, maps_dict, games_dict, games_short_name_dict, games_with_spots, db_data
 from flask import render_template
 from enum import Enum
 
