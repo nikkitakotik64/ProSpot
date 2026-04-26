@@ -9,7 +9,7 @@ from login import *
 from enum import Enum
 from data_db import db_session
 from data_db.users import User
-from forms.user import RegisterForm, LoginForm
+from forms.user import RegisterForm_Ru, LoginForm_Ru, RegisterForm_En, LoginForm_En
 from flask_login import LoginManager
 
 app = Flask(__name__)
@@ -41,7 +41,7 @@ def main_page_ru():
             case 'change_lang':
                 return redirect('/en')
             case 'autho':
-               return redirect('/regist/ru')  # TODO
+               return redirect('/autho/ru')  # TODO
             case 'CS 2':
                 return redirect('/cs2/ru')
             case 'Escape From Tarkov':
@@ -65,7 +65,7 @@ def main_page_en():
             case 'change_lang':
                 return redirect('/ru')
             case 'autho':
-                return redirect('/autho/ru') # TODO
+                return redirect('/autho/en') # TODO
             case 'CS 2':
                 return redirect('/cs2/en')
             case 'Escape From Tarkov':
@@ -148,7 +148,7 @@ def add_spot_page_en():
             case 'change_lang':
                 return redirect('/add_spot/ru')
             case 'autho':
-                print('Авторизация пока недоступна')  # TODO
+                return redirect('/autho/en')  # TODO
             case 'send':
                 game_errors = []
                 if game is None:
@@ -221,7 +221,7 @@ def add_spot_page_ru():
             case 'change_lang':
                 return redirect('/add_spot/en')
             case 'autho':
-                print('Авторизация пока недоступна')  # TODO
+                return redirect('/autho/ru')  # TODO
             case 'send':
                 game_errors = []
                 if game is None:
@@ -312,7 +312,7 @@ def game_info_page_en(game_short_name: str):
             case 'change_lang':
                 return redirect(f'/{game_short_name}/info/ru')
             case 'autho':
-                print('Авторизация пока недоступна')  # TODO
+                return redirect('/autho/en')  # TODO
             case 'to_game':
                 return redirect(f'/{game_short_name}/en')
             case 'to_main':
@@ -351,7 +351,7 @@ def game_page_ru(game_short_name: str):
             case 'change_lang':
                 return redirect(f'/{game_short_name}/en')
             case 'autho':
-                print('Авторизация пока недоступна')  # TODO
+                return redirect('/autho/ru')  # TODO
             case 'to_main':
                 return redirect('/ru')
             case 'Гайд':
@@ -375,7 +375,7 @@ def game_page_en(game_short_name: str):
             case 'change_lang':
                 return redirect(f'/{game_short_name}/ru')
             case 'autho':
-                print('Авторизация пока недоступна')  # TODO
+                return redirect('/autho/en')  # TODO
             case 'to_main':
                 return redirect('/en')
             case 'Guide':
@@ -443,7 +443,7 @@ def guess_page_ru(game_short_name: str, map_id: int):
             case 'change_lang':
                 return redirect(f'/{game_short_name}/guess/{map_id}/en')
             case 'autho':
-                print('Авторизация пока недоступна')  # TODO
+                return redirect('/autho/ru')  # TODO
             case 'to_main':
                 return redirect('/ru')
             case 'to_game':
@@ -503,7 +503,7 @@ def guess_page_en(game_short_name: str, map_id: int):
             case 'change_lang':
                 return redirect(f'/{game_short_name}/guess/{map_id}/ru')
             case 'autho':
-                print('Авторизация пока недоступна')  # TODO
+                return redirect('/autho/en')  # TODO
             case 'to_main':
                 return redirect('/en')
             case 'to_game':
@@ -577,7 +577,7 @@ def learn_page_ru(game_short_name: str, map_id: int):
             case 'change_lang':
                 return redirect(f'/{game_short_name}/learn/{map_id}/en')
             case 'autho':
-                print('Авторизация пока недоступна')  # TODO
+                return redirect('/autho/ru')  # TODO
             case 'to_main':
                 return redirect('/ru')
             case 'to_game':
@@ -604,7 +604,7 @@ def learn_page_en(game_short_name: str, map_id: int):
             case 'change_lang':
                 return redirect(f'/{game_short_name}/learn/{map_id}/ru')
             case 'autho':
-                print('Авторизация пока недоступна')  # TODO
+                return redirect('/autho/en')  # TODO
             case 'to_main':
                 return redirect('/en')
             case 'to_game':
@@ -656,7 +656,7 @@ def map_choice_page_ru(game_short_name: str, map_choice_type: int):
             case 'change_lang':
                 return redirect(f'/{game_short_name}/map_choice/{map_choice_type}/en')
             case 'autho':
-                print('Авторизация пока недоступна')  # TODO
+                return redirect('/autho/ru')  # TODO
             case 'to_main':
                 return redirect('/ru')
             case 'to_game':
@@ -688,7 +688,7 @@ def map_choice_page_en(game_short_name: str, map_choice_type: int):
             case 'change_lang':
                 return redirect(f'/{game_short_name}/map_choice/{map_choice_type}/ru')
             case 'autho':
-                print('Авторизация пока недоступна')  # TODO
+                return redirect('/autho/en')  # TODO
             case 'to_main':
                 return redirect('/en')
             case 'to_game':
@@ -743,7 +743,7 @@ def map_page_ru(game_short_name: str, map_id: int):
             case 'change_lang':
                 return redirect(f'/{game_short_name}/map/{map_id}/en')
             case 'autho':
-                print('Авторизация пока недоступна')  # TODO
+                return redirect('/autho/ru')  # TODO
             case 'to_main':
                 return redirect('/ru')
             case 'to_game':
@@ -764,7 +764,7 @@ def map_page_en(game_short_name: str, map_id: int):
             case 'change_lang':
                 return redirect(f'/{game_short_name}/map/{map_id}/ru')
             case 'autho':
-                print('Авторизация пока недоступна')  # TODO
+                return redirect('/autho/en')  # TODO
             case 'to_main':
                 return redirect('/en')
             case 'to_game':
@@ -783,7 +783,7 @@ def return_success_send_page_ru():
             case 'change_lang':
                 return redirect('/success/en')
             case 'autho':
-                print('')  # TODO
+                return redirect('/autho/ru')  # TODO
     data = TextData(pages_path + 'success_ru.json')
     return create_send_success_page(data)
 
@@ -798,21 +798,21 @@ def return_success_send_page_en():
             case 'change_lang':
                 return redirect('/success/ru')
             case 'autho':
-                print('')  # TODO
+                return redirect('/autho/en')  # TODO
     data = TextData(pages_path + 'success_en.json')
     return create_send_success_page(data)
 
 @app.route("/regist/ru", methods=["POST", "GET"])
-def reqister():
-    form = RegisterForm()
+def register_ru():
+    form = RegisterForm_Ru()
     if form.validate_on_submit():
         if form.password.data != form.password_again.data:
-            return render_template('register.html', title='Регистрация',
+            return render_template('register_ru.html', title='Регистрация',
                                    form=form,
                                    message="Пароли не совпадают")
         db_sess = db_session.create_session()
         if db_sess.query(User).filter(User.email == form.email.data).first():
-            return render_template('register.html', title='Регистрация',
+            return render_template('register_ru.html', title='Регистрация',
                                    form=form,
                                    message="Такой пользователь уже есть")
         user = User(
@@ -823,23 +823,60 @@ def reqister():
         user.set_password(form.password.data)
         db_sess.add(user)
         db_sess.commit()
-        return redirect('/regist/ru')
-    return render_template('register.html', title='Регистрация', form=form)
+        return redirect('/ru')
+    return render_template('register_ru.html', title='Регистрация', form=form)
 
 @app.route('/autho/ru', methods=['POST', 'GET'])
-def login():
-    form = LoginForm()
+def login_ru():
+    form = LoginForm_Ru()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.email == form.email.data).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
-            return redirect("/")
-        return render_template('authorizarion.html',
+            return redirect("/ru")
+        return render_template('authorization_ru.html',
                                 message="Неправильный логин или пароль",
                                 form=form)
-    return render_template('authorization.html', title='Авторизация', form=form)
+    return render_template('authorization_ru.html', title='Авторизация', form=form)
 
+@app.route('/autho/en', methods=['POST', 'GET'])
+def login_en():
+    form = LoginForm_En()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.email == form.email.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user, remember=form.remember_me.data)
+            return redirect("/en")
+        return render_template('authorization_en.html',
+                                message="Wrong password or login",
+                                form=form)
+    return render_template('authorization_en.html', title='Authorization', form=form)
+
+@app.route("/regist/en", methods=["POST", "GET"])
+def register_en():
+    form = RegisterForm_En()
+    if form.validate_on_submit():
+        if form.password.data != form.password_again.data:
+            return render_template('register_en.html', title='Registration',
+                                   form=form,
+                                   message="Passwords don't match")
+        db_sess = db_session.create_session()
+        if db_sess.query(User).filter(User.email == form.email.data).first():
+            return render_template('register_en.html', title='Registration',
+                                   form=form,
+                                   message="There is already such a user")
+        user = User(
+            name=form.name.data,
+            email=form.email.data,
+
+        )
+        user.set_password(form.password.data)
+        db_sess.add(user)
+        db_sess.commit()
+        return redirect('/en')
+    return render_template('register_en.html', title='Registration', form=form)
 
 if __name__ == '__main__':
     db_session.global_init("db/users.sqlite")
