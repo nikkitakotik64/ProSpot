@@ -65,7 +65,7 @@ def main_page_en():
             case 'change_lang':
                 return redirect('/ru')
             case 'autho':
-                print('Авторизация пока недоступна')  # TODO
+                return redirect('/autho/ru') # TODO
             case 'CS 2':
                 return redirect('/cs2/en')
             case 'Escape From Tarkov':
@@ -827,19 +827,18 @@ def reqister():
     return render_template('register.html', title='Регистрация', form=form)
 
 @app.route('/autho/ru', methods=['POST', 'GET'])
-def create_autho_page_ru():
-    def login():
-        form = LoginForm()
-        if form.validate_on_submit():
-            db_sess = db_session.create_session()
-            user = db_sess.query(User).filter(User.email == form.email.data).first()
-            if user and user.check_password(form.password.data):
-                login_user(user, remember=form.remember_me.data)
-                return redirect("/")
-            return render_template('authorizarion.html',
-                                   message="Неправильный логин или пароль",
-                                   form=form)
-        return render_template('authorization.html', title='Авторизация', form=form)
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.email == form.email.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user, remember=form.remember_me.data)
+            return redirect("/")
+        return render_template('authorizarion.html',
+                                message="Неправильный логин или пароль",
+                                form=form)
+    return render_template('authorization.html', title='Авторизация', form=form)
 
 
 if __name__ == '__main__':
