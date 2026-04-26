@@ -9,7 +9,7 @@ from login import *
 from enum import Enum
 from data_db import db_session
 from data_db.users import User
-from forms.user import RegisterForm
+from forms.user import RegisterForm, LoginForm
 from flask_login import LoginManager
 
 app = Flask(__name__)
