@@ -48,9 +48,7 @@ viewer.addHandler('open', function() {
     const viewerElement = document.getElementById("viewer");
     const aspectRatio = viewer.source.aspectRatio;
     viewerElement.style.height = Math.round(viewerElement.offsetWidth / aspectRatio) + "px";
-    console.log(markerRadius);
     markerRadius = Math.round(markerRadius * viewerElement.offsetWidth / tiledImage.source.width);
-    console.log(markerRadius);
     viewer.forceRedraw();
     viewer.viewport.goHome(true);
     viewer.viewport.fitHorizontally(true);
