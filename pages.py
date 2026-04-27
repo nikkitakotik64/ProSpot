@@ -1,7 +1,7 @@
 from data import games_list, TextData, maps_dict, games_dict, games_short_name_dict, games_with_spots, db_data
 from flask import render_template
 from enum import Enum
-from data_db.db_functions import is_authorized, get_current_user_name, get_user_info, get_current_user_id
+from data_db.db_functions import is_authorized, get_current_user_name, get_user_info, get_current_user_id, get_api_key
 
 title = 'ProSpot'
 
@@ -357,3 +357,37 @@ def create_send_success_page(data: TextData) -> str:
                            tech_info=data.get_phrase('tech_info'),
                            to_main_btn_text=data.get_to_main_btn_text(),
                            success_text=data.get_phrase('success_text'))
+
+
+def create_api_info_page(data: TextData) -> str:
+    if is_authorized():
+        autho_text = get_current_user_name()
+    else:
+        autho_text = data.get_autho_btn_text()
+    return render_template('api_info.html',
+                           lang=data.get_lang(),
+                           title=title,
+                           autho_btn_text=autho_text,
+                           change_lang_btn_text=data.get_another_lang(),
+                           type=PagesType.without_game_btn.value,
+                           tech_info=data.get_phrase('tech_info'),
+                           to_main_btn_text=data.get_to_main_btn_text(),
+                           text=data.get_phrase('api_text'),
+                           get_api_key_btn=data.get_phrase('get_api_key'),)
+
+
+def create_api_key_page(data: TextData) -> str:
+    if is_authorized():
+        autho_text = get_current_user_name()
+    else:
+        autho_text = data.get_autho_btn_text()
+    return render_template('get_api.html',
+                           lang=data.get_lang(),
+                           title=title,
+                           autho_btn_text=autho_text,
+                           change_lang_btn_text=data.get_another_lang(),
+                           type=PagesType.without_game_btn.value,
+                           tech_info=data.get_phrase('tech_info'),
+                           to_main_btn_text=data.get_to_main_btn_text(),
+                           text=data.get_phrase('api_text'),
+                           api_key=get_api_key(get_current_user_name()),)
