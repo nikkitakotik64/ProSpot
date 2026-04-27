@@ -1,4 +1,4 @@
-{% extends "base_template.html" %}
+{% extends "base.html" %}
 
 {% block content %}
     <h1>Авторизация</h1>
@@ -27,10 +27,10 @@
         <div>{{ message }}</div>
     </form>
 
+    <a href="/ru" class="btn btn-secondary">Вернуться на главную</a>
+
     <div class="registration-link">
         <p>Нет аккаунта?</p>
-        <form action="" method="post">
-            <button type="submit" name="btn" class="registration_btn" value="registration">Регистрация</button>
-        </form>
+        <a href="{{ url_for('register_ru') }}" class="registration_btn btn btn-primary">Регистрация</a>
     </div>
 {% endblock %}

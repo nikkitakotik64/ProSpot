@@ -24,7 +24,7 @@
 <script src="/static/openseadragon/openseadragon.min.js"></script>
 <script>
 // 1. Объявляем все переменные в начале
-const markerRadius = "{{ radius }}px";
+let markerRadius = Math.round("{{ radius }}");
 let marker = null;
 let pressPoint = null; // Обязательно объявляем здесь
 
@@ -44,9 +44,11 @@ const viewer = OpenSeadragon({
 });
 
 viewer.addHandler('open', function() {
+    var tiledImage = viewer.world.getItemAt(0);
     const viewerElement = document.getElementById("viewer");
     const aspectRatio = viewer.source.aspectRatio;
     viewerElement.style.height = Math.round(viewerElement.offsetWidth / aspectRatio) + "px";
+    markerRadius = Math.round(markerRadius * viewerElement.offsetWidth / tiledImage.source.width);
     viewer.forceRedraw();
     viewer.viewport.goHome(true);
     viewer.viewport.fitHorizontally(true);
@@ -77,7 +79,7 @@ function createMarker(viewportPoint, color, id) {
     el.id = id;
 
     // Определяем размер числом для расчетов
-    const numSize = (color !== "orange") ? 20 : parseInt("{{ radius }}");
+    const numSize = (color !== "orange") ? 20 : markerRadius * 2;
     const size = numSize + "px";
 
     el.style.width = size;

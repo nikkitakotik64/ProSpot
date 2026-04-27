@@ -1,0 +1,6 @@
+{
+  "lang": "en",
+  "tech_info": "",
+  "api_text": "The request requires the mandatory arguments api_key and game. Optional arguments are lang and map. If an error occurs, the response returns status: error and message: error message. If the request is successful, it returns status: success and data: data. Possible game values are: cs2, eft. Map names should preferably be entered in English, replacing spaces with underscores (e.g., Dust_II). Possible lang values are: ru, en. If map is not specified, the request returns the game description in data['description'] and a list of maps in data['maps']. If map is specified, data['description'] contains a list of strings describing the map.",
+  "get_api_key": "Get API key"
+}

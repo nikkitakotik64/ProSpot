@@ -1,6 +1,8 @@
-from data import games_list, TextData, SpotData, maps_dict, games_dict, games_short_name_dict, games_with_spots, db_data
+from data import games_list, TextData, maps_dict, games_dict, games_short_name_dict, games_with_spots, db_data
 from flask import render_template
 from enum import Enum
+from data_db.db_functions import is_authorized, get_current_user_name, get_user_info, get_current_user_id, get_api_key, \
+    update_user_stats
 
 title = 'ProSpot'
 
@@ -18,10 +20,14 @@ class GuessMode(Enum):
 
 
 def create_main_page(data: TextData) -> str:
+    if is_authorized():
+        autho_text = get_current_user_name()
+    else:
+        autho_text = data.get_autho_btn_text()
     return render_template('main_page.html',
                            lang=data.get_lang(),
                            title=title,
-                           autho_btn_text=data.get_autho_btn_text(),
+                           autho_btn_text=autho_text,
                            change_lang_btn_text=data.get_another_lang(),
                            type=PagesType.main.value,
                            tech_info=data.get_phrase('tech_info'),
@@ -34,6 +40,10 @@ def create_add_spot_page(data: TextData, game: str | None, map_name: str | None,
                          pos: tuple[float, float] | None, name: str | None, game_errors: list | None,
                          map_errors: list | None, spot_name_errors: list | None, file_errors: list | None) -> str:
     map_image = 'None'
+    if is_authorized():
+        autho_text = get_current_user_name()
+    else:
+        autho_text = data.get_autho_btn_text()
     if game is not None:
         if map_name is not None:
             map_image = db_data.get_map_image(games_short_name_dict[game], map_name)
@@ -83,7 +93,7 @@ def create_add_spot_page(data: TextData, game: str | None, map_name: str | None,
     return render_template('add_spot.html',
                            lang=data.get_lang(),
                            title=title,
-                           autho_btn_text=data.get_autho_btn_text(),
+                           autho_btn_text=autho_text,
                            change_lang_btn_text=data.get_another_lang(),
                            type=PagesType.without_game_btn.value,
                            to_main_btn_text=data.get_to_main_btn_text(),
@@ -104,10 +114,14 @@ def create_add_spot_page(data: TextData, game: str | None, map_name: str | None,
 
 def create_game_info_page(data: TextData, game: str) -> str:
     game_image = db_data.get_game_image(game)
+    if is_authorized():
+        autho_text = get_current_user_name()
+    else:
+        autho_text = data.get_autho_btn_text()
     return render_template('game_info_page.html',
                            lang=data.get_lang(),
                            title=title,
-                           autho_btn_text=data.get_autho_btn_text(),
+                           autho_btn_text=autho_text,
                            change_lang_btn_text=data.get_another_lang(),
                            type=PagesType.with_game_btn.value,
                            to_main_btn_text=data.get_to_main_btn_text(),
@@ -124,10 +138,14 @@ def create_game_page(data: TextData, game: str) -> str:
     btn_list = [data.get_phrase('guide_btn'), data.get_phrase('maps_btn'), data.get_phrase('challenge_btn')]
     if game in games_with_spots:
         btn_list.append(data.get_phrase('learn_btn'))
+    if is_authorized():
+        autho_text = get_current_user_name()
+    else:
+        autho_text = data.get_autho_btn_text()
     return render_template('game_page.html',
                            lang=data.get_lang(),
                            title=title,
-                           autho_btn_text=data.get_autho_btn_text(),
+                           autho_btn_text=autho_text,
                            change_lang_btn_text=data.get_another_lang(),
                            type=PagesType.without_game_btn.value,
                            to_main_btn_text=data.get_to_main_btn_text(),
@@ -142,6 +160,10 @@ def create_game_page(data: TextData, game: str) -> str:
 def create_guess_page(data: TextData, game: str, map_name: str, mode: GuessMode,
                       pos: tuple[float, float] | None, map_errors: list[str] | None, time: str | None,
                       spot_id: int | None) -> str:
+    if is_authorized():
+        autho_text = get_current_user_name()
+    else:
+        autho_text = data.get_autho_btn_text()
     maps = [map_name]
     if map_name != data.get_phrase('random_map'):
         maps.append(data.get_phrase('random_map'))
@@ -175,7 +197,6 @@ def create_guess_page(data: TextData, game: str, map_name: str, mode: GuessMode,
         spot_image = db_data.get_spot_image(spot_id)
         map_image = db_data.get_map_image(game, curr_map_name)
     else:
-        # TODO: сохранить точность в пользователя
         if time is None:
             raise TypeError('End mode without time')
         if spot_id is None:
@@ -185,9 +206,12 @@ def create_guess_page(data: TextData, game: str, map_name: str, mode: GuessMode,
         curr_map_name, true_pos_x, true_pos_y, spot_name = db_data.get_spot(spot_id)
         pos_x, pos_y = pos
         guess_text = data.get_phrase('next')
-        accuracy = db_data.get_accuracy(game, map_name, (pos_x, pos_y), (true_pos_x, true_pos_y))
+        accuracy = db_data.get_accuracy(game, curr_map_name, (pos_x, pos_y), (true_pos_x, true_pos_y))
         spot_image = db_data.get_spot_image(spot_id)
         map_image = db_data.get_map_image(game, curr_map_name)
+        if is_authorized():
+            _, score = get_user_info(user_id=get_current_user_id())
+            update_user_stats(user_id=get_current_user_id(), points=score + accuracy)
     if map_errors is None:
         map_errors = list()
     else:
@@ -197,7 +221,7 @@ def create_guess_page(data: TextData, game: str, map_name: str, mode: GuessMode,
                            lang=data.get_lang(),
                            title=title,
                            header=data.get_phrase('header'),
-                           autho_btn_text=data.get_autho_btn_text(),
+                           autho_btn_text=autho_text,
                            change_lang_btn_text=data.get_another_lang(),
                            type=PagesType.with_game_btn.value,
                            to_main_btn_text=data.get_to_main_btn_text(),
@@ -227,6 +251,10 @@ def create_guess_page(data: TextData, game: str, map_name: str, mode: GuessMode,
 
 
 def create_learn_page(data: TextData, game: str, map_name: str, spot: str, pos: tuple[int, int] | None) -> str:
+    if is_authorized():
+        autho_text = get_current_user_name()
+    else:
+        autho_text = data.get_autho_btn_text()
     radius = db_data.get_radius(game, map_name)
     spots = [spot]
     true_pos_x, true_pos_y = -1, -1
@@ -234,10 +262,10 @@ def create_learn_page(data: TextData, game: str, map_name: str, spot: str, pos: 
     if pos is None:
         pos = [-1, -1]
     for spot_name, sp_pos_x, sp_pos_y in db_data.get_spots(game, map_name):
-        if pos == [-1, -1] or ((sp_pos_x - pos[0]) ** 2 + (sp_pos_y - pos[1]) ** 2) ** 0.5 <= radius / 3:
+        positions.append([sp_pos_x, sp_pos_y])
+        if pos == [-1, -1] or ((sp_pos_x - pos[0]) ** 2 + (sp_pos_y - pos[1]) ** 2) ** 0.5 <= radius:
             if spot_name != spot:
                 spots.append(spot_name)
-                positions.append([sp_pos_x, sp_pos_y])
             else:
                 true_pos_x, true_pos_y = sp_pos_x, sp_pos_y
         else:
@@ -251,7 +279,7 @@ def create_learn_page(data: TextData, game: str, map_name: str, spot: str, pos: 
     return render_template('learn_page.html',
                            lang=data.get_lang(),
                            title=title,
-                           autho_btn_text=data.get_autho_btn_text(),
+                           autho_btn_text=autho_text,
                            change_lang_btn_text=data.get_another_lang(),
                            type=PagesType.with_game_btn.value,
                            to_main_btn_text=data.get_to_main_btn_text(),
@@ -271,10 +299,14 @@ def create_learn_page(data: TextData, game: str, map_name: str, spot: str, pos: 
 
 
 def create_map_choice_page(data: TextData, maps: list[str], game_name: str) -> str:
+    if is_authorized():
+        autho_text = get_current_user_name()
+    else:
+        autho_text = data.get_autho_btn_text()
     return render_template('map_choice.html',
                            lang=data.get_lang(),
                            title=title,
-                           autho_btn_text=data.get_autho_btn_text(),
+                           autho_btn_text=autho_text,
                            change_lang_btn_text=data.get_another_lang(),
                            type=PagesType.with_game_btn.value,
                            to_main_btn_text=data.get_to_main_btn_text(),
@@ -287,13 +319,17 @@ def create_map_choice_page(data: TextData, maps: list[str], game_name: str) -> s
 
 
 def create_map_page(data: TextData, map_name: str, game: str, description_file: str) -> str:
+    if is_authorized():
+        autho_text = get_current_user_name()
+    else:
+        autho_text = data.get_autho_btn_text()
     map_image = db_data.get_map_image(game, map_name)
     with open(description_file, 'r') as f:
         description = f.readlines()
     return render_template('map_page.html',
                            lang=data.get_lang(),
                            title=title,
-                           autho_btn_text=data.get_autho_btn_text(),
+                           autho_btn_text=autho_text,
                            change_lang_btn_text=data.get_another_lang(),
                            type=PagesType.with_game_btn.value,
                            to_main_btn_text=data.get_to_main_btn_text(),
@@ -307,10 +343,14 @@ def create_map_page(data: TextData, map_name: str, game: str, description_file: 
 
 
 def create_send_success_page(data: TextData) -> str:
+    if is_authorized():
+        autho_text = get_current_user_name()
+    else:
+        autho_text = data.get_autho_btn_text()
     return render_template('send_success_page.html',
                            lang=data.get_lang(),
                            title=title,
-                           autho_btn_text=data.get_autho_btn_text(),
+                           autho_btn_text=autho_text,
                            change_lang_btn_text=data.get_another_lang(),
                            type=PagesType.main.value,
                            tech_info=data.get_phrase('tech_info'),
@@ -318,23 +358,47 @@ def create_send_success_page(data: TextData) -> str:
                            success_text=data.get_phrase('success_text'))
 
 
-def create_moder_page(data: TextData, spot_info: SpotData) -> str:  # TODO: добавить форму
-    return render_template('base_template.html',
+def create_api_info_page(data: TextData) -> str:
+    if is_authorized():
+        autho_text = get_current_user_name()
+    else:
+        autho_text = data.get_autho_btn_text()
+    return render_template('api_info.html',
+                           lang=data.get_lang(),
+                           title=title,
+                           autho_btn_text=autho_text,
+                           change_lang_btn_text=data.get_another_lang(),
+                           type=PagesType.without_game_btn.value,
+                           tech_info=data.get_phrase('tech_info'),
+                           to_main_btn_text=data.get_to_main_btn_text(),
+                           text=data.get_phrase('api_text'),
+                           get_api_key_btn=data.get_phrase('get_api_key'),)
+
+
+def create_api_key_page(data: TextData) -> str:
+    if is_authorized():
+        autho_text = get_current_user_name()
+    else:
+        autho_text = data.get_autho_btn_text()
+    return render_template('get_api.html',
+                           lang=data.get_lang(),
+                           title=title,
+                           autho_btn_text=autho_text,
+                           change_lang_btn_text=data.get_another_lang(),
+                           type=PagesType.without_game_btn.value,
+                           tech_info=data.get_phrase('tech_info'),
+                           to_main_btn_text=data.get_to_main_btn_text(),
+                           text=data.get_phrase('api_text'),
+                           api_key=get_api_key(get_current_user_name()),)
+
+
+def create_need_to_auth_page(data: TextData) -> str:
+    return render_template('need_auth.html',
                            lang=data.get_lang(),
                            title=title,
                            autho_btn_text=data.get_autho_btn_text(),
                            change_lang_btn_text=data.get_another_lang(),
                            type=PagesType.without_game_btn.value,
+                           tech_info=data.get_phrase('tech_info'),
                            to_main_btn_text=data.get_to_main_btn_text(),
-                           tech_info=data.get_phrase('tech_info'))
-
-
-def create_account_page(data: TextData) -> str:  # TODO: добавить форму
-    return render_template('base_template.html',
-                           lang=data.get_lang(),
-                           title=title,
-                           autho_btn_text=data.get_autho_btn_text(),
-                           change_lang_btn_text=data.get_another_lang(),
-                           type=PagesType.without_game_btn.value,
-                           to_main_btn_text=data.get_to_main_btn_text(),
-                           tech_info=data.get_phrase('tech_info'))
+                           text=data.get_phrase('text'),)

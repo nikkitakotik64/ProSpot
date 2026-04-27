@@ -1,11 +1,10 @@
 from flask import Flask, request, jsonify
-from data import (db_data, full_game_name, maps_dict, TextData,
+from data import (full_game_name, maps_dict, TextData,
                   pages_path, maps_path, map_descriptions)
 
 app = Flask(__name__)
 
 
-# Универсальные кнопки навигации
 def get_nav_buttons(current_game=None):
     buttons = []
     if current_game:
@@ -25,29 +24,21 @@ def main():
         "session_state": session_state
     }
     command = data['request']['command'].lower()
-
-    # 1. Приветствие и Авторизация
     if data['session']['new']:
         response['response']['text'] = 'Добро пожаловать в ProSpot. Чтобы начать, авторизуйтесь.'
         response['response']['buttons'] = [{'title': 'Авторизация', 'hide': True}]
         return jsonify(response)
-
     if 'авторизация' in command:
         session_state['authorized'] = True
         response['response']['text'] = 'Вы авторизованы. Какую игру выберем?'
         response['response']['buttons'] = [{'title': 'Выбрать игру', 'hide': True}]
         return jsonify(response)
-
     if session_state.get('authorized'):
-
-        # 2. Навигация: К списку игр
         if 'списку игр' in command or 'выбрать игру' in command:
             games_list = list(full_game_name.values())
             response['response']['text'] = 'Выберите игру из доступных:'
             response['response']['buttons'] = [{'title': g, 'hide': True} for g in games_list]
             return jsonify(response)
-
-        # 3. Навигация: К списку карт
         current_game = session_state.get('current_game')
         if 'списку карт' in command and current_game:
             available_maps = maps_dict['ru'].get(current_game, [])
@@ -57,14 +48,11 @@ def main():
             buttons.append({'title': 'К списку игр', 'hide': True})
             response['response']['buttons'] = buttons
             return jsonify(response)
-
-        # 4. Обработка выбора ИГРЫ
         game_short_name = None
         for short, full in full_game_name.items():
             if full.lower() in command:
                 game_short_name = short
                 break
-
         if game_short_name:
             session_state['current_game'] = game_short_name
             available_maps = maps_dict['ru'].get(game_short_name, [])
@@ -74,15 +62,11 @@ def main():
             buttons.append({'title': 'К списку игр', 'hide': True})
             response['response']['buttons'] = buttons
             return jsonify(response)
-
-        # 5. Инфо об игре
         if 'информацию об игре' in command and current_game:
             game_info_data = TextData(pages_path + current_game + '_info_ru.json')
             response['response']['text'] = game_info_data.get_phrase('text')
             response['response']['buttons'] = get_nav_buttons(current_game)
             return jsonify(response)
-
-        # 6. Обработка выбора КАРТЫ
         if current_game:
             maps_list = maps_dict['ru'].get(current_game, [])
             for index, m_name in enumerate(maps_list):
@@ -94,10 +78,8 @@ def main():
                         response['response']['text'] = content
                     except:
                         response['response']['text'] = f'Описание карты {m_name} не найдено.'
-
                     response['response']['buttons'] = get_nav_buttons(current_game)
                     return jsonify(response)
-
     response['response']['text'] = 'Я вас не поняла. Воспользуйтесь кнопками навигации.'
     response['response']['buttons'] = get_nav_buttons(session_state.get('current_game'))
     return jsonify(response)

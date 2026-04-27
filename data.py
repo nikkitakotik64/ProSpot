@@ -2,6 +2,7 @@ import json
 import os
 import sqlite3
 import random
+from PIL import Image
 
 path = os.path.dirname(os.path.abspath(__file__)) + '/'
 pages_path = path + 'static/pages/'
@@ -32,19 +33,23 @@ maps_dict = {  # названия карт (доступ по [язык][игр�
 games_dict = {'cs2': 'CS 2', 'eft': 'Escape From Tarkov'}  # названия по сокращению
 full_game_name = {'cs2': 'Counter-Strike 2', 'eft': 'Escape From Tarkov'}  # полные названия
 games_short_name_dict = {'CS 2': 'cs2', 'Escape From Tarkov': 'eft'}  # сокращение по названию
-games_with_spots = ('cs2', )  # список игр, где можно учить позиции
+games_with_spots = ('cs2', 'eft')  # список игр, где можно учить позиции
 map_descriptions = {  # список файлов описания карт (доступ по [язык][игра][айди карты]), лежат в папке static/maps
     'ru': {
         'cs2': ['cs2_mirage_ru.txt', 'cs2_dust2_ru.txt', 'cs2_anubis_ru.txt', 'cs2_overpass_ru.txt',
                 'cs2_inferno_ru.txt', 'cs2_nuke_ru.txt', 'cs2_ancient_ru.txt', 'cs2_train_ru.txt',
                 'cs2_vertigo_ru.txt', 'cs2_office_ru.txt', 'cs2_italy_ru.txt', 'cs2_cache_ru.txt'],
-        'eft': ['', '', '']
+        'eft': ['eft_the_lab_ru.txt', 'eft_ground_zero_ru.txt', 'eft_streets_of_tarkov_ru.txt',
+                'eft_interchange_ru.txt', 'eft_customs_ru.txt', 'eft_factory_ru.txt', 'eft_woods_ru.txt',
+                'eft_reserve_ru.txt', 'eft_lighthouse_ru.txt', 'eft_shoreline_ru.txt']
     },
     'en': {
         'cs2': ['cs2_mirage_en.txt', 'cs2_dust2_en.txt', 'cs2_anubis_en.txt', 'cs2_overpass_en.txt',
                 'cs2_inferno_en.txt', 'cs2_nuke_en.txt', 'cs2_ancient_en.txt', 'cs2_train_en.txt',
                 'cs2_vertigo_en.txt', 'cs2_office_en.txt', 'cs2_italy_en.txt', 'cs2_cache_en.txt'],
-        'eft': ['', '', '']
+        'eft': ['eft_the_lab_en.txt', 'eft_ground_zero_en.txt', 'eft_streets_of_tarkov_en.txt',
+                'eft_interchange_en.txt', 'eft_customs_en.txt', 'eft_factory_en.txt', 'eft_woods_en.txt',
+                'eft_reserve_en.txt', 'eft_lighthouse_en.txt', 'eft_shoreline_en.txt']
     }
 }
 now_in_moder_work = dict()
@@ -93,6 +98,7 @@ class DBData:
         self.connection_maker = MakeConnection(self.db)
 
     def save_added(self, game: str, map_name: str, pos: tuple[int, int] | None, name: str, filename: str) -> None:
+        map_name = self.get_en_map_name(games_short_name_dict[game], map_name)
         game_name = full_game_name[games_short_name_dict[game]]
         if pos is None:
             pos_x, pos_y = -1, -1
@@ -111,6 +117,7 @@ class DBData:
     def generate_spot(self, short_name: str, map_name: str) -> int:
         game_name = full_game_name[short_name]
         if map_name != 'Random' and map_name != 'Случайная':
+            map_name = self.get_en_map_name(short_name, map_name)
             with self.connection_maker as cur:
                 game_ind = cur.execute(f'SELECT id FROM games WHERE title = "{game_name}"').fetchone()[0]
                 map_ind = cur.execute(f'SELECT id FROM maps WHERE title = "{map_name}" '
@@ -130,16 +137,33 @@ class DBData:
             map_name = cur.execute(f'SELECT title FROM maps WHERE id = {map_ind}').fetchone()[0]
         return map_name, pos_x, pos_y, name
 
-    def get_accuracy(self, game: str, map_name: str, pos: tuple[int, int],
+    def get_accuracy(self, short_name: str, map_name: str, pos: tuple[int, int],
                      true_pos: tuple[int, int]) -> int:
-        # TODO
-        return 100
+        map_name = self.get_en_map_name(short_name, map_name)
+        pos = int(pos[0]), int(pos[1])
+        true_pos = int(true_pos[0]), int(true_pos[1])
+        rad = self.get_radius(short_name, map_name)
+        dist = ((pos[0] - true_pos[0]) ** 2 + (pos[1] - true_pos[1]) ** 2) ** 0.5
+        if dist < rad / 4:
+            return 100
+        dist -= rad / 4
+        img = Image.open(map_images_path + self.get_map_image(short_name, map_name))
+        size = min(img.size) / 2.8
+        points = round(100 * (1 - dist / size) ** 2)
+        if points == 100:
+            points = 99
+        if points < 0:
+            points = 0
+        return points
 
-    def get_radius(self, game: str, map_name: str) -> int:
-        # TODO
-        return 200
+    def get_radius(self, short_name: str, map_name: str) -> int:
+        map_name = self.get_en_map_name(short_name, map_name)
+        img = Image.open(map_images_path + self.get_map_image(short_name, map_name))
+        size = min(img.size)
+        return round(size * 0.06)
 
     def get_spots(self, short_name: str, map_name: str) -> list[tuple[str, int, int]]:
+        map_name = self.get_en_map_name(short_name, map_name)
         game_name = full_game_name[short_name]
         with self.connection_maker as cur:
             game_ind = cur.execute(f'SELECT id FROM games WHERE title = "{game_name}"').fetchone()[0]
@@ -148,7 +172,15 @@ class DBData:
             data = cur.execute(f'SELECT name, pos_x, pos_y FROM spots WHERE map = {map_ind}').fetchall()
         return data
 
+    @staticmethod
+    def get_en_map_name(short_name: str, map_name: str):
+        if map_name in maps_dict['ru'][short_name]:
+            ind = maps_dict['ru'][short_name].index(map_name)
+            return maps_dict['en'][short_name][ind]
+        return map_name
+
     def get_images(self, short_name: str, map_name: str, spot: str) -> list[str]:
+        map_name = self.get_en_map_name(short_name, map_name)
         game = full_game_name[short_name]
         images = []
         with self.connection_maker as cur:
@@ -180,6 +212,7 @@ class DBData:
         return image
 
     def get_map_image(self, short_name: str, map_name: str) -> str:
+        map_name = self.get_en_map_name(short_name, map_name)
         game = full_game_name[short_name]
         with self.connection_maker as cur:
             game_ind = cur.execute(f'SELECT id FROM games WHERE title = "{game}"').fetchone()[0]
@@ -194,21 +227,3 @@ class DBData:
 
 
 db_data = DBData()  # глобальная константа для работы с бд
-
-
-class SpotData:
-    def __init__(self) -> None:
-        self.ind = 0  # получить индекс ещё не обработанной заявки на добавление (использовать now_in_moder_work)
-        # получить все данные
-
-    def accept(self) -> None:
-        # сохранить в бд
-        pass
-
-    def refuse(self) -> None:
-        # удалить запись из бд
-        pass
-
-    def sleep(self) -> None:
-        # удалить из now_in_moder_work
-        pass
