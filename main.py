@@ -109,7 +109,7 @@ def return_add_spot_page_ru(game: str | None = None, map_name: str | None = None
 @app.route('/add_spot', methods=['GET'])
 def add_spot_page():
     if not is_authorized():
-        abort(403)
+        return redirect('/need_to_auth/ru')
     request.accept_languages.best_match(['ru', 'en'])
     lang = request.accept_languages.best
     if lang == 'ru-RU':
@@ -120,7 +120,7 @@ def add_spot_page():
 @app.route('/add_spot/en', methods=['POST', 'GET'])
 def add_spot_page_en():
     if not is_authorized():
-        abort(403)
+        return redirect('/need_to_auth/en')
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
         game = request.form.get('game', None)
@@ -193,7 +193,7 @@ def add_spot_page_en():
 @app.route('/add_spot/ru', methods=['POST', 'GET'])
 def add_spot_page_ru():
     if not is_authorized():
-        abort(403)
+        return redirect('/need_to_auth/ru')
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
         game = request.form.get('game', None)
@@ -983,7 +983,7 @@ def get_key_page():
 @app.route('/get_key/ru', methods=['POST', 'GET'])
 def get_key_page_ru():
     if not is_authorized():
-        abort(403)
+        return redirect('/need_to_auth/ru')
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
         match btn_pressed:
@@ -999,7 +999,7 @@ def get_key_page_ru():
 @app.route('/get_key/en', methods=['POST', 'GET'])
 def get_key_page_en():
     if not is_authorized():
-        abort(403)
+        return redirect('/need_to_auth/en')
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
         match btn_pressed:
@@ -1010,6 +1010,49 @@ def get_key_page_en():
             case 'to_main':
                 return redirect('/en')
     return return_get_key_page_en()
+
+
+def return_need_to_auth_page_ru():
+    data = TextData(pages_path + 'need_auth_ru.json')
+    return create_need_to_auth_page(data)
+
+
+def return_need_to_auth_page_en():
+    data = TextData(pages_path + 'need_auth_en.json')
+    return create_need_to_auth_page(data)
+
+
+@app.route('/need_to_auth/ru', methods=['GET', 'POST'])
+def need_to_auth_page_ru():
+    if is_authorized():
+        return redirect('/ru')
+    if request.method == 'POST':
+        btn_pressed = request.form.get('btn', None)
+        match btn_pressed:
+            case 'change_lang':
+                return redirect('/need_to_auth/en')
+            case 'autho':
+                return redirect('/autho/ru')
+            case 'to_main':
+                return redirect('/ru')
+    return return_need_to_auth_page_ru()
+
+
+@app.route('/need_to_auth/en', methods=['GET', 'POST'])
+def need_to_auth_page_en():
+    if is_authorized():
+        return redirect('/en')
+    if request.method == 'POST':
+        btn_pressed = request.form.get('btn', None)
+        match btn_pressed:
+            case 'change_lang':
+                return redirect('/need_to_auth/ru')
+            case 'autho':
+                return redirect('/autho/en')
+            case 'to_main':
+                return redirect('/en')
+    return return_need_to_auth_page_en()
+
 
 
 if __name__ == '__main__':

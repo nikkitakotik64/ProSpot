@@ -391,3 +391,15 @@ def create_api_key_page(data: TextData) -> str:
                            to_main_btn_text=data.get_to_main_btn_text(),
                            text=data.get_phrase('api_text'),
                            api_key=get_api_key(get_current_user_name()),)
+
+
+def create_need_to_auth_page(data: TextData) -> str:
+    return render_template('need_auth.html',
+                           lang=data.get_lang(),
+                           title=title,
+                           autho_btn_text=data.get_autho_btn_text(),
+                           change_lang_btn_text=data.get_another_lang(),
+                           type=PagesType.without_game_btn.value,
+                           tech_info=data.get_phrase('tech_info'),
+                           to_main_btn_text=data.get_to_main_btn_text(),
+                           text=data.get_phrase('text'),)

@@ -7,7 +7,7 @@
       <excludeFolder url="file://$MODULE_DIR$/.venv/Scripts" />
     </content>
     <content url="file://$MODULE_DIR$/.venv/Lib/site-packages" />
-    <orderEntry type="jdk" jdkName="Python 3.13 (ProSpot)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.14 (ProSpot)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

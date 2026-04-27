@@ -94,6 +94,7 @@ class DBData:
         self.connection_maker = MakeConnection(self.db)
 
     def save_added(self, game: str, map_name: str, pos: tuple[int, int] | None, name: str, filename: str) -> None:
+        map_name = self.get_en_map_name(games_short_name_dict[game], map_name)
         game_name = full_game_name[games_short_name_dict[game]]
         if pos is None:
             pos_x, pos_y = -1, -1
@@ -112,6 +113,7 @@ class DBData:
     def generate_spot(self, short_name: str, map_name: str) -> int:
         game_name = full_game_name[short_name]
         if map_name != 'Random' and map_name != 'Случайная':
+            map_name = self.get_en_map_name(short_name, map_name)
             with self.connection_maker as cur:
                 game_ind = cur.execute(f'SELECT id FROM games WHERE title = "{game_name}"').fetchone()[0]
                 map_ind = cur.execute(f'SELECT id FROM maps WHERE title = "{map_name}" '
@@ -133,6 +135,7 @@ class DBData:
 
     def get_accuracy(self, short_name: str, map_name: str, pos: tuple[int, int],
                      true_pos: tuple[int, int]) -> int:
+        map_name = self.get_en_map_name(short_name, map_name)
         pos = int(pos[0]), int(pos[1])
         true_pos = int(true_pos[0]), int(true_pos[1])
         rad = self.get_radius(short_name, map_name)
@@ -150,11 +153,13 @@ class DBData:
         return points
 
     def get_radius(self, short_name: str, map_name: str) -> int:
+        map_name = self.get_en_map_name(short_name, map_name)
         img = Image.open(map_images_path + self.get_map_image(short_name, map_name))
         size = min(img.size)
         return round(size * 0.06)
 
     def get_spots(self, short_name: str, map_name: str) -> list[tuple[str, int, int]]:
+        map_name = self.get_en_map_name(short_name, map_name)
         game_name = full_game_name[short_name]
         with self.connection_maker as cur:
             game_ind = cur.execute(f'SELECT id FROM games WHERE title = "{game_name}"').fetchone()[0]
@@ -163,7 +168,15 @@ class DBData:
             data = cur.execute(f'SELECT name, pos_x, pos_y FROM spots WHERE map = {map_ind}').fetchall()
         return data
 
+    @staticmethod
+    def get_en_map_name(short_name: str, map_name: str):
+        if map_name in maps_dict['ru'][short_name]:
+            ind = maps_dict['ru'][short_name].index(map_name)
+            return maps_dict['en'][short_name][ind]
+        return map_name
+
     def get_images(self, short_name: str, map_name: str, spot: str) -> list[str]:
+        map_name = self.get_en_map_name(short_name, map_name)
         game = full_game_name[short_name]
         images = []
         with self.connection_maker as cur:
@@ -195,6 +208,7 @@ class DBData:
         return image
 
     def get_map_image(self, short_name: str, map_name: str) -> str:
+        map_name = self.get_en_map_name(short_name, map_name)
         game = full_game_name[short_name]
         with self.connection_maker as cur:
             game_ind = cur.execute(f'SELECT id FROM games WHERE title = "{game}"').fetchone()[0]
