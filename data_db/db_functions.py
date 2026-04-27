@@ -59,7 +59,7 @@ def get_user_info(user_id=None, user_name=None):
     return cnt, sm
 
 def is_authorized():
-    return current_user.is_authorized()
+    return current_user.is_authenticated
 
 def get_current_user_id():
     if current_user.is_authenticated:
