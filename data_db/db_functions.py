@@ -90,11 +90,11 @@ def update_user_stats(user_id=None, user_name=None, points=0):
         user = db_sess.query(User).filter(User.username == user_name).first()
     else:
         db_sess.close()
-        return None, None
+        return
 
     if not user:
         db_sess.close()
-        return None, None
+        return
 
     user.games_cnt = (user.games_cnt or 0 ) + 1
     user.sum_points = (user.sum_points or 0) + points

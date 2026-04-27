@@ -1,7 +1,8 @@
 from data import games_list, TextData, maps_dict, games_dict, games_short_name_dict, games_with_spots, db_data
 from flask import render_template
 from enum import Enum
-from data_db.db_functions import is_authorized, get_current_user_name, get_user_info, get_current_user_id, get_api_key
+from data_db.db_functions import is_authorized, get_current_user_name, get_user_info, get_current_user_id, get_api_key, \
+    update_user_stats
 
 title = 'ProSpot'
 
@@ -209,10 +210,8 @@ def create_guess_page(data: TextData, game: str, map_name: str, mode: GuessMode,
         spot_image = db_data.get_spot_image(spot_id)
         map_image = db_data.get_map_image(game, curr_map_name)
         if is_authorized():
-            count_games, score = get_user_info(user_id=get_current_user_id())
-            count_games += 1
-            score += accuracy
-            # TODO: сохранить
+            _, score = get_user_info(user_id=get_current_user_id())
+            update_user_stats(user_id=get_current_user_id(), points=score + accuracy)
     if map_errors is None:
         map_errors = list()
     else:
