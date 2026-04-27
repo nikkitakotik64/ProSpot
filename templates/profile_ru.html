@@ -18,8 +18,7 @@
             <p><strong>Email:</strong> {{ user.email }}</p>
             <p><strong>Дата регистрации:</strong> {{ user.created_date.strftime('%d.%m.%Y %H:%M') }}</p>
             <p><strong>Сыграно игр:</strong> {{ user.games_cnt or 0 }}</p>
-            <p><strong>Всего очков:</strong> {{ user.sum_points or 0 }}</p>
-            <p><strong>Средний результат:</strong>
+            <p><strong>Точность:</strong>
                 {% if user.games_cnt and user.games_cnt > 0 %}
                     {{ "%.2f"|format(user.sum_points / user.games_cnt) }}
                 {% else %}
