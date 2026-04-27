@@ -17,7 +17,7 @@ class User(SqlAlchemyBase, UserMixin):
     created_date = sqlalchemy.Column(sqlalchemy.DateTime,
                                      default=datetime.datetime.now)
     games_cnt = sqlalchemy.Column(sqlalchemy.Integer, nullable=True, unique=False, default=0)
-    sum_points = sqlalchemy.Column(sqlalchemy.Float, nullable=True, unique=False, default=0)
+    sum_points = sqlalchemy.Column(sqlalchemy.Integer, nullable=True, unique=False, default=0)
     api_key = sqlalchemy.Column(sqlalchemy.String, nullable=True, unique=True)
 
     def set_password(self, password):
