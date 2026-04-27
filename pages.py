@@ -1,7 +1,7 @@
 from data import games_list, TextData, maps_dict, games_dict, games_short_name_dict, games_with_spots, db_data
 from flask import render_template
 from enum import Enum
-from data_db.db_functions import is_authorized, get_current_user_name
+from data_db.db_functions import is_authorized, get_current_user_name, get_user_info, get_current_user_id
 
 title = 'ProSpot'
 
@@ -196,7 +196,6 @@ def create_guess_page(data: TextData, game: str, map_name: str, mode: GuessMode,
         spot_image = db_data.get_spot_image(spot_id)
         map_image = db_data.get_map_image(game, curr_map_name)
     else:
-        # TODO: сохранить точность в пользователя
         if time is None:
             raise TypeError('End mode without time')
         if spot_id is None:
@@ -209,6 +208,11 @@ def create_guess_page(data: TextData, game: str, map_name: str, mode: GuessMode,
         accuracy = db_data.get_accuracy(game, curr_map_name, (pos_x, pos_y), (true_pos_x, true_pos_y))
         spot_image = db_data.get_spot_image(spot_id)
         map_image = db_data.get_map_image(game, curr_map_name)
+        if is_authorized():
+            count_games, score = get_user_info(user_id=get_current_user_id())
+            count_games += 1
+            score += accuracy
+            # TODO: сохранить
     if map_errors is None:
         map_errors = list()
     else:

@@ -16,10 +16,11 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 app.config['SECRET_KEY'] = 'mi_crytie_ochen1_dva_geniya_prosto'
 
+
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = db_session.create_session()
-    return db_sess.get(User,user_id)
+    return db_sess.get(User, user_id)
 
 
 class MapChoiceType(Enum):
@@ -40,7 +41,7 @@ def main_page_ru():
             case 'change_lang':
                 return redirect('/en')
             case 'autho':
-               return redirect('/autho/ru')  # TODO
+                return redirect('/autho/ru')
             case 'CS 2':
                 return redirect('/cs2/ru')
             case 'Escape From Tarkov':
@@ -64,7 +65,7 @@ def main_page_en():
             case 'change_lang':
                 return redirect('/ru')
             case 'autho':
-                return redirect('/autho/en') # TODO
+                return redirect('/autho/en')
             case 'CS 2':
                 return redirect('/cs2/en')
             case 'Escape From Tarkov':
@@ -107,8 +108,8 @@ def return_add_spot_page_ru(game: str | None = None, map_name: str | None = None
 
 @app.route('/add_spot', methods=['GET'])
 def add_spot_page():
-    if False:
-        abort(403)  # TODO: пользователь не авторизован
+    if not is_authorized():
+        abort(403)
     request.accept_languages.best_match(['ru', 'en'])
     lang = request.accept_languages.best
     if lang == 'ru-RU':
@@ -118,8 +119,8 @@ def add_spot_page():
 
 @app.route('/add_spot/en', methods=['POST', 'GET'])
 def add_spot_page_en():
-    if False:
-        abort(403)  # TODO: пользователь не авторизован
+    if not is_authorized():
+        abort(403)
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
         game = request.form.get('game', None)
@@ -147,7 +148,7 @@ def add_spot_page_en():
             case 'change_lang':
                 return redirect('/add_spot/ru')
             case 'autho':
-                return redirect('/autho/en')  # TODO
+                return redirect('/autho/en')
             case 'send':
                 game_errors = []
                 if game is None:
@@ -191,8 +192,8 @@ def add_spot_page_en():
 
 @app.route('/add_spot/ru', methods=['POST', 'GET'])
 def add_spot_page_ru():
-    if False:
-        abort(403)  # TODO: пользователь не авторизован
+    if not is_authorized():
+        abort(403)
     if request.method == 'POST':
         btn_pressed = request.form.get('btn', None)
         game = request.form.get('game', None)
@@ -220,7 +221,7 @@ def add_spot_page_ru():
             case 'change_lang':
                 return redirect('/add_spot/en')
             case 'autho':
-                return redirect('/autho/ru')  # TODO
+                return redirect('/autho/ru')
             case 'send':
                 game_errors = []
                 if game is None:
@@ -293,7 +294,7 @@ def game_info_page_ru(game_short_name: str):
             case 'change_lang':
                 return redirect(f'/{game_short_name}/info/en')
             case 'autho':
-                print('Авторизация пока недоступна')  # TODO
+                return redirect('/autho/ru')
             case 'to_game':
                 return redirect(f'/{game_short_name}/ru')
             case 'to_main':
@@ -311,7 +312,7 @@ def game_info_page_en(game_short_name: str):
             case 'change_lang':
                 return redirect(f'/{game_short_name}/info/ru')
             case 'autho':
-                return redirect('/autho/en')  # TODO
+                return redirect('/autho/en')
             case 'to_game':
                 return redirect(f'/{game_short_name}/en')
             case 'to_main':
@@ -350,7 +351,7 @@ def game_page_ru(game_short_name: str):
             case 'change_lang':
                 return redirect(f'/{game_short_name}/en')
             case 'autho':
-                return redirect('/autho/ru')  # TODO
+                return redirect('/autho/ru')
             case 'to_main':
                 return redirect('/ru')
             case 'Гайд':
@@ -374,7 +375,7 @@ def game_page_en(game_short_name: str):
             case 'change_lang':
                 return redirect(f'/{game_short_name}/ru')
             case 'autho':
-                return redirect('/autho/en')  # TODO
+                return redirect('/autho/en')
             case 'to_main':
                 return redirect('/en')
             case 'Guide':
@@ -389,15 +390,15 @@ def game_page_en(game_short_name: str):
 
 
 def return_guess_page_en(short_name: str, map_name: str, mode: GuessMode,
-                      pos: tuple[float, float] | None = None, map_errors: list[str] | None = None,
-                      time: str | None = None, spot_id: int | None = None):
+                         pos: tuple[float, float] | None = None, map_errors: list[str] | None = None,
+                         time: str | None = None, spot_id: int | None = None):
     data = TextData(pages_path + short_name + '_guess_en.json')
     return create_guess_page(data, short_name, map_name, mode, pos, map_errors, time, spot_id)
 
 
 def return_guess_page_ru(short_name: str, map_name: str, mode: GuessMode,
-                      pos: tuple[float, float] | None = None, map_errors: list[str] | None = None,
-                      time: str | None = None, spot_id: int | None = None):
+                         pos: tuple[float, float] | None = None, map_errors: list[str] | None = None,
+                         time: str | None = None, spot_id: int | None = None):
     data = TextData(pages_path + short_name + '_guess_ru.json')
     return create_guess_page(data, short_name, map_name, mode, pos, map_errors, time, spot_id)
 
@@ -442,7 +443,7 @@ def guess_page_ru(game_short_name: str, map_id: int):
             case 'change_lang':
                 return redirect(f'/{game_short_name}/guess/{map_id}/en')
             case 'autho':
-                return redirect('/autho/ru')  # TODO
+                return redirect('/autho/ru')
             case 'to_main':
                 return redirect('/ru')
             case 'to_game':
@@ -454,7 +455,7 @@ def guess_page_ru(game_short_name: str, map_id: int):
                         time = '00:00'
                         pos_x, pos_y = -1, -1
                         return return_guess_page_ru(game_short_name, map_name, GuessMode.guess, (pos_x, pos_y),
-                                             [], time, spot_id)
+                                                    [], time, spot_id)
                     case GuessMode.guess:
                         map_errors = []
                         if pos_x is None or pos_y is None or not pos_x or not pos_y:
@@ -471,7 +472,7 @@ def guess_page_ru(game_short_name: str, map_id: int):
                         time = '00:00'
                         pos_x, pos_y = -1, -1
                         return return_guess_page_ru(game_short_name, map_name, GuessMode.guess, (pos_x, pos_y),
-                                             [], time, spot_id)
+                                                    [], time, spot_id)
     return return_guess_page_ru(game_short_name, map_name, GuessMode.start)
 
 
@@ -502,7 +503,7 @@ def guess_page_en(game_short_name: str, map_id: int):
             case 'change_lang':
                 return redirect(f'/{game_short_name}/guess/{map_id}/ru')
             case 'autho':
-                return redirect('/autho/en')  # TODO
+                return redirect('/autho/en')
             case 'to_main':
                 return redirect('/en')
             case 'to_game':
@@ -514,7 +515,7 @@ def guess_page_en(game_short_name: str, map_id: int):
                         time = '00:00'
                         pos_x, pos_y = -1, -1
                         return return_guess_page_en(game_short_name, map_name, GuessMode.guess, (pos_x, pos_y),
-                                             [], time, spot_id)
+                                                    [], time, spot_id)
                     case GuessMode.guess:
                         map_errors = []
                         if pos_x is None or pos_y is None or not pos_x or not pos_y:
@@ -531,7 +532,7 @@ def guess_page_en(game_short_name: str, map_id: int):
                         time = '00:00'
                         pos_x, pos_y = -1, -1
                         return return_guess_page_en(game_short_name, map_name, GuessMode.guess, (pos_x, pos_y),
-                                             [], time, spot_id)
+                                                    [], time, spot_id)
     return return_guess_page_en(game_short_name, map_name, GuessMode.start)
 
 
@@ -576,7 +577,7 @@ def learn_page_ru(game_short_name: str, map_id: int):
             case 'change_lang':
                 return redirect(f'/{game_short_name}/learn/{map_id}/en')
             case 'autho':
-                return redirect('/autho/ru')  # TODO
+                return redirect('/autho/ru')
             case 'to_main':
                 return redirect('/ru')
             case 'to_game':
@@ -603,7 +604,7 @@ def learn_page_en(game_short_name: str, map_id: int):
             case 'change_lang':
                 return redirect(f'/{game_short_name}/learn/{map_id}/ru')
             case 'autho':
-                return redirect('/autho/en')  # TODO
+                return redirect('/autho/en')
             case 'to_main':
                 return redirect('/en')
             case 'to_game':
@@ -655,7 +656,7 @@ def map_choice_page_ru(game_short_name: str, map_choice_type: int):
             case 'change_lang':
                 return redirect(f'/{game_short_name}/map_choice/{map_choice_type}/en')
             case 'autho':
-                return redirect('/autho/ru')  # TODO
+                return redirect('/autho/ru')
             case 'to_main':
                 return redirect('/ru')
             case 'to_game':
@@ -687,7 +688,7 @@ def map_choice_page_en(game_short_name: str, map_choice_type: int):
             case 'change_lang':
                 return redirect(f'/{game_short_name}/map_choice/{map_choice_type}/ru')
             case 'autho':
-                return redirect('/autho/en')  # TODO
+                return redirect('/autho/en')
             case 'to_main':
                 return redirect('/en')
             case 'to_game':
@@ -742,7 +743,7 @@ def map_page_ru(game_short_name: str, map_id: int):
             case 'change_lang':
                 return redirect(f'/{game_short_name}/map/{map_id}/en')
             case 'autho':
-                return redirect('/autho/ru')  # TODO
+                return redirect('/autho/ru')
             case 'to_main':
                 return redirect('/ru')
             case 'to_game':
@@ -763,7 +764,7 @@ def map_page_en(game_short_name: str, map_id: int):
             case 'change_lang':
                 return redirect(f'/{game_short_name}/map/{map_id}/ru')
             case 'autho':
-                return redirect('/autho/en')  # TODO
+                return redirect('/autho/en')
             case 'to_main':
                 return redirect('/en')
             case 'to_game':
@@ -782,7 +783,7 @@ def return_success_send_page_ru():
             case 'change_lang':
                 return redirect('/success/en')
             case 'autho':
-                return redirect('/autho/ru')  # TODO
+                return redirect('/autho/ru')
     data = TextData(pages_path + 'success_ru.json')
     return create_send_success_page(data)
 
@@ -797,9 +798,10 @@ def return_success_send_page_en():
             case 'change_lang':
                 return redirect('/success/ru')
             case 'autho':
-                return redirect('/autho/en')  # TODO
+                return redirect('/autho/en')
     data = TextData(pages_path + 'success_en.json')
     return create_send_success_page(data)
+
 
 @app.route("/regist/ru", methods=["POST", "GET"])
 def register_ru():
@@ -827,6 +829,7 @@ def register_ru():
         return redirect('/ru')
     return render_template('register_ru.html', title='Регистрация', form=form)
 
+
 @app.route('/autho/ru', methods=['POST', 'GET'])
 def login_ru():
     if current_user.is_authenticated:
@@ -839,9 +842,10 @@ def login_ru():
             login_user(user, remember=form.remember_me.data)
             return redirect("/ru")
         return render_template('authorization_ru.html',
-                                message="Неправильный логин или пароль",
-                                form=form)
+                               message="Неправильный логин или пароль",
+                               form=form)
     return render_template('authorization_ru.html', title='Авторизация', form=form)
+
 
 @app.route('/autho/en', methods=['POST', 'GET'])
 def login_en():
@@ -855,9 +859,10 @@ def login_en():
             login_user(user, remember=form.remember_me.data)
             return redirect("/en")
         return render_template('authorization_en.html',
-                                message="Wrong password or login",
-                                form=form)
+                               message="Wrong password or login",
+                               form=form)
     return render_template('authorization_en.html', title='Authorization', form=form)
+
 
 @app.route("/regist/en", methods=["POST", "GET"])
 def register_en():
@@ -885,6 +890,7 @@ def register_en():
         return redirect('/en')
     return render_template('register_en.html', title='Registration', form=form)
 
+
 @app.route('/logout')
 @login_required
 def logout():
@@ -897,10 +903,12 @@ def logout():
 def profile_ru():
     return render_template('profile_ru.html', user=current_user)
 
+
 @app.route('/profile_en')
 @login_required
 def profile_en():
     return render_template('profile_en.html', user=current_user)
+
 
 if __name__ == '__main__':
     db_session.global_init("db/users.sqlite")
