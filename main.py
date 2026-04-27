@@ -910,6 +910,108 @@ def profile_en():
     return render_template('profile_en.html', user=current_user)
 
 
+def return_api_info_page_ru():
+    data = TextData(pages_path + 'api_info_ru.json')
+    return create_api_info_page(data)
+
+
+def return_api_info_page_en():
+    data = TextData(pages_path + 'api_info_en.json')
+    return create_api_info_page(data)
+
+
+@app.route('/api_info', methods=['GET'])
+def api_info_page():
+    request.accept_languages.best_match(['ru', 'en'])
+    lang = request.accept_languages.best
+    if lang == 'ru-RU':
+        return redirect(f'/api_info/ru')
+    return redirect(f'/api_info/en')
+
+
+@app.route('/api_info/ru', methods=['POST', 'GET'])
+def api_info_page_ru():
+    if request.method == 'POST':
+        btn_pressed = request.form.get('btn', None)
+        match btn_pressed:
+            case 'change_lang':
+                return redirect('/api_info/en')
+            case 'autho':
+                return redirect('/autho/ru')
+            case 'to_main':
+                return redirect('/ru')
+            case 'get_api_key':
+                return redirect('/get_key/ru')
+    return return_api_info_page_ru()
+
+
+@app.route('/api_info/en', methods=['POST', 'GET'])
+def api_info_page_en():
+    if request.method == 'POST':
+        btn_pressed = request.form.get('btn', None)
+        match btn_pressed:
+            case 'change_lang':
+                return redirect('/api_info/ru')
+            case 'autho':
+                return redirect('/autho/en')
+            case 'to_main':
+                return redirect('/en')
+            case 'get_api_key':
+                return redirect('/get_key/en')
+    return return_api_info_page_en()
+
+
+def return_get_key_page_ru():
+    data = TextData(pages_path + 'get_key_ru.json')
+    return create_api_key_page(data)
+
+
+def return_get_key_page_en():
+    data = TextData(pages_path + 'get_key_en.json')
+    return create_api_key_page(data)
+
+
+@app.route('/get_key', methods=['GET'])
+def get_key_page():
+    request.accept_languages.best_match(['ru', 'en'])
+    lang = request.accept_languages.best
+    if lang == 'ru-RU':
+        return redirect(f'/get_key/ru')
+    return redirect(f'/get_key/en')
+
+
+@app.route('/get_key/ru', methods=['POST', 'GET'])
+def get_key_page_ru():
+    if not is_authorized():
+        abort(403)
+    if request.method == 'POST':
+        btn_pressed = request.form.get('btn', None)
+        match btn_pressed:
+            case 'change_lang':
+                return redirect('/get_key/en')
+            case 'autho':
+                return redirect('/autho/ru')
+            case 'to_main':
+                return redirect('/ru')
+    return return_get_key_page_ru()
+
+
+@app.route('/get_key/en', methods=['POST', 'GET'])
+def get_key_page_en():
+    if not is_authorized():
+        abort(403)
+    if request.method == 'POST':
+        btn_pressed = request.form.get('btn', None)
+        match btn_pressed:
+            case 'change_lang':
+                return redirect('/get_key/ru')
+            case 'autho':
+                return redirect('/autho/en')
+            case 'to_main':
+                return redirect('/en')
+    return return_get_key_page_en()
+
+
 if __name__ == '__main__':
     db_session.global_init("db/users.sqlite")
     app.run(port=8080, host='127.0.0.1')

@@ -9,6 +9,14 @@ simbs += simbs.upper()
 simbs += '1234567890'
 
 
+def check_api_key(key: str) -> bool:
+    db_sess = create_session()
+    exist_key = db_sess.query(User).filter(User.api_key == key).first()
+    if exist_key:
+        return True
+    return False
+
+
 def generate_api_key():
     while True:
         ans = ''
