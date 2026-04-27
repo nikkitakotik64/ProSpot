@@ -33,19 +33,23 @@ maps_dict = {  # названия карт (доступ по [язык][игр�
 games_dict = {'cs2': 'CS 2', 'eft': 'Escape From Tarkov'}  # названия по сокращению
 full_game_name = {'cs2': 'Counter-Strike 2', 'eft': 'Escape From Tarkov'}  # полные названия
 games_short_name_dict = {'CS 2': 'cs2', 'Escape From Tarkov': 'eft'}  # сокращение по названию
-games_with_spots = ('cs2', )  # список игр, где можно учить позиции
+games_with_spots = ('cs2', 'eft')  # список игр, где можно учить позиции
 map_descriptions = {  # список файлов описания карт (доступ по [язык][игра][айди карты]), лежат в папке static/maps
     'ru': {
         'cs2': ['cs2_mirage_ru.txt', 'cs2_dust2_ru.txt', 'cs2_anubis_ru.txt', 'cs2_overpass_ru.txt',
                 'cs2_inferno_ru.txt', 'cs2_nuke_ru.txt', 'cs2_ancient_ru.txt', 'cs2_train_ru.txt',
                 'cs2_vertigo_ru.txt', 'cs2_office_ru.txt', 'cs2_italy_ru.txt', 'cs2_cache_ru.txt'],
-        'eft': ['', '', '']
+        'eft': ['eft_the_lab_ru.txt', 'eft_ground_zero_ru.txt', 'eft_streets_of_tarkov_ru.txt',
+                'eft_interchange_ru.txt', 'eft_customs_ru.txt', 'eft_factory_ru.txt', 'eft_woods_ru.txt',
+                'eft_reserve_ru.txt', 'eft_lighthouse_ru.txt', 'eft_shoreline_ru.txt']
     },
     'en': {
         'cs2': ['cs2_mirage_en.txt', 'cs2_dust2_en.txt', 'cs2_anubis_en.txt', 'cs2_overpass_en.txt',
                 'cs2_inferno_en.txt', 'cs2_nuke_en.txt', 'cs2_ancient_en.txt', 'cs2_train_en.txt',
                 'cs2_vertigo_en.txt', 'cs2_office_en.txt', 'cs2_italy_en.txt', 'cs2_cache_en.txt'],
-        'eft': ['', '', '']
+        'eft': ['eft_the_lab_en.txt', 'eft_ground_zero_en.txt', 'eft_streets_of_tarkov_en.txt',
+                'eft_interchange_en.txt', 'eft_customs_en.txt', 'eft_factory_en.txt', 'eft_woods_en.txt',
+                'eft_reserve_en.txt', 'eft_lighthouse_en.txt', 'eft_shoreline_en.txt']
     }
 }
 now_in_moder_work = dict()
