@@ -5,6 +5,8 @@ from data import TextData, pages_path, games_short_names_list, maps_dict, \
 from datetime import datetime
 from PIL import Image
 from login import *
+from flask_restful import Api
+from api import SiteApi
 from enum import Enum
 from data_db import db_session
 from data_db.users import User
@@ -15,6 +17,8 @@ app = Flask(__name__)
 login_manager = LoginManager()
 login_manager.init_app(app)
 app.config['SECRET_KEY'] = 'mi_crytie_ochen1_dva_geniya_prosto'
+api = Api(app)
+api.add_resource(SiteApi, '/search')
 
 
 @login_manager.user_loader
