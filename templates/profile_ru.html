@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="alert alert-info">
+        <h2>Здравствуй, {{ user.name }}!</h2>
+        <p class="mt-3">Хочешь выйти из аккаунта?</p>
+        <a href="{{ url_for('logout') }}" class="btn btn-danger">Выйти</a>
+        <a href="/ru" class="btn btn-secondary ml-2">Вернуться на главную</a>
+    </div>
+
+    <!-- Доп инфa о пользователе -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>Твоя статистика</h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Дата регистрации:</strong> {{ user.created_date.strftime('%d.%m.%Y %H:%M') }}</p>
+            <p><strong>Сыграно игр:</strong> {{ user.games_cnt or 0 }}</p>
+            <p><strong>Всего очков:</strong> {{ user.sum_points or 0 }}</p>
+            <p><strong>Средний результат:</strong>
+                {% if user.games_cnt and user.games_cnt > 0 %}
+                    {{ "%.2f"|format(user.sum_points / user.games_cnt) }}
+                {% else %}
+                    0
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

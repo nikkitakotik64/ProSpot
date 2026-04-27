@@ -1,8 +1,7 @@
 from pages import *
-from flask import Flask, request, redirect, abort
+from flask import Flask, request, redirect, abort, url_for
 from data import TextData, pages_path, games_short_names_list, maps_dict, \
     map_descriptions, maps_path, images_path, full_game_name, memory_images_path, db_data
-from flask_login import login_user
 from datetime import datetime
 from PIL import Image
 from login import *
@@ -10,7 +9,7 @@ from enum import Enum
 from data_db import db_session
 from data_db.users import User
 from forms.user import RegisterForm_Ru, LoginForm_Ru, RegisterForm_En, LoginForm_En
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 
 app = Flask(__name__)
 login_manager = LoginManager()
@@ -804,6 +803,8 @@ def return_success_send_page_en():
 
 @app.route("/regist/ru", methods=["POST", "GET"])
 def register_ru():
+    if current_user.is_authenticated:
+        return redirect(url_for('profile_ru'))
     form = RegisterForm_Ru()
     if form.validate_on_submit():
         if form.password.data != form.password_again.data:
@@ -828,6 +829,8 @@ def register_ru():
 
 @app.route('/autho/ru', methods=['POST', 'GET'])
 def login_ru():
+    if current_user.is_authenticated:
+        return render_template('profile_ru.html', user=current_user)
     form = LoginForm_Ru()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
@@ -877,6 +880,18 @@ def register_en():
         db_sess.commit()
         return redirect('/en')
     return render_template('register_en.html', title='Registration', form=form)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect('/ru')
+
+
+@app.route('/profile_ru')
+@login_required
+def profile_ru():
+    return render_template('profile_ru.html', user=current_user)
 
 if __name__ == '__main__':
     db_session.global_init("db/users.sqlite")
