@@ -821,6 +821,10 @@ def register_ru():
         if db_sess.query(User).filter(User.email == form.email.data).first():
             return render_template('register_ru.html', title='Регистрация',
                                    form=form,
+                                   message="Пользователь с такой почтой уже есть")
+        if db_sess.query(User).filter(User.name == form.name.data).first():
+            return render_template('register_ru.html', title='Регистрация',
+                                   form=form,
                                    message="Такой пользователь уже есть")
         user = User(
             name=form.name.data,
@@ -881,6 +885,10 @@ def register_en():
         db_sess = db_session.create_session()
         if db_sess.query(User).filter(User.email == form.email.data).first():
             return render_template('register_en.html', title='Registration',
+                                   form=form,
+                                   message="There is already a user with such an email address")
+        if db_sess.query(User).filter(User.name == form.name.data).first():
+            return render_template('register_ru.html', title='Регистрация',
                                    form=form,
                                    message="There is already such a user")
         user = User(
