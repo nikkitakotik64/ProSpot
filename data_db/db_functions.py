@@ -48,13 +48,13 @@ def get_user_info(user_id=None, user_name=None):
         user = db_sess.query(User).filter_by(id=user_id).first()
         db_sess.close()
     else:
-        return 0, 0.0
+        return 0, 0
 
     if not user:
-        return 0, 0.0
+        return 0, 0
 
     cnt = user.games_cnt or 0
-    sm = user.sum_points or 0.0
+    sm = user.sum_points or 0
 
     return cnt, sm
 
@@ -73,3 +73,24 @@ def get_current_user_name():
     if current_user.is_authenticated:
         return current_user.name
     return None
+
+def update_user_stats(user_id=None, user_name=None, points=0):
+    db_sess = create_session()
+    if user_id:
+        user = db_sess.query(User).filter(User.id == user_id).first()
+    elif user_name:
+        user = db_sess.query(User).filter(User.username == user_name).first()
+    else:
+        db_sess.close()
+        return None, None
+
+    if not user:
+        db_sess.close()
+        return None, None
+
+    user.games_cnt = (user.games_cnt or 0 ) + 1
+    user.sum_points = (user.sum_points or 0) + points
+
+    db_sess.commit()
+    db_sess.close()
+
