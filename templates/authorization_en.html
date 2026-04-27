@@ -27,10 +27,10 @@
         <div>{{ message }}</div>
     </form>
 
+    <a href="/en" class="btn btn-secondary">Back to main page</a>
+
     <div class="registration-link">
-        <p>Нет аккаунта?</p>
-        <form action="" method="post">
-            <button type="submit" name="btn" class="registration_btn" value="registration">Регистрация</button>
-        </form>
+        <p>No account?</p>
+        <a href="{{ url_for('register_en') }}" class="registration_btn btn btn-primary">Registration</a>
     </div>
 {% endblock %}

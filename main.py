@@ -16,7 +16,6 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 app.config['SECRET_KEY'] = 'mi_crytie_ochen1_dva_geniya_prosto'
 
-
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = db_session.create_session()
@@ -802,7 +801,6 @@ def return_success_send_page_en():
     data = TextData(pages_path + 'success_en.json')
     return create_send_success_page(data)
 
-
 @app.route("/regist/ru", methods=["POST", "GET"])
 def register_ru():
     if current_user.is_authenticated:
@@ -829,7 +827,6 @@ def register_ru():
         return redirect('/ru')
     return render_template('register_ru.html', title='Регистрация', form=form)
 
-
 @app.route('/autho/ru', methods=['POST', 'GET'])
 def login_ru():
     if current_user.is_authenticated:
@@ -846,9 +843,10 @@ def login_ru():
                                 form=form)
     return render_template('authorization_ru.html', title='Авторизация', form=form)
 
-
 @app.route('/autho/en', methods=['POST', 'GET'])
 def login_en():
+    if current_user.is_authenticated:
+        return render_template('profile_en.html', user=current_user)
     form = LoginForm_En()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
@@ -861,9 +859,10 @@ def login_en():
                                 form=form)
     return render_template('authorization_en.html', title='Authorization', form=form)
 
-
 @app.route("/regist/en", methods=["POST", "GET"])
 def register_en():
+    if current_user.is_authenticated:
+        return redirect(url_for('profile_en'))
     form = RegisterForm_En()
     if form.validate_on_submit():
         if form.password.data != form.password_again.data:
@@ -886,12 +885,11 @@ def register_en():
         return redirect('/en')
     return render_template('register_en.html', title='Registration', form=form)
 
-
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
-    return redirect('/ru')
+    return redirect('/')
 
 
 @app.route('/profile_ru')
@@ -899,6 +897,10 @@ def logout():
 def profile_ru():
     return render_template('profile_ru.html', user=current_user)
 
+@app.route('/profile_en')
+@login_required
+def profile_en():
+    return render_template('profile_en.html', user=current_user)
 
 if __name__ == '__main__':
     db_session.global_init("db/users.sqlite")
