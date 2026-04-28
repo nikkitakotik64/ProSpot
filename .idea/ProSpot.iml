@@ -2,12 +2,13 @@
 <module type="PYTHON_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/.venv/Lib/site-packages" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
       <excludeFolder url="file://$MODULE_DIR$/.venv/Lib" />
       <excludeFolder url="file://$MODULE_DIR$/.venv/Scripts" />
     </content>
     <content url="file://$MODULE_DIR$/.venv/Lib/site-packages" />
-    <orderEntry type="jdk" jdkName="Python 3.13 (ProSpot)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.11 (ProSpot)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
