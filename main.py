@@ -13,6 +13,9 @@ from data_db.users import User
 from forms.user import RegisterForm_Ru, LoginForm_Ru, RegisterForm_En, LoginForm_En
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 
+# хостинг по адресу
+# https://prospot.pythonanywhere.com
+
 app = Flask(__name__)
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -206,7 +209,7 @@ def add_spot_page_ru():
             map_name = None
         else:
             map_name = request.form.get('map', None)
-            if map_name not in maps_dict['en'][games_short_name_dict[game]]:
+            if map_name not in maps_dict['ru'][games_short_name_dict[game]]:
                 map_name = None
         pos = (request.form.get('x_coord', None), request.form.get('y_coord', None))
         if pos[0] is None or pos[1] is None or not pos[0] or not pos[1]:
@@ -834,7 +837,7 @@ def register_ru():
         user.set_password(form.password.data)
         db_sess.add(user)
         db_sess.commit()
-        return redirect('/ru')
+        return redirect('/autho/ru')
     return render_template('register_ru.html', title='Регистрация', form=form)
 
 
@@ -899,7 +902,7 @@ def register_en():
         user.set_password(form.password.data)
         db_sess.add(user)
         db_sess.commit()
-        return redirect('/en')
+        return redirect('/autho/en')
     return render_template('register_en.html', title='Registration', form=form)
 
 
@@ -1066,7 +1069,6 @@ def need_to_auth_page_en():
     return return_need_to_auth_page_en()
 
 
-
+db_session.global_init("db/users.sqlite")
 if __name__ == '__main__':
-    db_session.global_init("db/users.sqlite")
     app.run(port=8080, host='127.0.0.1')

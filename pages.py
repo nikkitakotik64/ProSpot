@@ -324,7 +324,7 @@ def create_map_page(data: TextData, map_name: str, game: str, description_file: 
     else:
         autho_text = data.get_autho_btn_text()
     map_image = db_data.get_map_image(game, map_name)
-    with open(description_file, 'r') as f:
+    with open(description_file, 'r', encoding='utf-8') as f:
         description = f.readlines()
     return render_template('map_page.html',
                            lang=data.get_lang(),

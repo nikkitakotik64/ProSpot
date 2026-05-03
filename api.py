@@ -18,7 +18,8 @@ def get_map_info(lang, game, map_name):
     map_id = maps_dict['en'][game].index(map_name)
     with open(maps_path + map_descriptions[lang][game][map_id]) as f:
         data = f.readlines()
-    return {"descriptions": [data]}
+        data = list(map(lambda x: x.rstrip(), data))
+    return {"descriptions": data}
 
 
 class SiteApi(Resource):
@@ -30,17 +31,18 @@ class SiteApi(Resource):
         parser.add_argument('lang', type=str, default='en')
         parser.add_argument('map', type=str)
         args = parser.parse_args()
-        map_name = args['map'].replace('_', ' ')
+        map_name = args['map'].replace('_', ' ') if args['map'] else None
         data = None
         if args['lang'] not in ['ru', 'en']:
             return {"status": "error", "message": "Language not supported"}, 200
-        if not check_api_key(args['key']):
+        if not check_api_key(args['api_key']):
             return {"status": "error", "message": "Invalid API key"}, 200
         if args['game']:
             if map_name:
                 data = get_map_info(args['lang'], args['game'], map_name)
                 if not data:
                     return {"status": "error", "message": "Map not found"}, 200
+                return {"status": "success", "data": data}, 200
             data = get_game_info(args['lang'], args['game'])
             if not data:
                 return {"status": "error", "message": "Game not found"}, 200
